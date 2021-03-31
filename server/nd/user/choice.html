@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="0" />
+<title>プログラミングを学ぶ - Choice</title>
+<style type="text/css">
+div {
+   margin: 0 auto;
+   width: 900px;
+}
+.header{
+  text-align:center;
+  background-color: #bdf7f1;
+  height:50px;
+  width:1500px;
+  font-size: 40px;
+}
+</style>
+</head>
+<body>
+<div class ="header">
+ <!-- <div class="header-logo" style="position: relative; left: 100px; top: 0px">プログラミングを学ぶ</div> -->
+</div>
+<div style="font-size: 32px; position: relative; left: 150px; top: 10px">問題選択</div>
+
+<div id="result" style="font-size: 32px; position: relative; left: 200px; top: 20px"></div>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+// グローバル変数（いくつかの関数内で参照・更新する）
+let sid = null;
+let res_data = null;
+const flag_show_result = false;
+
+// pathに基づきサーバに問い合わせる
+const origin = location.origin;
+const path_base = location.pathname.replace(/\/[^\/]*$/,"")
+const query = async (path) => {
+  let res = await axios.get(origin + path_base + path);
+  res_data = res.data;
+  if (flag_show_result) {
+    document.getElementById('result').innerHTML = JSON.stringify(res.data);
+  }
+}
+
+// res_dataに基づきすべての問題（の一部の属性）を表形式で表示する
+const showQuestionForChoice = () => {
+  const a = (res_data instanceof Array) ? res_data : [res_data];
+  if (a.forEach) {
+    let table = '<ul>';
+    res_data.forEach((s) => {
+      let line = '<li>';
+      line +=  `<a href="typing.html?id=${s.question_id}">` + s.name +'</a>';
+      if (s.cnt) {
+        if (s.cnt == "0") {
+          line += ' (未実施)';
+        } else {
+          line += ` (${s.cnt}回実施)`;
+        }
+      }
+      table += line;
+    });
+    table += '</ul>'
+    document.getElementById('result').innerHTML += table;
+  }
+}
+
+// すべての問題を表示する
+const showQuestion = async () => {
+  await query('/showsort?tab=question');
+  showQuestionForChoice();
+}
+//showQuestion();
+
+// 学籍番号をクッキーから読み出す
+// 設定されていないときは，トップページに戻る確認画面を表示する
+const getsid = () => {
+  document.cookie.split(/; */).forEach((s) => {
+    const v = s.split(/=/);
+    if (v[0] == 'sid') {
+      sid = v[1];
+    }
+  });
+  if (!sid) {
+    if (window.confirm('学籍番号を設定していません。トップページに戻りますか？\n（キャンセルを押すと解答がサーバに記録されません。）')) {
+      location.href = 'top.html';
+    }
+  }
+}
+//getsid();
+
+// 学籍番号をクッキーから読み出す
+// (設定されていないときは，トップページに戻る確認画面を表示する)
+// すべての問題を表示する
+const getsidAndshowQuestion = async () => {
+  document.cookie.split(/; */).forEach((s) => {
+    const v = s.split(/=/);
+    if (v[0] == 'sid') sid = v[1];
+  });
+  if (sid == null) {
+    if (window.confirm('学籍番号を設定していません。トップページに戻りますか？\n（キャンセルを押すと解答がサーバに記録されません。）')) {
+      location.href = 'top.html';
+    }
+  } else {
+    await query('/showsid?sid=' + sid);
+    showQuestionForChoice();
+  }
+}
+getsidAndshowQuestion();
+
+</script>
+
+</body> </html>

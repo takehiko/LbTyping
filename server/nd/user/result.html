@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="0" />
+<title>プログラミングを学ぶ - Result</title>
+<style type="text/css">
+  div {
+    margin: 0 auto;
+    width: 900px;
+  }
+  .header{
+    position: relative; 
+    left: 0px; 
+    top: 0px;
+    background-color: #bdf7f1;
+    height:50px;
+    width:1500px;
+    font-size: 40px;
+  }
+  button:hover {
+    /* 背景色を明るい青色に指定 */
+    background-color: #24d;
+    /* 文字色を白色に指定 */
+  color: #fff;
+  }
+</style>
+</head>
+<body>
+  <div class ="header">
+<!--	<div class="header-logo" style="position: relative; left: 100px; top: 0px">プログラミングを学ぶ</div> -->
+  </div>
+  <div style="font-size: 32px; position: relative; left: 250px; top: 10px">結果発表</div>
+  <div id= "a" class="problem" style=" font-size: 30px; position: relative; left: 300px; top: 20px">問題: </div>
+  <div id= "b" class="chalacter_number" style="font-size: 30px; position: relative; left: 300px; top: 30px">入力文字数: </div>
+  <div id= "c" class="miss_cnt" style="font-size: 30px; position: relative; left: 300px; top: 40px">誤タイプ数: </div>
+  <div id= "d" class="Time" style="font-size: 30px; position: relative; left: 300px; top: 50px">タイプ時間: </div>
+  <div>
+  <button type="button" id="c2_page" onclick="location.href= `commentary.html?id=${rid}`" style="font-size: 30px; width:200px; height:100px; position: relative; top: 200px; left:200px;margin: 0 auto">解説画面へ</button>
+  <button type="button" id="t_page" onclick="location.href= 'top.html'" style="font-size: 30px; width:200px; height:100px; position: relative; top: 200px; left:200px;margin: 0 auto">トップ画面へ</button>
+  <button type="button" id="c_page" onclick="location.href= 'choice.html'" style="font-size: 30px;  width:230px; height:100px; position: relative; top: 200px; display: inline-block; left: 200px;margin: 0 auto">問題選択画面へ</button>
+  </div>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+<script type="text/javascript">
+let qid;
+let rid;
+let res_data = null;
+let title = document.getElementById("a");
+let t_count = document.getElementById("b");
+let miss_count = document.getElementById("c");
+let time = document.getElementById("d");
+const flag_show_result = false;
+
+// pathに基づきサーバに問い合わせる
+const origin = location.origin;
+const path_base = location.pathname.replace(/\/[^\/]*$/,"")
+const query = async (path) => {
+  let res = await axios.get(origin + path_base + path);
+  res_data = res.data;
+  if (flag_show_result) {
+    document.getElementById('result').innerHTML = JSON.stringify(res.data);
+  }
+}
+
+// question_idに基づき問題を獲得する
+const getQ = async (qid) => {
+  await query('/getq?id=' + qid);
+}
+
+//response_idに基づき解答状況を獲得する
+const getR = async (rid) => {
+  await query('/getr?id=' + rid);
+}
+
+const get_response_id=async() => {
+  let q_name;
+  let q_count;
+  let m_count;
+  let diffTime;
+
+  if (location.search.indexOf("?id=") == 0) {
+    rid = location.search.replace(/\?id=/,"");
+    await getR(rid);
+
+    qid = res_data.question_id;
+    q_name = res_data.name;
+    title.insertAdjacentHTML('beforeend', q_name);
+    m_count = res_data.miss_count
+    miss_count.insertAdjacentHTML('beforeend', m_count);
+
+    let start_at = Date.parse(res_data.start_at);
+    let finish_at = Date.parse(res_data.finish_at);
+    diffTime = finish_at - start_at;
+    let diffSecond = Math.floor(diffTime / (1000));
+    let diffMill = diffTime - diffSecond * 1000;
+    time.insertAdjacentHTML('beforeend', diffSecond + "秒" + diffMill);
+
+    await getQ(qid);
+    q_count = res_data.count;
+    t_count.insertAdjacentHTML('beforeend', q_count);
+  }
+}
+
+get_response_id();
+document.getElementById("c_page").focus();
+</script>
+
+</body>
+</html>

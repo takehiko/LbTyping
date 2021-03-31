@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>プログラミングを学ぶ - Type!</title>
+<style type="text/css">
+@keyframes borderFlashing {
+  0% {
+    border-bottom: hidden;
+  }
+  50% {
+    border-bottom: visible;
+  }
+  100% {
+    border-bottom: visible;
+  }
+}
+
+.title {
+  font-family: serif;
+  font-size: 70px;
+}
+.title2 {
+  font-family: serif;
+  font-size: 50px;
+}
+p {
+  font-size: 30px;
+  font-family: Lucida Grande;
+}
+div {
+   margin: 0 auto;
+   width: 900px;
+}
+.header {
+  text-align:center;
+  background-color: #bdf7f1;
+  height:50px;
+  width:1500px;
+  font-size: 40px;
+}
+button {
+  font-size: 30px;
+}
+button:hover {
+  /* 背景色を明るい青色に指定 */
+  background-color: #24d;
+  /* 文字色を白色に指定 */
+  color: #fff;
+}
+h2 {
+  font-size: 40px;
+  font-family: Lucida Grande;
+}
+h3 {
+  font-size: 40px;
+  font-family: Lucida Grande;
+}
+
+.open1 {
+  float:right;
+}
+#commentary1 {
+  float:right;
+}
+
+textarea {
+  width:100%;
+  height:300px;
+  resize:vertical;
+  font-size: 80px;
+}
+
+.timer {
+  display: inline-block;
+}
+input:hover {
+  /* 背景色を明るい青色に指定 */
+  background-color: #24d;
+  /* 文字色を白色に指定 */
+  color: #fff;
+}
+
+.typed {color:navy; font-weight:bold}
+.misstyped {color:red}
+.untyped {color:darkgray}
+.untyped span:nth-child(1) {
+  border-bottom:medium solid #000000;
+  animation: borderFlashing 0.6s linear infinite alternate;
+}
+.backspace {color:red}
+</style>
+</head>
+<body>
+<div class ="header">
+<!--  <div class="header-logo">プログラミングを学ぶ</div> -->
+</div>
+<h1 id = "f" class="title2" style="font-size:40px;position: relative; left: 200px; top: 5px"></h1>
+<div id="disp"</div>
+  <h2 class="problem1"></h2>
+  <p style="font-size: 20px; position: relative; left: 0px; top: 10px">正しく打つと次の文字に進みます。
+  <br>最後まで入力できたら終了です。<br>空白と改行はタイプしなくてかまいません。タイプしても無視されます。</p><br>
+
+<div id="typing" style="padding: 18px; margin-bottom: 10px; border: 1px solid #333333; position: relative; left: 0px; top: -30px; font-family: Courier New; font-size: 28px; ">
+<input type="button" id="start" value="スタート" onclick="OnButtonClick();" style="width:200px;height:100px; font-size:30px; position: relative; left: 250px; top: 35px"/>
+<div id="timer"></div>
+<span id = "a" class= "typed"></span><span id = "c" class= "misstyped"></span><span id = "b" class= "untyped"></span>
+<div id = "e" class= "backspace"></div>
+<p id = "d" class= "clear"></p>
+</div>
+<p id = "g" class= "log"></p>
+
+<button type="button" id="r_page" name="name" value="value" onclick="confirmation()" style="font-size: 30px;  width:200px; height:100px; position: relative; left: 750px; top: -10px">あきらめる</button>
+<button type="button" id="retire" name="name" value="value" onclick="location.href= `result.html?id=${rid}`" style="font-size: 30px;  width:250px; height:100px; position: relative; left: 750px; top: -10px; display:none;">結果画面へ</button>
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="text/javascript">
+
+let textList = "";
+let e_untyped;
+let e_typed = "";
+let q_name;
+let title = document.getElementById("f");
+let elem_untyped = document.getElementById("b");
+let elem_typed = document.getElementById("a");
+let miss_typed = document.getElementById("c");
+let start_button = document.getElementById("start");
+let miss_a = "";
+let clear = document.getElementById("d");
+let backspace = document.getElementById("e");
+let elem1 = document.getElementById("r_page");
+let elem2 = document.getElementById("retire");
+let n_page = document.getElementById("g");
+let log = document.getElementById("g");
+let problem;
+let problem_a;
+let save = problem;
+let cnt=0;
+let t_cnt=0;
+let miss_cnt = 0;
+let total_miss_cnt = 0;
+let restart = 0;
+let kc;
+let key;
+let shift_key;
+let interval_id=null;
+let time = [];
+
+// グローバル変数（いくつかの関数内で参照・更新する）
+let res_data = null;
+const flag_show_result = false;
+let qid;
+let sid;
+let rid;
+let miss;
+
+elem1.style.display = "none";
+
+// 学籍番号をクッキーから読み出す
+// 設定されていないときは，トップページに戻る確認画面を表示する
+const getsid = () => {
+  document.cookie.split(/; */).forEach((s) => {
+    const v = s.split(/=/);
+    if (v[0] == 'sid') {
+      sid = v[1];
+    }
+  });
+  if (!sid) {
+    if (window.confirm('学籍番号を設定していません。トップページに戻りますか？\n（キャンセルを押すと解答がサーバに記録されません。）')) {
+      location.href = 'top.html';
+    }
+  }
+}
+getsid();
+
+// pathに基づきサーバに問い合わせる
+const origin = location.origin;
+const path_base = location.pathname.replace(/\/[^\/]*$/,"")
+const query = async (path) => {
+  let res = await axios.get(origin + path_base + path);
+  res_data = res.data;
+  if (flag_show_result) {
+    document.getElementById('result').innerHTML = JSON.stringify(res.data);
+  }
+}
+
+// question_idに基づき問題を獲得する
+const getQ = async (qid) => {
+  await query('/getq?id=' + qid);
+}
+
+const get_question_id=async() =>{
+  if(location.search.indexOf("?id=")==0){
+    qid = location.search.replace(/\?id=/,"");
+    await getQ(qid);
+    q_name = res_data.name;
+    title.innerHTML = q_name;
+    textList = res_data.type_content.replace(/\\\\/g, "￥").split(/\\n/).map(s => s.replace(/￥/g, "\\"));
+    document.onkeydown = typeGame;
+  }
+}
+
+// question_id, student_idに基づき解答を開始する
+const startR = async () => {
+  if (qid == null || qid == '' || sid == null || sid == '') return;
+  await query(`/startr?qid=${qid}&sid=${sid}`);
+  const sleep = (time) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => { resolve(); }, time);
+    });
+  };
+  await sleep(100);
+  rid = res_data.rid;
+  if (flag_show_result) {
+    document.getElementById(rid_id).value = res_data.rid;
+    document.getElementById(miss_id).value = "10";
+  }
+}
+
+// response_id, missに基づき解答を終了する
+const endR = async () => {
+  if (rid == null || rid == '') return;
+  const time2 = time.map(s => ('0' + s[0].charCodeAt(0).toString(16).toUpperCase()).slice(-2) + (s[0].length > 1 ? s[0].substring(1) : '') + ',' + s[1]).join(';');
+  await query(`/endr?id=${rid}&miss=${total_miss_cnt}&note=${time2}`);
+/*
+上記のように格納した変数time2に対して
+time2.split(';').map(s => {t = s.split(','); return [String.fromCharCode(parseInt(t[0].substring(0,2), 16)) + (t[0].length > 2 ? t[0].substring(2) : ''), parseFloat(t[1])]})
+により，timeと同じ配列を得ることができる．
+ブラウザの開発者ツールのコンソールで，以下の式を評価してみるとよい．
+"69,5.351;66,0.127;38x,1.534;42S,0.512;28,0.465;6E,0.416;75,0.08;6D,0.224;62,0.24;65,0.047;72,0.21;3E,0.718;30,0.496;29,0.323;7B,0.526;70,0.768;72,0.241;69,0.096;6E,0.08;74,0.08;66,0.239;28,0.915;27x,0.27;42S,0.511;22,0.416;25,0.912;64,0.272;5C,0.352;6E,0.432;22,0.16;2C,0.368;53PC,0.608;6E,0.289;75,0.063;6D,0.225;62,0.24;65,0.063;72,0.208;29,0.881;3B,0.367;52ET,0.849;7D,0.415".split(';').map(s => {t = s.split(','); return [String.fromCharCode(parseInt(t[0].substring(0,2), 16)) + (t[0].length > 2 ? t[0].substring(2) : ''), parseFloat(t[1])]})
+*/
+}
+
+function start_timer() {
+  let timer = document.getElementById('timer');
+  let starting_time = 4;
+  let count_timer = starting_time;
+  interval_id = setInterval(count_time, 1000);
+  function count_time() {
+    count_timer = count_timer-1;
+    count_timer_minute = Math.floor(count_timer/60);
+    count_timer_second = Math.floor(count_timer%60);
+    timer.innerHTML = count_timer_second+"秒";
+    if(count_timer <= 0){
+      stop_timer();
+      timer.innerHTML = "";
+      e_untyped = textList.join("\n");
+      problem = e_untyped;
+      problem_a = problem.split("");
+      elem_untyped.innerHTML = e_untyped.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
+      changeColor();
+      startR();
+    }
+  }
+}
+
+function stop_timer() {
+  clearInterval(interval_id);
+}
+
+function OnButtonClick() {
+  start.style.display = "none";
+  elem1.style.display = "";
+  start_timer();
+}
+
+get_question_id();
+
+function typeGame(evt) {
+  key = evt.key;
+  // https://www.w3.org/TR/uievents-key/#key-attribute-value
+  if (key == "Backspace")
+    kc = 8;
+  else if (key == "Enter")
+    kc = 13;
+  else if (key == "Esc")
+    kc = 27;
+  else if (key == "Tab")
+    kc = 8;
+  else if (key == "Delete")
+    kc = 127;
+  else if ("|CapsLock|Control|Fn|NumLock|ScrollLock|Shift|".indexOf("|" + key + "|") >= 0)
+    kc = -1;
+  else
+    kc = key.charCodeAt(0);
+
+  if (e_untyped != undefined && e_untyped[0]) {
+    if (key == "Enter") {
+      key = "RET";
+      outputTime();
+    }
+    if (key == " ") {
+      key = "SPC";
+      outputTime();
+    }
+    if (key.length == 1 && e_untyped[0] == key) {
+      if (!miss_a) {
+        outputTime();
+        e_typed = e_typed + e_untyped[0];
+        e_untyped = e_untyped.substring(1,e_untyped.Length);
+        if (!e_untyped) {
+          clear.innerHTML = "Complete!!";
+          elem_untyped.innerHTML = e_untyped.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
+          elem_typed.innerHTML = e_typed.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
+          elem1.style.display = "none";
+          elem2.style.display = "";
+          changeColor();
+          endR();
+        }
+        cnt++;
+
+        while(e_untyped[0] == '\n' || e_untyped[0] == ' '){
+          e_typed = e_typed + e_untyped[0];
+          e_untyped = e_untyped.substring(1, problem_a.Length);
+          cnt++;
+        }
+      } else {
+        missType();
+      }
+    } else if (key == "Backspace") {
+      key = "BS";
+      outputTime();
+      if (miss_cnt > 0) {
+        miss_a = miss_a.slice(0, -1);
+        miss_typed.innerHTML = miss_a;
+        changeColor();
+        miss_cnt--;
+        if (miss_cnt == 0) {
+          backspace.innerHTML = "";
+        } else {
+          backspace.innerHTML = `backspaceを${miss_cnt}回押してください`;
+        }
+      }
+    } else if (key.length == 1) {
+      missType();
+    }
+  }
+
+  if (e_untyped != undefined) {
+    elem_untyped.innerHTML = e_untyped.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
+  }
+  elem_typed.innerHTML = e_typed.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
+  changeColor();
+
+  return false;
+}
+
+function missType() {
+  if (t_cnt == 0) {
+    time_a = performance.now();
+    time[t_cnt] = [key + "x" , Math.round(time_a)/1000];
+  } else {
+    time_b = performance.now();
+    time[t_cnt] = [key + "x" , Math.round(time_b - time_a)/1000];
+    time_a = time_b;
+  }
+  t_cnt++;
+
+  miss_a += key;
+  miss_typed.innerHTML = miss_a;
+  miss_cnt++;
+  total_miss_cnt++;
+  backspace.innerHTML = `backspaceを${miss_cnt}回押してください`;
+}
+
+function outputTime() {
+  if (t_cnt == 0){
+    time_a = performance.now();
+    time[t_cnt] = [ key ,Math.round(time_a)/1000];
+  } else {
+    time_b = performance.now();
+    time[t_cnt] = [key ,Math.round(time_b - time_a)/1000];
+    time_a = time_b;
+  }
+  t_cnt++;
+}
+
+function changeColor() {
+   $(".typed").children().addBack().contents().each(function() {
+      if (this.nodeType == 3) {
+         let $this = $(this);
+         $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
+      }
+   });
+   $(".misstyped").children().addBack().contents().each(function() {
+      if (this.nodeType == 3) {
+         let $this = $(this);
+         $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
+      }
+   });
+   $(".untyped").children().addBack().contents().each(function() {
+      if (this.nodeType == 3) {
+         let $this = $(this);
+         $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
+      }
+   });
+   $(".backspace").children().addBack().contents().each(function() {
+      if (this.nodeType == 3) {
+         let $this = $(this);
+         $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
+      }
+   });
+}
+
+function confirmation() {
+   ret = confirm("問題の解答を中断して選択画面に戻りますか？");
+   if (ret == true){
+      location.href= 'choice.html';
+   }
+}
+</script>
+
+</body>
+</html>

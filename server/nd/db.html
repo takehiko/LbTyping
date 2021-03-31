@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Database Viewer</title>
+</head>
+<body>
+<h1>DBアクセス</h1>
+
+origin = <input type="text" name="origin" id="origin" size="60" value="http://localhost:11337"><br>
+<input type="button" value="all question" onclick="showQuestion()"><br>
+<input type="button" value="all response" onclick="showResponse()"><br>
+student_id = <input type="text" name="sid" id="sid" size="10">
+<input type="button" value="set student_id" onclick="setsid()">
+<input type="button" value="history" onclick="showHistoryByStudent()">
+<input type="button" value="response by student_id" onclick="showResponseByStudent()"><br>
+question_id = <input type="text" name="qid" id="qid" size="10">
+<input type="button" value="get" onclick="getQ()">
+<input type="button" value="start" onclick="startR()"><br>
+response_id = <input type="text" name="rid" id="rid" size="10">,
+miss = <input type="text" name="miss" id="miss" size="10">,
+note = <input type="text" name="note" id="note" size="20">
+<input type="button" value="end" onclick="endR()"><br>
+<input type="button" value="clear" onclick="clearResult()"><br>
+<hr>
+<div id="result"></div>
+<hr>
+<h2>使い方など</h2>
+<ul>
+  <li>「all question」または「all response」のボタンを押すと、データベースにアクセスし、テーブルの内容を、JSON形式で表示します。
+  <li>「student_id =」の右に値を入力してから「set student_id」ボタンを押すと、その値がクッキーに格納されます。ブラウザを閉じて同じURLにアクセスすると、値が復活するはずです。
+  <li>student_idの値をセットしてから、「history」ボタンを押すと、そのstudent_idの解答状況（question_idごとの、実施回数、最小ミスタイプ数、最短時間）を表示します。finish_atが未設定のレコードは含まれません。
+  <li>student_idの値をセットしてから、「response by student_id」ボタンを押すと、そのstudent_idの解答ごとの状況を表示します。finish_atが未設定のレコードも含まれます。
+  <li>「question_id =」の右に値を入力して、「get」ボタンを押すと、questionテーブルに対して問い合わせを行います。該当レコードが見つかれば、そのレコードの値を、JSON形式で表示します。
+  <li>student_idの値をセットしてから、「question_id =」の右に値を入力して、「start」ボタンを押すと、responseテーブルに対して挿入（解答開始）を行います。
+  <li>「response_id =」と「miss =」の右にそれぞれ値を入力し、「end」ボタンを押すと、responseテーブルの更新（解答終了）を行います。
+  <li>「clear」ボタンを押すと、結果表示を消去します。
+</ul>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+// グローバル変数（いくつかの関数内で参照・更新する）
+let res_data = null; // query呼び出しで格納
+let hist = null; // setupHist呼び出しで格納
+const origin_id = 'origin'
+const sid_id = 'sid';
+const qid_id = 'qid';
+const rid_id = 'rid';
+const miss_id = 'miss';
+const note_id = 'note';
+let null_string = '&nbsp;'
+const flag_show_result = true;
+// オリジンの変更
+document.getElementById('origin').value = location.href.replace("/db", "")
+
+// pathに基づきサーバに問い合わせる
+const query = async (path) => {
+  const origin = document.getElementById('origin').value.replace(/\/$/, '');
+  let res = await axios.get(origin + path);
+  res_data = res.data;
+  if (flag_show_result) {
+    document.getElementById('result').innerHTML = JSON.stringify(res.data);
+  }
+}
+
+// res_dataの値に基づき表を作成する
+// red_dataは，responseテーブルまたはその配列のJavaScriptオブジェクト
+const showResponseTable = () => {
+  const a = (res_data instanceof Array) ? res_data : [res_data];
+  let table = '<br><table border="1"><tr><th>response_id</th><th>student_id</th><th>question_id</th><th>start_at</th><th>finish_at</th><th>miss_count</th><th>time</th><th>note</th></tr>';
+  a.forEach((s) => {
+    let line = '<tr>';
+    line += '<td>' + s.response_id + '</td>';
+    line += '<td>' + s.student_id + '</td>';
+    line += '<td>' + s.question_id + '</td>';
+    line += '<td>' + dateString(s.start_at) + '</td>';
+    line += '<td>' + dateString(s.finish_at) + '</td>';
+    line += '<td>' + s.miss_count + '</td>';
+    line += '<td>' + worktimeString(s.start_at, s.finish_at) + '</td>';
+    if (("" + s.note).match(/^[0-9a-fA-F]{2}/)) {
+      line += '<td>' + escape_html(JSON.stringify(s.note.split(';').map(s => {t = s.split(','); t[0] = t[0].replace(/^0/, ""); return [String.fromCharCode(parseInt(t[0].substring(0,2), 16)) + (t[0].length > 2 ? t[0].substring(2) : ''), parseFloat(t[1])]}))) + '</td>';
+    } else {
+      line += '<td>' + escape_html(s.note) + '</td>';
+    }
+    line += '</tr>';
+    table += line;
+  });
+  table += '<table>'
+  document.getElementById('result').innerHTML += table;
+}
+
+// "2019-09-03T13:10:00.000Z"のような文字列(UTC)を
+// "2019年9月3日(火) 22時10分0秒"のような文字列(JST)に変換する
+const dateString = (d) => {
+  if (d == null || d == '') return null_string;
+  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  const date = new Date(d);
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日${daytable[date.getDay()]} ${date.getHours()}時${date.getMinutes()}分${date.getSeconds()}秒`
+}
+
+// 開始時刻d1と終了時刻d2の経過時間を"4分0秒"のような文字列にする
+const worktimeString = (d1, d2) => {
+  if (d1 == null || d1 == '' || d2 == null || d2 == '') return null_string;
+  const t1 = Date.parse(d1);
+  const t2 = Date.parse(d2);
+  const t12 = t2 - t1;
+  let sec = Math.floor(t12 / 1000);
+  const msec = t12 - sec * 1000;
+  const min = Math.floor(sec / 60);
+  sec -= min * 60
+  return min + '分' + sec + '秒';
+}
+
+// stringをHTMLエスケープして返す
+// https://qiita.com/saekis/items/c2b41cd8940923863791
+const escape_html = (string) => {
+  if (typeof string !== 'string') {
+    return string;
+  }
+  return string.replace(/[&'`"<>]/g, function(match) {
+    return {
+      '&': '&amp;',
+      "'": '&#x27;',
+      '`': '&#x60;',
+      '"': '&quot;',
+      '<': '&lt;',
+      '>': '&gt;',
+    }[match]
+  });
+}
+
+// question_idに基づき問題を獲得する
+const getQ = () => {
+  const id = document.getElementById(qid_id).value;
+  if (id == null || id == '') return;
+  query('/getq?id=' + id);
+}
+
+// question_id, student_idに基づき解答を開始する
+const startR = async () => {
+  const qid = document.getElementById(qid_id).value;
+  const sid = document.getElementById(sid_id).value;
+  if (qid == null || qid == '' || sid == null || sid == '') return;
+  await query(`/startr?qid=${qid}&sid=${sid}`);
+  const sleep = (time) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => { resolve(); }, time);
+    });
+  };
+  await sleep(100);
+  if (flag_show_result) {
+    document.getElementById(rid_id).value = res_data.rid;
+    document.getElementById(miss_id).value = "10";
+  }
+}
+
+// response_id, missに基づき解答を終了する
+const endR = async () => {
+  const id = document.getElementById(rid_id).value;
+  const miss = document.getElementById(miss_id).value;
+  const note = encodeURIComponent(document.getElementById(note_id).value || '');
+  if (id == null || id == '' || miss == null || miss == '') return;
+  await query(`/endr?id=${id}&miss=${miss}&note=${note}`);
+  showResponseTable();
+}
+
+// res_dataに基づきすべての問題（の一部の属性）を表形式で表示する
+const showQuestionForChoice = () => {
+  const a = (res_data instanceof Array) ? res_data : [res_data];
+  if (a.forEach) {
+    let table = '<br><table border="1"><tr><th>question_id</th><th>name</th><th>difficulty</th></tr>';
+    res_data.forEach((s) => {
+      let line = '<tr>';
+      line += '<td>' + s.question_id + '</td>';
+      line += '<td>' + s.name + '</td>';
+      line += '<td>' + s.difficulty + '</td>';
+      line += '</tr>';
+      table += line;
+    });
+    table += '<table>'
+    document.getElementById('result').innerHTML += table;
+  }
+}
+
+// すべての問題を表示する
+const showQuestion = async () => {
+  await query('/show?tab=question');
+  showQuestionForChoice();
+}
+
+// すべての解答を表示する
+const showResponse = () => query('/show?tab=response');
+
+// student_idに基づき解答を表示する
+const showResponseByStudent = async () => {
+  const sid = document.getElementById(sid_id).value;
+  if (sid == null || sid == '') return;
+  await query('/resp?sid=' + sid);
+  showResponseTable();
+}
+
+// res_dataに基づき解答状況を表形式で表示する
+const showHistoryTable = () => {
+  if (!(res_data instanceof Array) || res_data.length == 0) {
+    document.getElementById('result').innerHTML += "(no history)";
+    return;
+  }
+
+  let table = '<br><table border="1"><tr><th>question_id</th><th>count</th><th>min_miss</th><th>min_time</th></tr>';
+  res_data.forEach((s) => {
+    let line = '<tr>';
+    line += '<td>' + s.question_id + '</td>';
+    line += '<td>' + s.count + '</td>';
+    line += '<td>' + s.miss + '</td>';
+    line += '<td>' + s.time + '</td>';
+    line += '</tr>';
+    table += line;
+  });
+  table += '<table>'
+  document.getElementById('result').innerHTML += table;
+}
+
+// res_dataに基づき解答状況を表形式で表示する
+const setupHist = () => {
+  hist = {};
+  if (!(res_data instanceof Array) || res_data.length == 0) return;
+  res_data.forEach((s) => {
+    hist[s.question_id] = s;
+  });
+}
+
+// student_idに基づき解答状況を表示する
+const showHistoryByStudent = async () => {
+  const sid = document.getElementById(sid_id).value;
+  if (sid == null || sid == '') return;
+  await query('/hist?sid=' + sid);
+  setupHist();
+  document.getElementById('result').innerHTML += '';
+  showHistoryTable();
+}
+
+// resultを消去する
+const clearResult = () => { document.getElementById('result').innerHTML = '' };
+
+// student_idに基づき設定する
+const setsid = () => {
+  let sid = document.getElementById(sid_id).value;
+  if (sid == null || sid == '') {
+    sid = 'sid=;max-age=0'
+  }
+  document.cookie = `sid=${sid}`;
+}
+
+// student_idをクッキーから読み出す
+const getsid = () => {
+  let sid = null;
+  document.cookie.split(/; */).forEach((s) => {
+    const v = s.split(/=/);
+    if (v[0] == 'sid') {
+      sid = v[1];
+    }
+  })
+  if (sid) document.getElementById(sid_id).value = sid;
+  return sid;
+}
+getsid();
+</script>
+
+</body> </html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="0" />
+<meta charset="UTF-8">
+<title>プログラミングを学ぶ - Top</title>
+
+<style type="text/css">
+div {
+   margin: 0 auto;
+   width: 900px;
+}
+.header{
+  position: relative; 
+  left: 0px; 
+  top: 0px;
+  background-color: #bdf7f1;
+  height:50px;
+  width:1500px;
+  font-size: 40px;
+}
+</style>
+
+</head>
+<body>
+<div class ="header">
+  <div class="header-logo" style="position: relative; left: 100px; top: 0px">プログラミングを学ぶ</div>
+</div>
+
+<p style="position: relative; left: 400px; top: 20px">
+本システムは、「写経型学習（写経型プログラミング）」のための<br>
+Webアプリケーションです。数行のプログラムコードを打ち込むと、<br>
+タイプ時間と誤タイプ数を表示します。<br>
+<!--
+ご利用にあたり、学籍番号の入力をお願いしています。タイピング状況は1文字単位で<br>
+研究室内のデータベースに格納しますが、流出のないよう細心の注意を払って<br>
+管理します。また統計処理を行いながら、学籍番号を含む個人情報（プライバシー情報）<br>
+を適切に除外し、論文執筆・学会発表などに活用する予定です。<br>
+-->
+<br>
+注意事項　以下の2点をご確認ください。<br>
+1.ブラウザの幅に関して、このページの文章が右端まで見えていない場合には、すべて<br>表示されるよう調節してください。<br>
+2.プログラムを記述する上で人それぞれやりやすい書き方等あると思いますが、<br>
+本システムでは表示されている順にタイピングしてください。大文字・小文字は区別<br>されます。また「<span lang="en" style="font-family: Courier New; font-size: 24px;">\</span>」が表示される箇所は、円記号(￥)を、「<span lang="en" style="font-family: Courier New; font-size: 24px;">*</span>」が表示される箇所は、<br>アスタリスクを、打ち込んでください。<br>
+</p>
+
+<p id="msgsid1" style="position: relative; left: 400px; top: 50px">はじめに学籍番号を入力してください</p>
+<p style="position: relative; left: 400px; top: 60px">
+学籍番号 <input type="text" name="sid" id="sid" size="10">
+<input type="button" value="設定する" onclick="setsid()">
+</p>
+
+<p id="msgsid2" style="position: relative; left: 400px; top: 70px"><a href="choice.html">問題選択画面へ</a></p>
+
+<script>
+// グローバル変数（いくつかの関数内で参照・更新する）
+const sid_id = "sid";
+let sid = null;
+
+// 学籍番号を設定する
+// nullまたは空文字列のときは設定を消去する
+const setsid = () => {
+  sid = document.getElementById(sid_id).value;
+
+  // 学籍番号チェック
+  if (!sid.match(/^\d+$/)) {
+    sid = null;
+    document.getElementById("msgsid1").removeAttribute("hidden");
+    document.getElementById("msgsid2").setAttribute("hidden", "hidden");
+    alert("おそれいりますが、\n学籍番号は数字のみで記入してください。");
+    return;
+  }
+
+  const cookie_sid = (sid == null || sid == '') ? 'sid=;max-age=0;path=/' : `sid=${sid};path=/`;
+  document.cookie = cookie_sid;
+  getsid();
+}
+
+// 学籍番号をクッキーから読み出す
+// 設定されているか否かで表示内容を変える
+const getsid = () => {
+  document.cookie.split(/; */).forEach((s) => {
+    const v = s.split(/=/);
+    if (v[0] == 'sid') sid = v[1];
+  })
+  if (sid) {
+    document.getElementById(sid_id).value = sid;
+    document.getElementById("msgsid1").setAttribute("hidden", "hidden");
+    document.getElementById("msgsid2").removeAttribute("hidden");
+  } else {
+    document.getElementById("msgsid1").removeAttribute("hidden");
+    document.getElementById("msgsid2").setAttribute("hidden", "hidden");
+  }
+  return sid;
+}
+getsid();
+</script>
+
+</body> </html>
