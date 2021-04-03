@@ -26,10 +26,10 @@ CREATE TABLE response (
 
 );
 
--- 20201008_cn
+INSERT INTO question(question_id,name,Type_content,count,basename,commentary,url) VALUES
+(500,'No.1 Hello','#include <stdio.h>\nint main(void){\n    printf("Hello\\n");\n}',50,'hello','タイピングの動作確認用のプログラムです。<br>3行目の途中、「H」を大文字できちんとタイプできましたか？','https://paiza.io/projects/e/ky0Xb0eS5Z6_FuPNMDIHzg');
 INSERT INTO question(question_id,name,Type_content,count,basename,commentary,url) VALUES
 (501,'No.1 Pangram','#include <stdio.h>\nint main(void){\n    printf("waltz, bad nymph, for quick jigs vex.\\n");\n    return 0;\n}',84,'pangram','このプログラムはprintf(プリントエフ)関数を使って、決まった文字列を出力します。<br><br>1行目の#include&lt;stdio.h&gt;により、printf関数を使用することができます。<br><br>2行目で、mainという、Cのプログラムで最初に実行する関数を宣言しています。<br>mainの前の「int 」と、後ろの「(void)」も、必要です。<br>行の最後の { について、対応する } は5行目の先頭です。{ と } の間に、プログラムが実行する処理を順番に並べます。<br><br>3行目には、実行する処理を記述しており、printf関数で表示する文字を記述します。<br>また、このプログラムで出力する（打ち込んだ）文字列は，すべての英字が1回以上出現しています。<br><br>ところで、3行目と出力を見比べると、3行目の（2つの）「&quot;」と「\n」が出力に現れていません。<br>2つの「&quot;」は、それらで囲まれた中の部分を、文字列とします。<br>次に、「\n」は改行を意味します。このプログラムでは\nがなくても、結果の見た目は変わりませんが、<br>出力時に改行しておくのがよく、もっと複雑なプログラムになると、\nの有無により、結果の表示に影響する<br>こともあります。<br><br>4行目のreturn 0;で、main関数（そしてこのプログラム）の実行は終了となります。','https://paiza.io/projects/e/RFD-sLBc9LpVjAcHnXDW-w');
--- 20201015
 INSERT INTO question(question_id,name,Type_content,count,basename,commentary,url) VALUES
 (502,'No.2 Even-Odd','#include <stdio.h>\nint main(void) {\n    int x = 101;\n\n    if(x % 2 == 1) {\n        printf("Odd number\\n");\n    } else {\n        printf("Even number\\n");\n    }\n    return 0;\n}',112,'evenodd','このプログラムはif(イフ)文を用いて、変数xの値が奇数か偶数かを判定し、その結果を出力します。<br><br>3行目では変数xをint型で宣言し、整数101で初期化しています。<br><br>5行目からのif文で、条件分岐をしています。<br>「if(x % 2 == 1)」は、「xの値を2で割ったときの余りが1と等しいならば」という意味になります。<br>余りが1の場合、printf関数で「Odd number」と出力します。<br>また、else以降はif文の条件を満たさなかったとき、ここではxの値を2で割ったときの余りが1と等しくない（0である）場合に、<br>printf関数で「Even number」と出力します。<br><br>xの値は、このプログラムでは101です。<br>出力には「Odd number」と表示されています。この時、else文の処理は行われていません。','https://paiza.io/projects/e/UbGpyKo64si31wOwlifsZQ');
 INSERT INTO question(question_id,name,Type_content,count,basename,commentary,url) VALUES
