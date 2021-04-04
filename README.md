@@ -19,6 +19,14 @@ docker-compose up -d
 
 タイプすべき数行のプログラムコードが、薄く表示されます。順に正しくタイプすると、色が変わっていきます。またミスタイプは赤字で表示され、バックスペースキーを押して削除しないといけません。すべて打ち込むと、タイプ時間と誤タイプ数が表示されます。また、何ミリ秒でどのキーを押したかを文字ごとに記録し、データベースに格納します。
 
+![Scene 1: start](https://user-images.githubusercontent.com/57928/113510678-ee440400-9596-11eb-9fa5-65d0ab3a7b31.png)
+
+![Scene 2: missed](https://user-images.githubusercontent.com/57928/113510685-f56b1200-9596-11eb-8775-92b97a3e92ac.png)
+
+![Scene 3: corrected](https://user-images.githubusercontent.com/57928/113510687-f7cd6c00-9596-11eb-95a5-28c5ddd9a5f6.png)
+
+![Scene 4: completed](https://user-images.githubusercontent.com/57928/113510690-f9972f80-9596-11eb-9396-07fc337ca52d.png)
+
 プログラムコードは、あらかじめ登録されています。和歌山大学システム工学部の1年生向け授業で学生にタイピングしてもらった、C言語で書かれた6つのプログラムです。将来的には、プログラムファイルから簡単に登録するための仕組みを取り入れます。
 
 実行にあたってはDocker Composeを使用します。クライアントとサーバの計算機が異なっていても（その場合にはサーバにのみDocker Composeが必要となり、クライアントはブラウザのみでかまいません）、同じ（スタンドアロン）でも、動作します。docker-compose.ymlを編集すれば、終了しても、データベースに格納されたデータ（実施日時や結果など）を保持することができます。
