@@ -240,7 +240,7 @@ Http.createServer(function (req, res) {
         const Fs = require('fs')
         const html = Fs.readFileSync("db.html")
         res.end(html)
-    } else if (u.pathname.match(/\.html$/)) {
+    } else if (u.pathname.match(/\.(html|js)$/)) {
         res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'})
         if (u.pathname == "/top.html") {
             const Fs = require('fs')
@@ -262,6 +262,10 @@ Http.createServer(function (req, res) {
             const Fs = require('fs')
             const html = Fs.readFileSync("user/commentary.html")
             res.end(html)
+	} else if (u.pathname == "/jquery.min.js") {
+	    const Fs = require('fs')
+	    const html = Fs.readFileSync("user/jquery.min.js")
+	    res.end(html)
         /* 他のhtmlファイルを読み出したい場合はその都度else ifを書く */
         } else {
             res.end("<body>sorry</body>")
