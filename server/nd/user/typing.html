@@ -375,31 +375,65 @@ function outputTime() {
   t_cnt++;
 }
 
+// jQueryが使われているのでこれをJavaScriptに書き直す
+
 function changeColor() {
-   $(".typed").children().addBack().contents().each(function() {
-      if (this.nodeType == 3) {
-         let $this = $(this);
-         $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
-      }
-   });
-   $(".misstyped").children().addBack().contents().each(function() {
-      if (this.nodeType == 3) {
-         let $this = $(this);
-         $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
-      }
-   });
-   $(".untyped").children().addBack().contents().each(function() {
-      if (this.nodeType == 3) {
-         let $this = $(this);
-         $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
-      }
-   });
-   $(".backspace").children().addBack().contents().each(function() {
-      if (this.nodeType == 3) {
-         let $this = $(this);
-         $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
-      }
-   });
+  //  $(".typed").children().addBack().contents().each(function() {
+  //     if (this.nodeType == 3) {
+  //        let $this = $(this); //jQueryオブジェクトの代入
+  //        $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
+  //     }
+  //  });
+  //  $(".misstyped").children().addBack().contents().each(function() {
+  //     if (this.nodeType == 3) {
+  //        let $this = $(this);
+  //        $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
+  //     }
+  //  });
+  //  $(".untyped").children().addBack().contents().each(function() {
+  //     if (this.nodeType == 3) {
+  //        let $this = $(this);
+  //        $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
+  //     }
+  //  });
+  //  $(".backspace").children().addBack().contents().each(function() {
+  //     if (this.nodeType == 3) {
+  //        let $this = $(this);
+  //        $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
+  //     }
+  //  });
+
+  let typed = document.getElementsByClassName("typed");
+  let misstyped = document.getElementsByClassName("misstyped");
+  let untyped = document.getElementsByClassName("untyped");
+  let backspace = document.getElementsByClassName("backspace");
+
+  for(let i = 0; i < typed.length; i++){
+    if(typed[i].nodeType == 3){
+      typed[i].textContent.replace(/(\S)/g, "<span>$&</span>");
+    }
+  }
+  for(let i = 0; i < misstyped.length; i++){
+    if(misstyped[i].nodeType == 3){
+      misstyped[i].textContent.replace(/(\S)/g, "<span>$&</span>");
+    }
+  }
+  for(let i = 0; i < untyped.length; i++){
+    if(untyped[i].nodeType == 3){
+      untyped[i].textContent.replace(/(\S)/g, "<span>$&</span>");
+    }
+  }
+  for(let i = 0; i < backspace.length; i++){
+    if(backspace[i].nodeType == 3){
+      backspace[i].textContent.replace(/(\S)/g, "<span>$&</span>");
+    }
+  }
+
+  // for debug
+  // console.log(typed);
+  // console.log(misstyped);
+  // console.log(untyped);
+  // console.log(backspace);
 }
 
 function confirmation() {
