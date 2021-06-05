@@ -112,7 +112,7 @@ input:hover {
 <button type="button" id="r_page" name="name" value="value" onclick="confirmation()" style="font-size: 30px;  width:200px; height:100px; position: relative; left: 750px; top: -10px">あきらめる</button>
 <button type="button" id="retire" name="name" value="value" onclick="location.href= `result.html?id=${rid}`" style="font-size: 30px;  width:250px; height:100px; position: relative; left: 750px; top: -10px; display:none;">結果画面へ</button>
 
-<script type="text/javascript" src="jquery.min.js"></script>
+<!-- <script type="text/javascript" src="jquery.min.js"></script> -->
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="text/javascript">
 
@@ -376,30 +376,45 @@ function outputTime() {
 }
 
 function changeColor() {
-   $(".typed").children().addBack().contents().each(function() {
-      if (this.nodeType == 3) {
-         let $this = $(this);
-         $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
-      }
-   });
-   $(".misstyped").children().addBack().contents().each(function() {
-      if (this.nodeType == 3) {
-         let $this = $(this);
-         $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
-      }
-   });
-   $(".untyped").children().addBack().contents().each(function() {
-      if (this.nodeType == 3) {
-         let $this = $(this);
-         $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
-      }
-   });
-   $(".backspace").children().addBack().contents().each(function() {
-      if (this.nodeType == 3) {
-         let $this = $(this);
-         $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
-      }
-   });
+  //  $(".typed").children().addBack().contents().each(function() {
+  //     if (this.nodeType == 3) {
+  //        let $this = $(this);
+  //        $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
+  //     }
+  //  });
+  //  $(".misstyped").children().addBack().contents().each(function() {
+  //     if (this.nodeType == 3) {
+  //        let $this = $(this);
+  //        $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
+  //     }
+  //  });
+  //  $(".untyped").children().addBack().contents().each(function() {
+  //     if (this.nodeType == 3) {
+  //        let $this = $(this);
+  //        $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
+  //     }
+  //  });
+  //  $(".backspace").children().addBack().contents().each(function() {
+  //     if (this.nodeType == 3) {
+  //        let $this = $(this);
+  //        $this.replaceWith($this.text().replace(/(\S)/g, "<span>$&</span>"));
+  //     }
+  //  });
+  
+  let typed = document.querySelector(".typed");
+  let misstyped = document.querySelector(".misstyped");
+  let untyped = document.querySelector(".untyped");
+  let backspace = document.querySelector(".backspace");
+
+  // console.log(untyped);
+  // console.log(untyped.innerText);
+  
+  typed.innerHTML = typed.innerText.replace(/(\S)/g, "<span>$&</span>").replace(/\n/g,"<br>");
+  misstyped.innerHTML = misstyped.innerText.replace(/(\S)/g, "<span>$&</span>").replace(/\n/g,"<br>");
+  untyped.innerHTML = untyped.innerText.replace(/(\S)/g, "<span>$&</span>").replace(/\n/g,"<br>");
+  backspace.innerHTML = backspace.innerText.replace(/(\S)/g, "<span>$&</span>").replace(/\n/g,"<br>");
+
+
 }
 
 function confirmation() {
