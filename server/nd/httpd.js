@@ -262,9 +262,9 @@ Http.createServer(function (req, res) {
             const Fs = require('fs')
             const html = Fs.readFileSync("user/commentary.html")
             res.end(html)
-	} else if (u.pathname == "/jquery.min.js") {
+	} else if (u.pathname == "/axios.min.js") {
 	    const Fs = require('fs')
-	    const html = Fs.readFileSync("user/jquery.min.js")
+	    const html = Fs.readFileSync("user/axios.min.js")
 	    res.end(html)
         /* 他のhtmlファイルを読み出したい場合はその都度else ifを書く */
         } else {

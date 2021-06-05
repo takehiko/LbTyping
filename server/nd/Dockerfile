@@ -11,6 +11,6 @@ RUN npm install pg \
 RUN mkdir user srcimg
 COPY ["httpd.js", "db.html", "/root/"]
 COPY ["user/choice.html", "user/result.html", "user/top.html", "user/typing.html", "user/commentary.html", "/root/user/"]
-ADD ["http://code.jquery.com/jquery-1.10.2.min.js", "/root/user/jquery.min.js"]
+ADD ["https://unpkg.com/axios/dist/axios.min.js", "/root/user/axios.min.js"]
 
 CMD ["nodemon", "httpd.js"]
