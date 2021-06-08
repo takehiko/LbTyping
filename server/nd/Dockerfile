@@ -6,7 +6,8 @@ EXPOSE 1337
 WORKDIR /root
 
 RUN npm install pg \
- && npm install nodemon -g
+    && npm install nodemon -g \
+    && npm install express
 
 RUN mkdir user srcimg
 COPY ["httpd.js", "db.html", "/root/"]
