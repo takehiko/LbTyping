@@ -6,8 +6,68 @@
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="expires" content="0" />
 <title>問題登録</title>
+<style>
+  
+  .form{
+    margin:0 auto;
+    border:1px solid black;
+    width:80%;
+    display:flex;
+    flex-direction: column;
+  }
+
+  .form label{
+    margin-bottom:3px;
+  }
+
+  .form input{
+    width:30%;
+  }
+
+  .form textarea{
+    width:30%;
+  }
+
+  .form .register{
+    margin-top:30px;
+    height:50px;
+    width:300px;
+    font-size:30px;
+  }
+
+</style>
 </head>
 <body>
-  
+  <h1>登録画面</h1>
+  <form action="" method="POST" class="form">
+    <label for="qid">question ID</label>
+    <input type="text" id="qid">
+    <label for="qname">question name</label>
+    <input type="text" id="qname">
+    <label for=""></label>
+    <label>ソースコード</label>
+    <iframe src="https://paiza.io/projects/e/tKXBoPbsg3J4fhq5uttehg?theme=twilight" width="100%" height="500" scrolling="no" seamless="seamless"></iframe>
+    <label for="count">文字数</label>
+    <input type="text" id="count">
+    <label for="diff">難易度</label>
+    <input type="text" id="diff">
+    <label for="basename">basename</label>
+    <input type="text" id="basename">
+    <label for="comment">解説</label>
+    <textarea name="" id="comment" cols="30" rows="10"></textarea>
+    <label for="paiza">Paiza.ioのURL</label>
+    <input type="text" id="paiza">
+  </form>
+  <button class="register" onclick="register()">登録</button>
 </body>
+
+<script>
+  console.log("aaa");
+  function register(){
+    let code = document.querySelector("iframe").contentWindow.document;
+
+    console.log(code);
+    
+  }
+</script>
 </html>
