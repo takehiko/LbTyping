@@ -233,6 +233,73 @@ const server = app.listen(sv_settings.port, () => {
             doQuery(q, r => res.end(JSON.stringify({"set":val})))
         }
 
+        const getResponseByQid = (qid) => {
+            const q = {
+                text: "select * from response where question_id=$1",
+                values: [qid]
+            }
+            const fileName = 'response.xlsx'
+            const path = 'response/' + fileName
+            res.writeHead(200, {'Content-Disposition': `attachment; filename=${fileName}`})
+            doQuery(q, r => {
+                if (r.rowCount <= 0) {
+                    res.end(err_msg)
+                    return;
+                }
+                const XLSX = require('xlsx')
+                const book = XLSX.utils.book_new()
+                const sheet = XLSX.utils.aoa_to_sheet(
+                    [['response_id'], ['student_id'], ['question_id'], ['start_at'], ['finish_at'], ['miss_count']],
+                    {origin: {r: 1, c: 1}}
+                )
+                let correctStr = ''
+                r.rows.forEach((row, i) => {
+                    XLSX.utils.sheet_add_aoa(sheet, [[i + 1]], {origin: {r: 0, c: i * 3 + 2}}) // ナンバリング
+                    XLSX.utils.sheet_add_aoa(sheet, [['wrong']], {origin: {r: 7, c: i * 3 + 1}})
+                    XLSX.utils.sheet_add_aoa(sheet, [['time per type']], {origin: {r: 7, c: i * 3 + 2}})
+                    XLSX.utils.sheet_add_aoa(sheet, [['wrong count']], {origin: {r: 7, c: i * 3 + 3}})
+                    let cnt = 1
+                    for (const [key, val] of Object.entries(row)) {
+                        if (key == 'note') {
+                            const times = val.split(';').map(s => {t = s.split(','); return [String.fromCharCode(parseInt(t[0].substring(0,2), 16)) + (t[0].length > 2 ? t[0].substring(2) : ''), parseFloat(t[1])]})
+                            let _correctStr = ''
+                            let missStr = ''
+                            let missTime = 0
+                            for (const [char, time] of times) {
+                                if (char == 'BS') continue
+                                if (char.length == 1) {
+                                    _correctStr += char
+                                    let missCnt = missStr.length
+                                    if (missCnt == 0) missCnt = ''
+                                    XLSX.utils.sheet_add_aoa(sheet, [[missStr, time + missTime, missCnt]], {origin: {r: ++cnt, c: i * 3 + 1}})
+                                    missStr = ''
+                                    missTime = 0
+                                } else {
+                                    missStr += char[0]
+                                    missTime += time
+                                }
+                            }
+                            correctStr = _correctStr
+                        } else {
+                            XLSX.utils.sheet_add_aoa(sheet, [[val]], {origin: {r: cnt++, c: i * 3 + 2}})
+                        }
+                    }
+                })
+                let cnt = 7
+                XLSX.utils.sheet_add_aoa(sheet, [['correct']], {origin: {r: cnt++, c: 0}})
+                for (const char of correctStr) {
+                    XLSX.utils.sheet_add_aoa(sheet, [[char]], {origin: {r: cnt++, c: 0}}) // 正解の文字列を書き込む
+                }
+
+                XLSX.utils.book_append_sheet(book, sheet)
+                XLSX.writeFile(book, path)
+                
+                const Fs = require('fs')
+                const file = Fs.readFileSync(path)
+                res.end(file)
+            })
+        }
+
         const u = Url.parse(req.url, true)
         if (u.pathname == '' || u.pathname == '/' || u.pathname == '/1') {
             res.writeHead(200, {'Content-Type': 'text/plain; charset=UTF-8'})
@@ -272,6 +339,8 @@ const server = app.listen(sv_settings.port, () => {
             } else {
                 res.end("<body>sorry</body>")
             }
+        } else if (u.pathname == '/respbyq' && u.query.qid) {
+            getResponseByQid(u.query.qid)
         } else {
             res.writeHead(200, {'Content-Type': 'text/plain; charset=UTF-8'})
             if (u.pathname == '/getq' && u.query.id) {
