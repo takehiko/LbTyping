@@ -7,9 +7,10 @@ WORKDIR /root
 
 RUN npm install pg \
     && npm install nodemon -g \
-    && npm install express
+    && npm install express \
+    && npm install xlsx
 
-RUN mkdir user srcimg
+RUN mkdir user srcimg response
 COPY ["httpd.js", "db.html", "/root/"]
 COPY ["user/choice.html", "user/result.html", "user/top.html", "user/typing.html", "user/commentary.html", "/root/user/"]
 ADD ["https://unpkg.com/axios/dist/axios.min.js", "/root/user/axios.min.js"]

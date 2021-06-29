@@ -16,7 +16,8 @@ student_id = <input type="text" name="sid" id="sid" size="10">
 <input type="button" value="response by student_id" onclick="showResponseByStudent()"><br>
 question_id = <input type="text" name="qid" id="qid" size="10">
 <input type="button" value="get" onclick="getQ()">
-<input type="button" value="start" onclick="startR()"><br>
+<input type="button" value="start" onclick="startR()">
+<input type="button" value="export in Excel fortmat" onclick="exportInExcelFormat()"><br>
 response_id = <input type="text" name="rid" id="rid" size="10">,
 miss = <input type="text" name="miss" id="miss" size="10">,
 note = <input type="text" name="note" id="note" size="20">
@@ -264,6 +265,32 @@ const getsid = () => {
   return sid;
 }
 getsid();
+
+// question_idに基づき解答結果を取得し、Excel形式で出力する
+const exportInExcelFormat = async () => {
+  let qid = document.getElementById(qid_id).value
+  if (qid == null || qid == '') return
+
+  const origin = document.getElementById('origin').value.replace(/\/$/, '')
+  const path = '/respbyq?qid=' + qid
+  await axios({
+      url: origin + path,
+      method: 'GET',
+      responseType: 'blob',
+    })
+    .then(res => {
+      const url = URL.createObjectURL(new Blob([res.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'response.xlsx')
+      document.body.appendChild(link)
+      link.click()
+      URL.revokeObjectURL(url)
+
+      console.log(res)
+    })
+}
+
 </script>
 
 </body> </html>
