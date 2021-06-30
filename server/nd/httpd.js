@@ -35,6 +35,15 @@ const server = app.listen(sv_settings.port, () => {
                 })
                 .then(() => client.end())
         }
+
+        const registerQuestion = (id,qname,source,count,basename,comment,paiza) => {
+            const q = {
+                text: 'INSERT INTO question(question_id,name,Type_content,count,basename,commentary,url) VALUES($1,$2,$3,$4,$5,$6,$7)',
+                values : [id,qname,source,count,basename,comment,paiza]
+            }
+
+            doQuery(q, r => res.end(JSON.stringify(r.rows)))//callbackは適当
+        }
     
         const getQuestion = (id) => {
             const q = {
@@ -309,6 +318,12 @@ const server = app.listen(sv_settings.port, () => {
             const Fs = require('fs')
             const html = Fs.readFileSync("db.html")
             res.end(html)
+        } else if (u.pathname == '/question_register') {
+            console.log("question register called");
+            res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'})
+            const Fs = require('fs')
+            const html = Fs.readFileSync("question_register.html")
+            res.end(html)
         } else if (u.pathname.match(/\.(html|js)$/)) {
             res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'})
             if (u.pathname == "/top.html") {
@@ -331,11 +346,11 @@ const server = app.listen(sv_settings.port, () => {
                 const Fs = require('fs')
                 const html = Fs.readFileSync("user/commentary.html")
                 res.end(html)
-        } else if (u.pathname == "/axios.min.js") {
-            const Fs = require('fs')
-            const html = Fs.readFileSync("user/axios.min.js")
-            res.end(html)
-            /* 他のhtmlファイルを読み出したい場合はその都度else ifを書く */
+            } else if (u.pathname == "/axios.min.js") {
+                const Fs = require('fs')
+                const html = Fs.readFileSync("user/axios.min.js")
+                res.end(html)
+                /* 他のhtmlファイルを読み出したい場合はその都度else ifを書く */
             } else {
                 res.end("<body>sorry</body>")
             }
@@ -365,6 +380,14 @@ const server = app.listen(sv_settings.port, () => {
                 getCommentary1(u.query.rid ? u.query.rid : u.query.id)
             } else if (u.pathname == '/getc2' && (u.query.id || u.query.rid)) {
                 getCommentary2(u.query.rid ? u.query.rid : u.query.id)
+            } else if (u.pathname == '/register_question'){
+                //あとでelse ifの条件含めて詳しく書く
+                console.log("register_questionに関するqueryを受信");
+                console.log(u.query);
+                if(u.query.qid && u.query.qname && u.query.source && u.query.count && u.query.basename && u.query.comment && u.query.paiza){
+                    console.log("if passed");
+                    registerQuestion(u.query.qid,u.query.qname,u.query.source,u.query.count,u.query.basename,u.query.comment,u.query.paiza);
+                }
             //} else if (u.pathname == '/get' && u.query.id) {
             //    getValue(u.query.id)
             //} else if (u.pathname == '/add' && u.query.val) {
