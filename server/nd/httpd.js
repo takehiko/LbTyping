@@ -252,12 +252,15 @@ const server = app.listen(sv_settings.port, () => {
                     [['response_id'], ['student_id'], ['question_id'], ['start_at'], ['finish_at'], ['miss_count']],
                     {origin: {r: 1, c: 1}}
                 )
+
+                let cols = [{width: 10}]
                 let correctStr = ''
                 r.rows.forEach((row, i) => {
                     XLSX.utils.sheet_add_aoa(sheet, [[i + 1]], {origin: {r: 0, c: i * 3 + 2}}) // ナンバリング
                     XLSX.utils.sheet_add_aoa(sheet, [['wrong']], {origin: {r: 7, c: i * 3 + 1}})
                     XLSX.utils.sheet_add_aoa(sheet, [['time per type']], {origin: {r: 7, c: i * 3 + 2}})
                     XLSX.utils.sheet_add_aoa(sheet, [['wrong count']], {origin: {r: 7, c: i * 3 + 3}})
+                    cols.push({width: 10}, {width: 20}, {width: 10})
                     let cnt = 1
                     for (const [key, val] of Object.entries(row)) {
                         if (key == 'note') {
@@ -266,8 +269,9 @@ const server = app.listen(sv_settings.port, () => {
                             let missStr = ''
                             let missTime = 0
                             for (const [char, time] of times) {
-                                if (char == 'BS') continue
-                                if (char.length == 1) {
+                                if (char == 'RET' || char == 'SPC' || char == 'BS') {
+                                    missTime += time
+                                } else if (char.length == 1) {
                                     _correctStr += char
                                     let missCnt = missStr.length
                                     if (missCnt == 0) missCnt = ''
@@ -281,7 +285,7 @@ const server = app.listen(sv_settings.port, () => {
                             }
                             correctStr = _correctStr
                         } else {
-                            XLSX.utils.sheet_add_aoa(sheet, [[val]], {origin: {r: cnt++, c: i * 3 + 2}})
+                            XLSX.utils.sheet_add_aoa(sheet, [[val]], {origin: {r: cnt++, c: i * 3 + 2}, dateNF: 'yyyy/mm/dd hh:mm:ss'})
                         }
                     }
                 })
@@ -291,6 +295,7 @@ const server = app.listen(sv_settings.port, () => {
                     XLSX.utils.sheet_add_aoa(sheet, [[char]], {origin: {r: cnt++, c: 0}}) // 正解の文字列を書き込む
                 }
 
+                sheet['!cols'] = cols
                 XLSX.utils.book_append_sheet(book, sheet)
                 XLSX.writeFile(book, path)
                 
