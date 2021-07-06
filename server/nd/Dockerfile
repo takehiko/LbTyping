@@ -12,7 +12,6 @@ RUN npm install pg \
 
 RUN mkdir user srcimg response
 COPY ["httpd.js", "db.html", "/root/"]
-RUN mkdir user srcimg
 COPY ["httpd.js", "db.html","question_register.html", "/root/"]
 COPY ["user/choice.html", "user/result.html", "user/top.html", "user/typing.html", "user/commentary.html", "/root/user/"]
 ADD ["https://unpkg.com/axios/dist/axios.min.js", "/root/user/axios.min.js"]
