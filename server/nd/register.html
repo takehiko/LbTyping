@@ -10,7 +10,6 @@
   
   .form{
     margin:0 auto;
-    border:1px solid black;
     width:80%;
     display:flex;
     flex-direction: column;
@@ -20,13 +19,15 @@
     margin-bottom:3px;
   }
 
-  .form input{
-    width:30%;
+  .form input,.form textarea{
+    width: 100%; /*親要素いっぱい広げる*/
+    padding: 10px 15px; /*ボックスを大きくする*/
+    font-size: 16px;
+    border-radius: 3px; /*ボックス角の丸み*/
+    border: 2px solid #ddd; /*枠線*/
+    box-sizing: border-box; /*横幅の解釈をpadding, borderまでとする*/
   }
 
-  .form textarea{
-    width:30%;
-  }
 
   .form .register{
     margin-top:30px;
@@ -35,11 +36,47 @@
     font-size:30px;
   }
 
+
+  .button {
+    display: inline-block;
+    width: 200px;
+    height: 54px;
+    text-align: center;
+    text-decoration: none;
+    line-height: 54px;
+    outline: none;
+  }
+  .button::before,
+  .button::after {
+    position: absolute;
+    z-index: -1;
+    display: block;
+    content: '';
+  }
+  .button,
+  .button::before,
+  .button::after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition: all .3s;
+    transition: all .3s;
+  }
+
+  .button {
+    background-color: #333;
+    color: #fff;
+  }
+
+  .button:hover {
+    background-color: #59b1eb;
+  }
+
 </style>
 </head>
 <body>
-  <h1>登録画面</h1>
   <form action="" method="POST" class="form">
+    <h1>登録画面</h1>
     <label for="qid">question ID</label>
     <input type="text" id="qid">
     <label for="qname">question name</label>
@@ -59,9 +96,8 @@
     <textarea name="" id="comment" cols="30" rows="10"></textarea>
     <label for="paiza">Paiza.ioのURL</label>
     <input type="text" id="paiza">
+    <button class="register" type="button">登録</button>
   </form>
-  <button class="register">登録</button>
-  <div class="result"></div>
 </body>
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -69,7 +105,7 @@
 let qid;
 let rid;
 let res_data = null;
-const flag_show_result = true;
+const flag_show_result = false;
 
 // pathに基づきサーバに問い合わせる
 const origin = location.origin;
@@ -85,7 +121,7 @@ const query = async (path) => {
 }
 
 const register = async() => {
-  console.log("register_debug function called");
+  console.log("register function called");
 
   let qid = document.querySelector("#qid").value;
   let qname = document.querySelector("#qname").value;
@@ -96,6 +132,8 @@ const register = async() => {
   let paiza = document.querySelector("#paiza").value;
 
   console.log(source);
+
+  
 
   comment = comment.replace('/\n/g','<br>');
   source = encodeURIComponent(source);
@@ -108,13 +146,22 @@ const register = async() => {
   // let count = 38;
   // let basename = "test2";
   // let comment="aaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-  // let paiza="http://google.com";  
+  // let paiza="http://google.com";
+  
+  //使い方を説明するpaizaIO
+  //paizaIOのURLをどのように取得するか
+  //more,解説文が書きやすいか？？
+  //解説文のtextareaを移動可能に
+  //registerだけでいい
 
   let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment}&paiza=${paiza}`;
 
   console.log(queryString);
 
-  await query(queryString);
+  if(confirm("登録しますか?")){
+    await query(queryString);
+    alert("登録しました");
+  }
 
 }
 

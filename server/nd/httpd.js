@@ -318,11 +318,11 @@ const server = app.listen(sv_settings.port, () => {
             const Fs = require('fs')
             const html = Fs.readFileSync("db.html")
             res.end(html)
-        } else if (u.pathname == '/question_register') {
+        } else if (u.pathname == '/register') {
             console.log("question register called");
             res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'})
             const Fs = require('fs')
-            const html = Fs.readFileSync("question_register.html")
+            const html = Fs.readFileSync("register.html")
             res.end(html)
         } else if (u.pathname.match(/\.(html|js)$/)) {
             res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'})
