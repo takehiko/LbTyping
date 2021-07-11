@@ -72,6 +72,11 @@
     background-color: #59b1eb;
   }
 
+  .flex-container{
+    display:flex;
+    flex-direction: column;
+  }
+
 </style>
 </head>
 <body>
@@ -84,19 +89,27 @@
     <label for=""></label>
     <label>動作確認</label>
     <iframe src="https://paiza.io/projects/e/tKXBoPbsg3J4fhq5uttehg?theme=twilight" width="100%" height="500" scrolling="no" seamless="seamless"></iframe>
-    <label for="source">ソースコード</label>
-    <textarea name="" id="source" cols="30" rows="10"></textarea>
+    <div class="flex-container">
+      <div>
+        <label for="source">ソースコード</label>
+        <textarea name="" id="source" cols="30" rows="10"></textarea>
+      </div>
+      <div>
+        <label for="comment">解説</label>
+        <textarea name="" id="comment" cols="30" rows="10"></textarea>
+      </div>
+    </div>
     <label for="count">文字数</label>
     <input type="text" id="count">
     <label for="diff">難易度</label>
     <input type="text" id="diff">
     <label for="basename">basename</label>
     <input type="text" id="basename">
-    <label for="comment">解説</label>
-    <textarea name="" id="comment" cols="30" rows="10"></textarea>
     <label for="paiza">Paiza.ioのURL</label>
     <input type="text" id="paiza">
     <button class="register" type="button">登録</button>
+    <button class="resize" type="button">横並び</button>
+    <button class="count" type="button">カウント</button>
   </form>
 </body>
 
@@ -153,6 +166,7 @@ const register = async() => {
   //more,解説文が書きやすいか？？
   //解説文のtextareaを移動可能に
   //registerだけでいい
+  //question_IDを自動的に連番に
 
   let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment}&paiza=${paiza}`;
 
@@ -160,9 +174,15 @@ const register = async() => {
 
   if(confirm("登録しますか?")){
     await query(queryString);
-    alert("登録しました");
   }
+}
 
+const resize = () => {
+
+}
+
+const count = (str) => {
+  
 }
 
 document.querySelector("button.register").setAttribute("onclick","register()");
