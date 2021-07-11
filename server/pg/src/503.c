@@ -1,13 +1,13 @@
 #include <stdio.h>
 int main(void) {
-    int i,u;
+    int i, u;
     for (i = 0; i < 10; i++) {
-        printf("wakayama\n");
+        printf("waka\n");
     }
 
     u = 0;
-    while(u < 10) {
-        printf("daigaku\n");
+    while (u < 10) {
+        printf("yama\n");
         u++;
     }
     return 0;
