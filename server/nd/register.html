@@ -29,7 +29,7 @@
   }
 
 
-  .form .register{
+  .form .register,.form .resize,.form .count{
     margin-top:30px;
     height:50px;
     width:300px;
@@ -77,6 +77,10 @@
     flex-direction: column;
   }
 
+  .flex-container div{
+    width:100%;
+  }
+
 </style>
 </head>
 <body>
@@ -99,7 +103,7 @@
         <textarea name="" id="comment" cols="30" rows="10"></textarea>
       </div>
     </div>
-    <label for="count">文字数</label>
+    <label for="count">ソースコード文字数(空白文字や改行を除く)</label>
     <input type="text" id="count">
     <label for="diff">難易度</label>
     <input type="text" id="diff">
@@ -107,9 +111,9 @@
     <input type="text" id="basename">
     <label for="paiza">Paiza.ioのURL</label>
     <input type="text" id="paiza">
-    <button class="register" type="button">登録</button>
-    <button class="resize" type="button">横並び</button>
-    <button class="count" type="button">カウント</button>
+    <button class="register" type="button" onclick="register()">登録</button>
+    <button class="resize" type="button" onclick="resize()">横並び</button>
+    <button class="count" type="button" onclick="counter()">カウント</button>
   </form>
 </body>
 
@@ -178,14 +182,40 @@ const register = async() => {
 }
 
 const resize = () => {
+  let con = document.querySelector(".flex-container");
+  let textarea = document.querySelector(".flex-container div");
+
+  if(con.style.flexDirection == "column"){
+    con.style.flexDirection = "row";
+    textarea.style.width = "50%";
+  }else{
+    con.style.flexDirection = "column";
+    textarea.style.width = "100%";
+  }
 
 }
 
-const count = (str) => {
+const counter = () => {
+  let source = document.querySelector("#source").value;
+  
+  let len = 0;
+
+  for(let i = 0; i < source.length; i++){
+    console.log(source[i]);
+    if(source[i] ==  ' ' || source[i] == '\t' || source[i] == '\n'){
+      console.log(source[i] + " is_exception_char");
+    }else{
+      len++;
+    }
+  }
+
+  // console.log(len);
+
+  document.querySelector("#count").value = len;
   
 }
 
-document.querySelector("button.register").setAttribute("onclick","register()");
+// document.querySelector("button.register").setAttribute("onclick","register()");
 
 </script>
 </html>
