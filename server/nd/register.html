@@ -148,11 +148,10 @@ const register = async() => {
   let comment = document.querySelector("#comment").value;
   let paiza = document.querySelector("#paiza").value;
 
-  console.log(source);
+  console.log(source); 
 
-  
-
-  comment = comment.replace('/\n/g','<br>');
+  comment = comment.replace(/\n/g,'<br>');
+  source = source.replace(/\n/g,'\\n');
   source = encodeURIComponent(source);
 
   
@@ -178,6 +177,7 @@ const register = async() => {
 
   if(confirm("登録しますか?")){
     await query(queryString);
+    alert("登録完了");
   }
 }
 
