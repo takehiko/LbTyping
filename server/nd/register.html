@@ -15,6 +15,15 @@
     flex-direction: column;
   }
 
+  .form .explain:hover{
+    cursor:pointer;
+    text-decoration: underline;
+  }
+
+  .form .explain_paiza{
+    display:none;
+  }
+
   .form label{
     margin-bottom:3px;
   }
@@ -100,6 +109,13 @@
 <body>
   <form action="" method="POST" class="form">
     <h1>登録画面</h1>
+    <h2 class="explain" onclick="toggle_explain()">Paiza.ioのURL取得方法(クリックで表示)</h2>
+    <ol class="explain_paiza">
+      <li><a href="https://paiza.io/ja">https://paiza.io/ja</a>にアクセスし、コード作成ボタンを押す</li>
+      <li>ブラウザ上のエディタにソースコードを入力し、実行ボタンを押す</li>
+      <li>一番右側にある共有と埋め込みボタンを押す</li>
+      <li>iframeのsrc属性をコピーしてPaiza.ioのURLに入力</li>
+    </ol>
     <div class="flex">
       <label for="qid">question ID</label>
       <button type="button" class="check">使用可能かチェック</button>
@@ -154,6 +170,18 @@ const query = async (path) => {
   res_data = res.data;
   if (flag_show_result) {
     document.getElementById('result').innerHTML = JSON.stringify(res.data);
+  }
+}
+
+const toggle_explain = () => {
+  let con = document.querySelector(".form ol");
+
+  console.log(con.style.display);
+  
+  if(con.style.display == "none" || con.style.display == ""){
+    con.style.display = "block";
+  }else{
+    con.style.display = "none";
   }
 }
 
