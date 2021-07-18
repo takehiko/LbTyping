@@ -29,11 +29,19 @@
   }
 
 
-  .form .register,.form .resize,.form .count{
+  .form .register,.form .resize{
     margin-top:30px;
     height:50px;
     width:300px;
     font-size:30px;
+  }
+
+  .flex{
+    display:flex;
+  }
+
+  .flex :not(:last-child){
+    margin-right:8px;
   }
 
 
@@ -46,6 +54,7 @@
     line-height: 54px;
     outline: none;
   }
+
   .button::before,
   .button::after {
     position: absolute;
@@ -53,6 +62,7 @@
     display: block;
     content: '';
   }
+
   .button,
   .button::before,
   .button::after {
@@ -77,6 +87,10 @@
     flex-direction: column;
   }
 
+  .row{
+    flex-direction: row;
+  }
+
   .flex-container div{
     width:100%;
   }
@@ -86,7 +100,11 @@
 <body>
   <form action="" method="POST" class="form">
     <h1>登録画面</h1>
-    <label for="qid">question ID</label>
+    <div class="flex">
+      <label for="qid">question ID</label>
+      <button type="button" class="check">使用可能かチェック</button>
+      <button type="button" class="series">連番生成</button>
+    </div>
     <input type="text" id="qid">
     <label for="qname">question name</label>
     <input type="text" id="qname">
@@ -103,7 +121,10 @@
         <textarea name="" id="comment" cols="30" rows="10"></textarea>
       </div>
     </div>
-    <label for="count">ソースコード文字数(空白文字や改行を除く)</label>
+    <div class="flex">
+      <label for="count">ソースコード文字数(空白文字や改行を除く)</label>
+      <button class="count" type="button" onclick="counter()">カウント</button>
+    </div>
     <input type="text" id="count">
     <label for="diff">難易度</label>
     <input type="text" id="diff">
@@ -113,7 +134,6 @@
     <input type="text" id="paiza">
     <button class="register" type="button" onclick="register()">登録</button>
     <button class="resize" type="button" onclick="resize()">横並び</button>
-    <button class="count" type="button" onclick="counter()">カウント</button>
   </form>
 </body>
 
@@ -153,22 +173,8 @@ const register = async() => {
   comment = comment.replace(/\n/g,'<br>');
   source = source.replace(/\n/g,'\\n');
   source = encodeURIComponent(source);
-
-  
-  
-  // let qid = 507;
-  // let qname = "test";
-  // let source = "#include<stdio.h>\nint main(void){    int a = 5;\n}";
-  // let count = 38;
-  // let basename = "test2";
-  // let comment="aaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-  // let paiza="http://google.com";
   
   //使い方を説明するpaizaIO
-  //paizaIOのURLをどのように取得するか
-  //more,解説文が書きやすいか？？
-  //解説文のtextareaを移動可能に
-  //registerだけでいい
   //question_IDを自動的に連番に
 
   let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment}&paiza=${paiza}`;
@@ -183,14 +189,16 @@ const register = async() => {
 
 const resize = () => {
   let con = document.querySelector(".flex-container");
-  let textarea = document.querySelector(".flex-container div");
+  let textarea = document.querySelectorAll(".flex-container div");
 
-  if(con.style.flexDirection == "column"){
-    con.style.flexDirection = "row";
-    textarea.style.width = "50%";
+  if(!con.classList.contains('row')){
+    con.classList.add("row");
+    textarea[0].style.width = "50%";
+    textarea[1].style.width = "50%";
   }else{
-    con.style.flexDirection = "column";
-    textarea.style.width = "100%";
+    con.classList.remove("row");
+    textarea[0].style.width = "100%";
+    textarea[1].style.width = "100%";
   }
 
 }
@@ -208,14 +216,8 @@ const counter = () => {
       len++;
     }
   }
-
-  // console.log(len);
-
-  document.querySelector("#count").value = len;
-  
+  document.querySelector("#count").value = len;  
 }
-
-// document.querySelector("button.register").setAttribute("onclick","register()");
 
 </script>
 </html>
