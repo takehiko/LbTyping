@@ -15,6 +15,10 @@
     flex-direction: column;
   }
 
+  .form .explain{
+    display:block;
+  }
+
   .form .explain:hover{
     cursor:pointer;
     text-decoration: underline;
@@ -118,7 +122,7 @@
     </ol>
     <div class="flex">
       <label for="qid">question ID</label>
-      <button type="button" class="check">使用可能かチェック</button>
+      <button type="button" class="check" onclick="checkID()">使用可能かチェック</button>
       <button type="button" class="series">連番生成</button>
     </div>
     <input type="text" id="qid">
@@ -182,6 +186,19 @@ const toggle_explain = () => {
     con.style.display = "block";
   }else{
     con.style.display = "none";
+  }
+}
+
+const checkID = () => {
+  let value = document.querySelector("#qid").value;
+
+  //https://webllica.com/javascript-number-check-function/
+  const pattern = /^([1-9]\d*|0)$/;
+
+  if(pattern.test(value)){
+    alert(`${value}は使用可能です`);
+  }else{
+    alert(`${value}は使用不可能です`);
   }
 }
 
