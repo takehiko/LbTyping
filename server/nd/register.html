@@ -213,10 +213,11 @@ const register = async() => {
   let comment = document.querySelector("#comment").value;
   let paiza = document.querySelector("#paiza").value;
 
-  console.log(source); 
 
   comment = comment.replace(/\n/g,'<br>');
-  source = source.replace(/\n/g,'\\n');
+  source = source.replace(/\\/g,'\\\\');
+  console.log(source);
+
   source = encodeURIComponent(source);
   
   //使い方を説明するpaizaIO
