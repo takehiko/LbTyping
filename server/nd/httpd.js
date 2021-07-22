@@ -42,7 +42,23 @@ const server = app.listen(sv_settings.port, () => {
                 values : [id,qname,source,count,basename,comment,paiza]
             }
 
-            doQuery(q, r => res.end(JSON.stringify(r.rows)))//callbackは適当
+            doQuery(q, r => res.end(JSON.stringify(r.rows)))
+        }
+
+        const getALLQuestionID = () => {
+            const q = {
+                text :'SELECT question_id FROM question' 
+            }
+
+            doQuery(q, (r) =>{
+                let array = [];
+
+                for(let i = 0; i < r.rows.length; i++){
+                    array.push(r.rows[i].question_id);
+                }
+
+                return res.end(JSON.stringify(array));
+            })
         }
     
         const getQuestion = (id) => {
@@ -386,13 +402,14 @@ const server = app.listen(sv_settings.port, () => {
             } else if (u.pathname == '/getc2' && (u.query.id || u.query.rid)) {
                 getCommentary2(u.query.rid ? u.query.rid : u.query.id)
             } else if (u.pathname == '/register_question'){
-                //あとでelse ifの条件含めて詳しく書く
                 console.log("register_questionに関するqueryを受信");
                 console.log(u.query);
                 if(u.query.qid && u.query.qname && u.query.source && u.query.count && u.query.basename && u.query.comment && u.query.paiza){
                     console.log("if passed");
                     registerQuestion(u.query.qid,u.query.qname,u.query.source,u.query.count,u.query.basename,u.query.comment,u.query.paiza);
                 }
+            } else if (u.pathname == '/getALLQuestionID'){
+                getALLQuestionID();
             //} else if (u.pathname == '/get' && u.query.id) {
             //    getValue(u.query.id)
             //} else if (u.pathname == '/add' && u.query.val) {

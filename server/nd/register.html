@@ -111,6 +111,7 @@
 </style>
 </head>
 <body>
+  <div id="result"></div>
   <form action="" method="POST" class="form">
     <h1>登録画面</h1>
     <h2 class="explain" onclick="toggle_explain()">Paiza.ioのURL取得方法(クリックで表示)</h2>
@@ -121,15 +122,15 @@
       <li>iframeのsrc属性をコピーしてPaiza.ioのURLに入力</li>
     </ol>
     <div class="flex">
-      <label for="qid">question ID</label>
+      <label for="qid">問題ID</label>
       <button type="button" class="check" onclick="checkID()">使用可能かチェック</button>
-      <button type="button" class="series">連番生成</button>
+      <button type="button" class="series" onclick="generateID()">連番生成</button>
     </div>
     <input type="text" id="qid">
-    <label for="qname">question name</label>
+    <label for="qname">問題名</label>
     <input type="text" id="qname">
     <label for=""></label>
-    <label>動作確認</label>
+    <label>動作確認(確認後、ソースコード欄にコピーすること)</label>
     <iframe src="https://paiza.io/projects/e/tKXBoPbsg3J4fhq5uttehg?theme=twilight" width="100%" height="500" scrolling="no" seamless="seamless"></iframe>
     <div class="flex-container">
       <div>
@@ -162,7 +163,7 @@
 let qid;
 let rid;
 let res_data = null;
-const flag_show_result = false;
+const flag_show_result = true;
 
 // pathに基づきサーバに問い合わせる
 const origin = location.origin;
@@ -189,17 +190,35 @@ const toggle_explain = () => {
   }
 }
 
-const checkID = () => {
-  let value = document.querySelector("#qid").value;
+const checkID = async() => {
+  let value = Number(document.querySelector("#qid").value);
 
   //https://webllica.com/javascript-number-check-function/
-  const pattern = /^([1-9]\d*|0)$/;
+  const pattern = /^([1-9]\d*)$/;
 
-  if(pattern.test(value)){
+  await query("/getALLQuestionID");
+
+  let used = res_data.includes(value);
+
+  console.log(used);
+
+  if(pattern.test(value) && !used){
     alert(`${value}は使用可能です`);
   }else{
     alert(`${value}は使用不可能です`);
   }
+}
+
+const generateID = async() => {
+  await query("/getALLQuestionID");
+  
+  let maxNUM = Math.max(...res_data);//spread operator
+
+  console.log(res_data);
+
+  console.log(maxNUM);
+
+  document.querySelector("#qid").value = maxNUM + 1;
 }
 
 const register = async() => {
