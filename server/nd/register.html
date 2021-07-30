@@ -127,7 +127,7 @@
     <div class="flex">
       <label for="qid">問題ID</label>
       <button type="button" class="check" onclick="checkID()">使用可能かチェック</button>
-      <button type="button" class="series" onclick="generateID()">連番生成</button>
+      <!-- <button type="button" class="series" onclick="generateID()">連番生成</button> -->
     </div>
     <input type="text" id="qid">
     <label for="qname">問題名</label>
@@ -212,9 +212,13 @@ const checkID = async() => {
 }
 
 const generateID = async() => {
-  await query("/getALLQuestionID");
+  await query("/getALLQuestionID");  
   
-  let maxNUM = Math.max(...res_data);//spread operator
+  let maxNUM = 0;
+
+  if(res_data.length){
+    maxNUM = Math.max(...res_data);
+  }
 
   console.log(res_data);
 
@@ -285,6 +289,8 @@ const counter = () => {
   }
   document.querySelector("#count").value = len;  
 }
+
+generateID();
 
 </script>
 </html>
