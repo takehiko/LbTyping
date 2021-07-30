@@ -115,13 +115,15 @@
   <form action="" method="POST" class="form">
     <h1>登録画面</h1>
     <h2 class="explain" onclick="toggle_explain()">Paiza.ioのURL取得方法(クリックで表示)</h2>
-    <ol class="explain_paiza">
-      <li><a href="https://paiza.io/ja">https://paiza.io/ja</a>にアクセスし、コード作成ボタンを押す</li>
-      <li>ブラウザ上のエディタにソースコードを入力し、実行ボタンを押す</li>
-      <li>一番右側にある共有と埋め込みボタンを押す</li>
-      <li>iframeのsrc属性をコピーしてPaiza.ioのURLに入力</li>
-      <li>生成されたPaiza.ioのURLが前回のURLとかぶってないかチェック</li>
-    </ol>
+   <div class="explain_paiza">
+     <ol>
+       <li><a href="https://paiza.io/ja">https://paiza.io/ja</a>にアクセスし、コード作成ボタンを押す</li>
+       <li>ブラウザ上のエディタにソースコードを入力し、実行ボタンを押す</li>
+       <li>一番右側にある共有と埋め込みボタンを押す</li>
+       <li>iframeのsrc属性をコピーしてPaiza.ioのURLに入力</li>
+     </ol>
+     <p>注意:複数の問題を登録する際、手順1からやり直す</p>
+   </div>
     <div class="flex">
       <label for="qid">問題ID</label>
       <button type="button" class="check" onclick="checkID()">使用可能かチェック</button>
@@ -130,13 +132,12 @@
     <input type="text" id="qid">
     <label for="qname">問題名</label>
     <input type="text" id="qname">
-    <label for=""></label>
-    <label>動作確認(確認後、ソースコード欄にコピーすること)</label>
+    <label>動作確認</label>
     <iframe src="https://paiza.io/projects/e/tKXBoPbsg3J4fhq5uttehg?theme=twilight" width="100%" height="500" scrolling="no" seamless="seamless"></iframe>
     <div class="flex-container">
       <div>
         <label for="source">ソースコード</label>
-        <textarea name="" id="source" cols="30" rows="10"></textarea>
+        <textarea placeholder="Paiza.ioで動作確認後、こちらに貼り付けること"name="" id="source" cols="30" rows="10"></textarea>
       </div>
       <div>
         <label for="comment">解説</label>
@@ -164,7 +165,7 @@
 let qid;
 let rid;
 let res_data = null;
-const flag_show_result = true;
+const flag_show_result = false;
 
 // pathに基づきサーバに問い合わせる
 const origin = location.origin;
@@ -180,7 +181,7 @@ const query = async (path) => {
 }
 
 const toggle_explain = () => {
-  let con = document.querySelector(".form ol");
+  let con = document.querySelector(".form div.explain_paiza");
 
   console.log(con.style.display);
   
