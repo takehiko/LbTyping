@@ -108,6 +108,23 @@
     width:100%;
   }
 
+  .required::after {
+    content: "必須";
+    background-color: #f0ad4e;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 10px;
+    padding: 3px 7px;
+    margin: 0px 5px;
+    line-height: 1;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-align: center;
+    border-radius: 10px;
+    display: inline-block;
+  }
+
 </style>
 </head>
 <body>
@@ -125,18 +142,18 @@
      <p>注意:複数の問題を登録する際、手順1からやり直す</p>
    </div>
     <div class="flex">
-      <label for="qid">問題ID</label>
+      <label for="qid" class="required">問題ID</label>
       <button type="button" class="check" onclick="checkID()">使用可能かチェック</button>
       <!-- <button type="button" class="series" onclick="generateID()">連番生成</button> -->
     </div>
     <input type="text" id="qid">
-    <label for="qname">問題名</label>
+    <label for="qname" class="required">問題名</label>
     <input type="text" id="qname">
     <label>動作確認</label>
     <iframe src="https://paiza.io/projects/e/tKXBoPbsg3J4fhq5uttehg?theme=twilight" width="100%" height="500" scrolling="no" seamless="seamless"></iframe>
     <div class="flex-container">
       <div>
-        <label for="source">ソースコード</label>
+        <label for="source" class="required">ソースコード</label>
         <textarea placeholder="Paiza.ioで動作確認後、こちらに貼り付けること"name="" id="source" cols="30" rows="10"></textarea>
       </div>
       <div>
@@ -151,9 +168,9 @@
     <input type="text" id="count">
     <label for="diff">難易度</label>
     <input type="text" id="diff">
-    <label for="basename">basename</label>
+    <label for="basename" class="required">basename</label>
     <input type="text" id="basename">
-    <label for="paiza">Paiza.ioのURL</label>
+    <label for="paiza" class="required">Paiza.ioのURL</label>
     <input type="text" id="paiza">
     <button class="register" type="button" onclick="register()">登録</button>
     <button class="resize" type="button" onclick="resize()">横並び</button>
