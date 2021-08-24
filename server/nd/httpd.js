@@ -60,6 +60,39 @@ const server = app.listen(sv_settings.port, () => {
                 return res.end(JSON.stringify(array));
             })
         }
+
+
+        const getALLBasename= () => {
+            const q = {
+                text :'SELECT basename FROM question' 
+            }
+
+            doQuery(q, (r) =>{
+                let array = [];
+
+                for(let i = 0; i < r.rows.length; i++){
+                    array.push(r.rows[i].basename);
+                }
+
+                return res.end(JSON.stringify(array));
+            })
+        }
+
+        const getALLPaizaio= () => {
+            const q = {
+                text :'SELECT url FROM question' 
+            }
+
+            doQuery(q, (r) =>{
+                let array = [];
+
+                for(let i = 0; i < r.rows.length; i++){
+                    array.push(r.rows[i].url);
+                }
+
+                return res.end(JSON.stringify(array));
+            })
+        }
     
         const getQuestion = (id) => {
             const q = {
@@ -410,6 +443,10 @@ const server = app.listen(sv_settings.port, () => {
                 }
             } else if (u.pathname == '/getALLQuestionID'){
                 getALLQuestionID();
+            } else if (u.pathname == '/getALLBasename'){
+                getALLBasename();
+            } else if (u.pathname == '/getALLPaizaio'){
+                getALLPaizaio();
             //} else if (u.pathname == '/get' && u.query.id) {
             //    getValue(u.query.id)
             //} else if (u.pathname == '/add' && u.query.val) {

@@ -32,7 +32,7 @@
     margin-bottom:3px;
   }
 
-  .form input,.form textarea{
+  .form input[type="text"],.form textarea{
     width: 100%; /*親要素いっぱい広げる*/
     padding: 10px 15px; /*ボックスを大きくする*/
     font-size: 16px;
@@ -141,10 +141,13 @@
      </ol>
      <p>注意:複数の問題を登録する際、手順1からやり直す</p>
    </div>
-    <div class="flex">
+   <div>
+     <input id="toggle" type="checkbox" onclick="toggleQID()" checked>
+     <label for="toggle">自分でIDを入力する</label>
+   </div>
+    <div class="flex qid-container">
       <label for="qid" class="required">問題ID</label>
       <button type="button" class="check" onclick="checkID()">使用可能かチェック</button>
-      <!-- <button type="button" class="series" onclick="generateID()">連番生成</button> -->
     </div>
     <input type="text" id="qid">
     <label for="qname" class="required">問題名</label>
@@ -168,9 +171,15 @@
     <input type="text" id="count">
     <label for="diff">難易度</label>
     <input type="text" id="diff">
-    <label for="basename" class="required">basename</label>
+    <div class="flex">
+      <label for="basename" class="required">basename</label>
+      <button type="button" class="check" onclick="checkBasename()">使用可能かチェック</button>
+    </div>
     <input type="text" id="basename">
-    <label for="paiza" class="required">Paiza.ioのURL</label>
+    <div class="flex">
+      <label for="paiza" class="required">Paiza.ioのURL</label>
+      <button type="button" class="check" onclick="checkPaiza()">使用可能かチェック</button>
+    </div>
     <input type="text" id="paiza">
     <button class="register" type="button" onclick="register()">登録</button>
     <button class="resize" type="button" onclick="resize()">横並び</button>
@@ -307,6 +316,54 @@ const counter = () => {
   document.querySelector("#count").value = len;  
 }
 
+const toggleQID = () => {
+  const flag = document.querySelector('input[type="checkbox"]').checked;
+  const QIDform = document.querySelector("div.flex.qid-container");
+  const QIDform2 = document.querySelector("input#qid");
+
+  console.log(flag);
+  console.log(QIDform);
+
+  if(flag){
+    QIDform.style.display = "block";
+    QIDform2.style.display = "block";
+  }else{
+    QIDform.style.display = "none";
+    QIDform2.style.display = "none";
+  }
+}
+
+const checkBasename = async() => {
+  let value = document.querySelector("#basename").value;
+
+  await query("/getALLBasename");
+
+  let used = res_data.includes(value);
+
+  console.log(used);
+
+  if(!used){
+    alert(`${value}は使用可能です`);
+  }else{
+    alert(`${value}は使用不可能です`);
+  }
+}
+
+const checkPaiza = async() => {
+  let value = document.querySelector("#paiza").value;
+
+  await query("/getALLPaizaio");
+
+  let used = res_data.includes(value);
+
+  console.log(used);
+
+  if(!used){
+    alert(`${value}は使用可能です`);
+  }else{
+    alert(`${value}は使用不可能です`);
+  }
+}
 generateID();
 
 </script>
