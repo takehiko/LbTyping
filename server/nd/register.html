@@ -164,11 +164,11 @@
         <textarea name="" id="comment" cols="30" rows="10"></textarea>
       </div>
     </div>
-    <div class="flex">
+    <!-- <div class="flex">
       <label for="count">ソースコード文字数(空白文字や改行を除く)</label>
       <button class="count" type="button" onclick="counter()">カウント</button>
-    </div>
-    <input type="text" id="count">
+    </div> -->
+    <!-- <input type="text" id="count"> -->
     <label for="diff">難易度</label>
     <input type="text" id="diff">
     <div class="flex">
@@ -253,20 +253,36 @@ const generateID = async() => {
   document.querySelector("#qid").value = maxNUM + 1;
 }
 
+const counter = () => {
+  let source = document.querySelector("#source").value;
+  
+  let len = 0;
+
+  for(let i = 0; i < source.length; i++){
+    console.log(source[i]);
+    if(source[i] ==  ' ' || source[i] == '\t' || source[i] == '\n'){
+      console.log(source[i] + " is_exception_char");
+    }else{
+      len++;
+    }
+  }
+  return len;
+}
+
 const register = async() => {
   console.log("register function called");
 
   let qid = document.querySelector("#qid").value;
   let qname = document.querySelector("#qname").value;
   let source = document.querySelector("#source").value;
-  let count = document.querySelector("#count").value;
+  let count = counter();
   let basename = document.querySelector("#basename").value;
   let comment = document.querySelector("#comment").value;
   let paiza = document.querySelector("#paiza").value;
 
 
   comment = comment.replace(/\n/g,'<br>');
-  source = source.replace(/\\/g,'\\\\');
+  source = source.replace(/\\/g,'\\\\').replace(/\n/g,'\\n');
   console.log(source);
 
   source = encodeURIComponent(source);
@@ -280,7 +296,13 @@ const register = async() => {
 
   if(confirm("登録しますか?")){
     await query(queryString);
-    alert("登録完了");
+    // console.log(res_data);
+
+    if(res_data.error == 1){
+      alert("登録失敗");
+    }else{
+      alert("登録完了");
+    }
   }
 }
 
@@ -298,22 +320,6 @@ const resize = () => {
     textarea[1].style.width = "100%";
   }
 
-}
-
-const counter = () => {
-  let source = document.querySelector("#source").value;
-  
-  let len = 0;
-
-  for(let i = 0; i < source.length; i++){
-    console.log(source[i]);
-    if(source[i] ==  ' ' || source[i] == '\t' || source[i] == '\n'){
-      console.log(source[i] + " is_exception_char");
-    }else{
-      len++;
-    }
-  }
-  document.querySelector("#count").value = len;  
 }
 
 const toggleQID = () => {

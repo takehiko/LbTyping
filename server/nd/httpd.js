@@ -42,7 +42,7 @@ const server = app.listen(sv_settings.port, () => {
                 values : [id,qname,source,count,basename,comment,paiza]
             }
 
-            doQuery(q, r => res.end(JSON.stringify(r.rows)))
+            doQuery(q, r => res.end(JSON.stringify({"ok":1})))
         }
 
         const getALLQuestionID = () => {
