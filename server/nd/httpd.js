@@ -376,7 +376,7 @@ const server = app.listen(sv_settings.port, () => {
             console.log("question register called");
             res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'})
             const Fs = require('fs')
-            const html = Fs.readFileSync("register.html")
+            const html = Fs.readFileSync("register/register.html")
             res.end(html)
         } else if (u.pathname.match(/\.(html|js)$/)) {
             res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'})
