@@ -213,6 +213,18 @@ const toggle_explain = () => {
   }
 }
 
+const endLineDeteler = (str) => {
+  //文字列の末尾の改行を削除
+  newstr = str;
+  
+  while(newstr.endsWith('\n')){
+    console.log(newstr);
+    newstr = newstr.slice(0,newstr.length - 1);
+  }
+
+  return newstr;
+}
+
 const checkID = async() => {
   let value = Number(document.querySelector("#qid").value);
 
@@ -275,15 +287,12 @@ const register = async() => {
   let comment = document.querySelector("#comment").value;
   let paiza = document.querySelector("#paiza").value;
 
-
+  source = endLineDeteler(source);
   comment = comment.replace(/\n/g,'<br>');
   source = source.replace(/\\/g,'\\\\').replace(/\n/g,'\\n');
   console.log(source);
 
   source = encodeURIComponent(source);
-  
-  //使い方を説明するpaizaIO
-  //question_IDを自動的に連番に
 
   let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment}&paiza=${paiza}`;
 
@@ -365,6 +374,8 @@ const checkPaiza = async() => {
     alert(`${value}は使用不可能です`);
   }
 }
+
+
 generateID();
 
 </script>
