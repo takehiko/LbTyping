@@ -152,6 +152,7 @@ let qid;
 let sid;
 let rid;
 let miss;
+let time_a;
 
 elem1.style.display = "none";
 
@@ -346,7 +347,7 @@ function typeGame(evt) {
 }
 
 function missType() {
-  time_b = performance.now();
+  const time_b = performance.now();
   time[t_cnt] = [key + "x" , Math.round(time_b - time_a)/1000];
   time_a = time_b;
   t_cnt++;
@@ -359,8 +360,8 @@ function missType() {
 }
 
 function outputTime() {
-  time_b = performance.now();
-  time[t_cnt] = [key ,Math.round(time_b - time_a)/1000];
+  const time_b = performance.now();
+  time[t_cnt] = [key, Math.round(time_b - time_a)/1000];
   time_a = time_b;
   t_cnt++;
 }
