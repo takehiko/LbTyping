@@ -332,7 +332,7 @@ const register = async() => {
 
   source = encodeURIComponent(source);
 
-  let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment}&paiza=${paiza}`;
+  let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment ? comment : "\'\'"}&paiza=${paiza}`;
 
   console.log(queryString);
 
@@ -341,7 +341,7 @@ const register = async() => {
       alert("行指定が不正です");
     }else{
       await query(queryString);
-      // console.log(res_data);
+      console.log("queryを実行しました");
       if(res_data.error == 1){
         alert("登録失敗");
       }else{
