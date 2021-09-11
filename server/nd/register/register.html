@@ -154,6 +154,14 @@
     <input type="text" id="qname">
     <label>動作確認</label>
     <iframe src="https://paiza.io/projects/e/tKXBoPbsg3J4fhq5uttehg?theme=twilight" width="100%" height="500" scrolling="no" seamless="seamless"></iframe>
+    <div class="flex">
+      <label for="rowselect">ソースコードの行指定</label>
+      <!-- <button type="button" class="check" onclick="rowSelect()">抽出</button> -->
+    </div>
+    <div class="flex">
+      <input type="number" id="rowselect" min="1">~
+      <input type="number" max="255">
+    </div>
     <div class="flex-container">
       <div>
         <label for="source" class="required">ソースコード</label>
@@ -163,14 +171,6 @@
         <label for="comment">解説</label>
         <textarea name="" id="comment" cols="30" rows="10"></textarea>
       </div>
-    </div>
-    <div class="flex">
-      <label for="rowselect">ソースコードの行指定</label>
-      <button type="button" class="check" onclick="rowSelect()">抽出</button>
-    </div>
-    <div class="flex">      
-      <input type="number" id="rowselect">~
-      <input type="number">
     </div>
     <label for="diff">難易度</label>
     <input type="text" id="diff">
@@ -207,6 +207,35 @@ const query = async (path) => {
   if (flag_show_result) {
     document.getElementById('result').innerHTML = JSON.stringify(res.data);
   }
+}
+
+const strToArray = (str) => {
+  //ex. str = "abc\ndef" -> str[0] = "abc" ,str[1] = "def" と変換する関数
+  strArray = str.split('\n');
+
+  return strArray;
+}
+
+const rowSelect = (source) => {
+  const minNum = document.querySelector("input[min='1']").value - 1;
+  const maxNum = document.querySelector("input[max='255']").value - 1;
+  //何も入力されていないとき、minNum maxNumには-1がはいっている
+  if(minNum == -1 && maxNum == -1) return [source,false];
+  if(minNum > maxNum || minNum < 0 || maxNum < 0) return [source,true];
+
+  newSource = strToArray(source);
+
+  source = "";
+
+  
+
+  for(let i = minNum; i <= maxNum; i++){
+    source += newSource[i];
+    source += (i == maxNum ? "":"\n");
+  }
+
+  console.log(source);
+  return [source,false]
 }
 
 const toggle_explain = () => {
@@ -268,9 +297,7 @@ const generateID = async() => {
   document.querySelector("#qid").value = maxNUM + 1;
 }
 
-const counter = () => {
-  let source = document.querySelector("#source").value;
-  
+const counter = (source) => {  
   let len = 0;
 
   for(let i = 0; i < source.length; i++){
@@ -290,12 +317,15 @@ const register = async() => {
   let qid = document.querySelector("#qid").value;
   let qname = document.querySelector("#qname").value;
   let source = document.querySelector("#source").value;
-  let count = counter();
+  let count = 0;
   let basename = document.querySelector("#basename").value;
   let comment = document.querySelector("#comment").value;
   let paiza = document.querySelector("#paiza").value;
+  let rowSelectErrorFlag = false;
 
   source = endLineDeteler(source);
+  [source,rowSelectErrorFlag] = rowSelect(source);
+  count = counter(source);
   comment = comment.replace(/\n/g,'<br>');
   source = source.replace(/\\/g,'\\\\').replace(/\n/g,'\\n');
   console.log(source);
@@ -307,13 +337,16 @@ const register = async() => {
   console.log(queryString);
 
   if(confirm("登録しますか?")){
-    await query(queryString);
-    // console.log(res_data);
-
-    if(res_data.error == 1){
-      alert("登録失敗");
+    if(rowSelectErrorFlag){
+      alert("行指定が不正です");
     }else{
-      alert("登録完了");
+      await query(queryString);
+      // console.log(res_data);
+      if(res_data.error == 1){
+        alert("登録失敗");
+      }else{
+        alert("登録完了");
+      }
     }
   }
 }
@@ -382,7 +415,6 @@ const checkPaiza = async() => {
     alert(`${value}は使用不可能です`);
   }
 }
-
 
 generateID();
 
