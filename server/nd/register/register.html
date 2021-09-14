@@ -154,17 +154,14 @@
     <input type="text" id="qname">
     <label>動作確認</label>
     <iframe src="https://paiza.io/projects/e/tKXBoPbsg3J4fhq5uttehg?theme=twilight" width="100%" height="500" scrolling="no" seamless="seamless"></iframe>
-    <div class="flex">
-      <label for="rowselect">ソースコードの行指定</label>
-      <!-- <button type="button" class="check" onclick="rowSelect()">抽出</button> -->
-    </div>
-    <div class="flex">
+    <label for="rowselect" style="display:none">ソースコードの行指定</label>
+    <div class="flex" style="display:none">
       <input type="number" id="rowselect" min="1">~
       <input type="number" max="255">
     </div>
     <div class="flex-container">
       <div>
-        <label for="source" class="required">ソースコード</label>
+        <label for="source" class="required">タイピング内容</label>
         <textarea placeholder="Paiza.ioで動作確認後、こちらに貼り付けること"name="" id="source" cols="30" rows="10"></textarea>
       </div>
       <div>
@@ -322,15 +319,24 @@ const register = async() => {
   let comment = document.querySelector("#comment").value;
   let paiza = document.querySelector("#paiza").value;
   let rowSelectErrorFlag = false;
+  let isWhiteSpaceAtbeginningOfLine = false;
 
   source = endLineDeteler(source);
   [source,rowSelectErrorFlag] = rowSelect(source);
   count = counter(source);
+
+  console.log(source);
+
+  if(source[0] == ' ' || source[0] == '\t'){
+    isWhiteSpaceAtbeginningOfLine = true;
+  }
+
   comment = comment.replace(/\n/g,'<br>');
   source = source.replace(/\\/g,'\\\\').replace(/\n/g,'\\n');
   console.log(source);
 
   source = encodeURIComponent(source);
+  comment = encodeURIComponent(comment);
 
   let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment ? comment : "\'\'"}&paiza=${paiza}`;
 
@@ -339,6 +345,8 @@ const register = async() => {
   if(confirm("登録しますか?")){
     if(rowSelectErrorFlag){
       alert("行指定が不正です");
+    }else if(isWhiteSpaceAtbeginningOfLine){
+      alert("ソースコードの行頭に空白文字が含まれています。");
     }else{
       await query(queryString);
       console.log("queryを実行しました");
