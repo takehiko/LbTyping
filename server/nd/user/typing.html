@@ -152,6 +152,7 @@ let qid;
 let sid;
 let rid;
 let miss;
+let time_a;
 
 elem1.style.display = "none";
 
@@ -248,6 +249,7 @@ function start_timer() {
       problem_a = problem.split("");
       elem_untyped.innerHTML = e_untyped.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
       changeColor();
+      time_a = performance.now()
       startR();
     }
   }
@@ -345,14 +347,9 @@ function typeGame(evt) {
 }
 
 function missType() {
-  if (t_cnt == 0) {
-    time_a = performance.now();
-    time[t_cnt] = [key + "x" , Math.round(time_a)/1000];
-  } else {
-    time_b = performance.now();
-    time[t_cnt] = [key + "x" , Math.round(time_b - time_a)/1000];
-    time_a = time_b;
-  }
+  const time_b = performance.now();
+  time[t_cnt] = [key + "x" , Math.round(time_b - time_a)/1000];
+  time_a = time_b;
   t_cnt++;
 
   miss_a += key;
@@ -363,14 +360,9 @@ function missType() {
 }
 
 function outputTime() {
-  if (t_cnt == 0){
-    time_a = performance.now();
-    time[t_cnt] = [ key ,Math.round(time_a)/1000];
-  } else {
-    time_b = performance.now();
-    time[t_cnt] = [key ,Math.round(time_b - time_a)/1000];
-    time_a = time_b;
-  }
+  const time_b = performance.now();
+  time[t_cnt] = [key, Math.round(time_b - time_a)/1000];
+  time_a = time_b;
   t_cnt++;
 }
 
