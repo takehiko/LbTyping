@@ -196,7 +196,6 @@ const flag_show_result = false;
 // pathに基づきサーバに問い合わせる
 const origin = location.origin;
 const path_base = location.pathname.replace(/\/[^\/]*$/,"")
-console.log(path_base);
 const query = async (path) => {
   let res = await axios.get(origin + path_base + path);
   
@@ -231,14 +230,11 @@ const rowSelect = (source) => {
     source += (i == maxNum ? "":"\n");
   }
 
-  console.log(source);
   return [source,false]
 }
 
 const toggle_explain = () => {
   let con = document.querySelector(".form div.explain_paiza");
-
-  console.log(con.style.display);
   
   if(con.style.display == "none" || con.style.display == ""){
     con.style.display = "block";
@@ -252,7 +248,6 @@ const endLineDeteler = (str) => {
   newstr = str;
   
   while(newstr.endsWith('\n')){
-    console.log(newstr);
     newstr = newstr.slice(0,newstr.length - 1);
   }
 
@@ -268,8 +263,6 @@ const checkID = async() => {
   await query("/getALLQuestionID");
 
   let used = res_data.includes(value);
-
-  console.log(used);
 
   if(pattern.test(value) && !used){
     alert(`${value}は使用可能です`);
@@ -287,10 +280,6 @@ const generateID = async() => {
     maxNUM = Math.max(...res_data);
   }
 
-  console.log(res_data);
-
-  console.log(maxNUM);
-
   document.querySelector("#qid").value = maxNUM + 1;
 }
 
@@ -298,9 +287,8 @@ const counter = (source) => {
   let len = 0;
 
   for(let i = 0; i < source.length; i++){
-    console.log(source[i]);
     if(source[i] ==  ' ' || source[i] == '\t' || source[i] == '\n'){
-      console.log(source[i] + " is_exception_char");
+      // console.log(source[i] + " is_exception_char");
     }else{
       len++;
     }
@@ -309,8 +297,6 @@ const counter = (source) => {
 }
 
 const register = async() => {
-  console.log("register function called");
-
   let qid = document.querySelector("#qid").value;
   let qname = document.querySelector("#qname").value;
   let source = document.querySelector("#source").value;
@@ -325,7 +311,6 @@ const register = async() => {
   [source,rowSelectErrorFlag] = rowSelect(source);
   count = counter(source);
 
-  console.log(source);
 
   if(source[0] == ' ' || source[0] == '\t'){
     isWhiteSpaceAtbeginningOfLine = true;
@@ -333,14 +318,12 @@ const register = async() => {
 
   comment = comment.replace(/\n/g,'<br>');
   source = source.replace(/\\/g,'\\\\').replace(/\n/g,'\\n');
-  console.log(source);
 
   source = encodeURIComponent(source);
   comment = encodeURIComponent(comment);
 
   let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment ? comment : "\'\'"}&paiza=${paiza}`;
 
-  console.log(queryString);
 
   if(confirm("登録しますか?")){
     if(rowSelectErrorFlag){
@@ -349,7 +332,6 @@ const register = async() => {
       alert("ソースコードの行頭に空白文字が含まれています。");
     }else{
       await query(queryString);
-      console.log("queryを実行しました");
       if(res_data.error == 1){
         alert("登録失敗");
       }else{
@@ -380,9 +362,6 @@ const toggleQID = () => {
   const QIDform = document.querySelector("div.flex.qid-container");
   const QIDform2 = document.querySelector("input#qid");
 
-  console.log(flag);
-  console.log(QIDform);
-
   if(flag){
     QIDform.style.display = "block";
     QIDform2.style.display = "block";
@@ -399,7 +378,6 @@ const checkBasename = async() => {
 
   let used = res_data.includes(value);
 
-  console.log(used);
 
   if(!used){
     alert(`${value}は使用可能です`);
@@ -414,8 +392,6 @@ const checkPaiza = async() => {
   await query("/getALLPaizaio");
 
   let used = res_data.includes(value);
-
-  console.log(used);
 
   if(!used){
     alert(`${value}は使用可能です`);
