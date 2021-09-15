@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="0" />
+<title>問題登録</title>
+<style>
+  
+  .form{
+    margin:0 auto;
+    width:80%;
+    display:flex;
+    flex-direction: column;
+  }
+
+  .form .explain{
+    display:block;
+  }
+
+  .form .explain:hover{
+    cursor:pointer;
+    text-decoration: underline;
+  }
+
+  .form .explain_paiza{
+    display:none;
+  }
+
+  .form label{
+    margin-bottom:3px;
+  }
+
+  .form input[type="text"],.form input[type="number"],.form textarea{
+    width: 100%; /*親要素いっぱい広げる*/
+    padding: 10px 15px; /*ボックスを大きくする*/
+    font-size: 16px;
+    border-radius: 3px; /*ボックス角の丸み*/
+    border: 2px solid #ddd; /*枠線*/
+    box-sizing: border-box; /*横幅の解釈をpadding, borderまでとする*/
+  }
+
+
+  .form .register,.form .resize{
+    margin-top:30px;
+    height:50px;
+    width:300px;
+    font-size:30px;
+  }
+
+  .flex{
+    display:flex;
+  }
+
+  .flex :not(:last-child){
+    margin-right:8px;
+  }
+
+
+  .button {
+    display: inline-block;
+    width: 200px;
+    height: 54px;
+    text-align: center;
+    text-decoration: none;
+    line-height: 54px;
+    outline: none;
+  }
+
+  .button::before,
+  .button::after {
+    position: absolute;
+    z-index: -1;
+    display: block;
+    content: '';
+  }
+
+  .button,
+  .button::before,
+  .button::after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition: all .3s;
+    transition: all .3s;
+  }
+
+  .button {
+    background-color: #333;
+    color: #fff;
+  }
+
+  .button:hover {
+    background-color: #59b1eb;
+  }
+
+  .flex-container{
+    display:flex;
+    flex-direction: column;
+  }
+
+  .row{
+    flex-direction: row;
+  }
+
+  .flex-container div{
+    width:100%;
+  }
+
+  .required::after {
+    content: "必須";
+    background-color: #f0ad4e;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 10px;
+    padding: 3px 7px;
+    margin: 0px 5px;
+    line-height: 1;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-align: center;
+    border-radius: 10px;
+    display: inline-block;
+  }
+
+</style>
+</head>
+<body>
+  <div id="result"></div>
+  <form action="" method="POST" class="form">
+    <h1>登録画面</h1>
+    <h2 class="explain" onclick="toggle_explain()">Paiza.ioのURL取得方法(クリックで表示)</h2>
+   <div class="explain_paiza">
+     <ol>
+       <li><a href="https://paiza.io/ja">https://paiza.io/ja</a>にアクセスし、コード作成ボタンを押す</li>
+       <li>ブラウザ上のエディタにソースコードを入力し、実行ボタンを押す</li>
+       <li>一番右側にある共有と埋め込みボタンを押す</li>
+       <li>iframeのsrc属性をコピーしてPaiza.ioのURLに入力</li>
+     </ol>
+     <p>注意:複数の問題を登録する際、手順1からやり直す</p>
+   </div>
+   <div>
+     <input id="toggle" type="checkbox" onclick="toggleQID()" checked>
+     <label for="toggle">自分でIDを入力する</label>
+   </div>
+    <div class="flex qid-container">
+      <label for="qid" class="required">問題ID</label>
+      <button type="button" class="check" onclick="checkID()">使用可能かチェック</button>
+    </div>
+    <input type="text" id="qid">
+    <label for="qname" class="required">問題名</label>
+    <input type="text" id="qname">
+    <label>動作確認</label>
+    <iframe src="https://paiza.io/projects/e/tKXBoPbsg3J4fhq5uttehg?theme=twilight" width="100%" height="500" scrolling="no" seamless="seamless"></iframe>
+    <label for="rowselect" style="display:none">ソースコードの行指定</label>
+    <div class="flex" style="display:none">
+      <input type="number" id="rowselect" min="1">~
+      <input type="number" max="255">
+    </div>
+    <div class="flex-container">
+      <div>
+        <label for="source" class="required">タイピング内容</label>
+        <textarea placeholder="Paiza.ioで動作確認後、こちらに貼り付けること"name="" id="source" cols="30" rows="10"></textarea>
+      </div>
+      <div>
+        <label for="comment">解説</label>
+        <textarea name="" id="comment" cols="30" rows="10"></textarea>
+      </div>
+    </div>
+    <label for="diff">難易度</label>
+    <input type="text" id="diff">
+    <div class="flex">
+      <label for="basename" class="required">basename</label>
+      <button type="button" class="check" onclick="checkBasename()">使用可能かチェック</button>
+    </div>
+    <input type="text" id="basename">
+    <div class="flex">
+      <label for="paiza" class="required">Paiza.ioのURL</label>
+      <button type="button" class="check" onclick="checkPaiza()">使用可能かチェック</button>
+    </div>
+    <input type="text" id="paiza">
+    <button class="register" type="button" onclick="register()">登録</button>
+    <button class="resize" type="button" onclick="resize()">横並び</button>
+  </form>
+</body>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="text/javascript">
+let qid;
+let rid;
+let res_data = null;
+const flag_show_result = false;
+
+// pathに基づきサーバに問い合わせる
+const origin = location.origin;
+const path_base = location.pathname.replace(/\/[^\/]*$/,"")
+const query = async (path) => {
+  let res = await axios.get(origin + path_base + path);
+  
+  res_data = res.data;
+  if (flag_show_result) {
+    document.getElementById('result').innerHTML = JSON.stringify(res.data);
+  }
+}
+
+const strToArray = (str) => {
+  //ex. str = "abc\ndef" -> str[0] = "abc" ,str[1] = "def" と変換する関数
+  strArray = str.split('\n');
+
+  return strArray;
+}
+
+const rowSelect = (source) => {
+  const minNum = document.querySelector("input[min='1']").value - 1;
+  const maxNum = document.querySelector("input[max='255']").value - 1;
+  //何も入力されていないとき、minNum maxNumには-1がはいっている
+  if(minNum == -1 && maxNum == -1) return [source,false];
+  if(minNum > maxNum || minNum < 0 || maxNum < 0) return [source,true];
+
+  newSource = strToArray(source);
+
+  source = "";
+
+  
+
+  for(let i = minNum; i <= maxNum; i++){
+    source += newSource[i];
+    source += (i == maxNum ? "":"\n");
+  }
+
+  return [source,false]
+}
+
+const toggle_explain = () => {
+  let con = document.querySelector(".form div.explain_paiza");
+  
+  if(con.style.display == "none" || con.style.display == ""){
+    con.style.display = "block";
+  }else{
+    con.style.display = "none";
+  }
+}
+
+const endLineDeteler = (str) => {
+  //文字列の末尾の改行を削除
+  newstr = str;
+  
+  while(newstr.endsWith('\n')){
+    newstr = newstr.slice(0,newstr.length - 1);
+  }
+
+  return newstr;
+}
+
+const checkID = async() => {
+  let value = Number(document.querySelector("#qid").value);
+
+  //https://webllica.com/javascript-number-check-function/
+  const pattern = /^([1-9]\d*)$/;
+
+  await query("/getALLQuestionID");
+
+  let used = res_data.includes(value);
+
+  if(pattern.test(value) && !used){
+    alert(`${value}は使用可能です`);
+  }else{
+    alert(`${value}は使用不可能です`);
+  }
+}
+
+const generateID = async() => {
+  await query("/getALLQuestionID");  
+  
+  let maxNUM = 0;
+
+  if(res_data.length){
+    maxNUM = Math.max(...res_data);
+  }
+
+  document.querySelector("#qid").value = maxNUM + 1;
+}
+
+const counter = (source) => {  
+  let len = 0;
+
+  for(let i = 0; i < source.length; i++){
+    if(source[i] ==  ' ' || source[i] == '\t' || source[i] == '\n'){
+      // console.log(source[i] + " is_exception_char");
+    }else{
+      len++;
+    }
+  }
+  return len;
+}
+
+const register = async() => {
+  let qid = document.querySelector("#qid").value;
+  let qname = document.querySelector("#qname").value;
+  let source = document.querySelector("#source").value;
+  let count = 0;
+  let basename = document.querySelector("#basename").value;
+  let comment = document.querySelector("#comment").value;
+  let paiza = document.querySelector("#paiza").value;
+  let rowSelectErrorFlag = false;
+  let isWhiteSpaceAtbeginningOfLine = false;
+
+  source = endLineDeteler(source);
+  [source,rowSelectErrorFlag] = rowSelect(source);
+  count = counter(source);
+
+
+  if(source[0] == ' ' || source[0] == '\t'){
+    isWhiteSpaceAtbeginningOfLine = true;
+  }
+
+  comment = comment.replace(/\n/g,'<br>');
+  source = source.replace(/\\/g,'\\\\').replace(/\n/g,'\\n');
+
+  source = encodeURIComponent(source);
+  comment = encodeURIComponent(comment);
+
+  let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment ? comment : "\'\'"}&paiza=${paiza}`;
+
+
+  if(confirm("登録しますか?")){
+    if(rowSelectErrorFlag){
+      alert("行指定が不正です");
+    }else if(isWhiteSpaceAtbeginningOfLine){
+      alert("ソースコードの行頭に空白文字が含まれています。");
+    }else{
+      await query(queryString);
+      if(res_data.error == 1){
+        alert("登録失敗");
+      }else{
+        alert("登録完了");
+      }
+    }
+  }
+}
+
+const resize = () => {
+  let con = document.querySelector(".flex-container");
+  let textarea = document.querySelectorAll(".flex-container div");
+
+  if(!con.classList.contains('row')){
+    con.classList.add("row");
+    textarea[0].style.width = "50%";
+    textarea[1].style.width = "50%";
+  }else{
+    con.classList.remove("row");
+    textarea[0].style.width = "100%";
+    textarea[1].style.width = "100%";
+  }
+
+}
+
+const toggleQID = () => {
+  const flag = document.querySelector('input[type="checkbox"]').checked;
+  const QIDform = document.querySelector("div.flex.qid-container");
+  const QIDform2 = document.querySelector("input#qid");
+
+  if(flag){
+    QIDform.style.display = "block";
+    QIDform2.style.display = "block";
+  }else{
+    QIDform.style.display = "none";
+    QIDform2.style.display = "none";
+  }
+}
+
+const checkBasename = async() => {
+  let value = document.querySelector("#basename").value;
+
+  await query("/getALLBasename");
+
+  let used = res_data.includes(value);
+
+
+  if(!used){
+    alert(`${value}は使用可能です`);
+  }else{
+    alert(`${value}は使用不可能です`);
+  }
+}
+
+const checkPaiza = async() => {
+  let value = document.querySelector("#paiza").value;
+  const urlPattern = "https://paiza.io/projects/e/";
+  let isVaildUrl = value.startsWith(urlPattern);
+
+  await query("/getALLPaizaio");
+
+  let used = res_data.includes(value);
+
+  if(!isVaildUrl){
+    alert(`${value}は使用不可能です(URL不適切)`);
+    return;
+  }
+
+  if(!used){
+    alert(`${value}は使用可能です`);
+  }else{
+    alert(`${value}は使用不可能です(登録済み）`);
+  }
+}
+
+generateID();
+
+</script>
+</html>

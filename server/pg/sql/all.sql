@@ -1,6 +1,6 @@
 CREATE TABLE question (
     question_id  SERIAL NOT NULL,
-    name         VARCHAR(30) UNIQUE,
+    name         text     UNIQUE,
     Type_content text     NOT NULL,
     count        int      DEFAULT 0,
     difficulty   VARCHAR(10)     DEFAULT 'NONE',
