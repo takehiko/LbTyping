@@ -388,15 +388,23 @@ const checkBasename = async() => {
 
 const checkPaiza = async() => {
   let value = document.querySelector("#paiza").value;
+  const urlPattern = "https://paiza.io/projects/e/";
+  let isVaildUrl = value.startsWith(urlPattern);
+
 
   await query("/getALLPaizaio");
 
   let used = res_data.includes(value);
 
+  if(!isVaildUrl){
+    alert(`${value}は使用不可能です(URL不適切)`);
+    return;
+  }
+
   if(!used){
     alert(`${value}は使用可能です`);
   }else{
-    alert(`${value}は使用不可能です`);
+    alert(`${value}は使用不可能です(登録済み）`);
   }
 }
 
