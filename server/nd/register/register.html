@@ -6,8 +6,7 @@
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="expires" content="0" />
 <title>問題登録</title>
-<style>
-  
+<style type="text/css">
   .form{
     margin:0 auto;
     width:80%;
@@ -41,7 +40,6 @@
     box-sizing: border-box; /*横幅の解釈をpadding, borderまでとする*/
   }
 
-
   .form .register,.form .resize{
     margin-top:30px;
     height:50px;
@@ -56,7 +54,6 @@
   .flex :not(:last-child){
     margin-right:8px;
   }
-
 
   .button {
     display: inline-block;
@@ -124,7 +121,6 @@
     border-radius: 10px;
     display: inline-block;
   }
-
 </style>
 </head>
 <body>
@@ -184,7 +180,6 @@
     <button class="register" type="button" onclick="register()">登録</button>
     <button class="resize" type="button" onclick="resize()">横並び</button>
   </form>
-</body>
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="text/javascript">
@@ -198,7 +193,7 @@ const origin = location.origin;
 const path_base = location.pathname.replace(/\/[^\/]*$/,"")
 const query = async (path) => {
   let res = await axios.get(origin + path_base + path);
-  
+
   res_data = res.data;
   if (flag_show_result) {
     document.getElementById('result').innerHTML = JSON.stringify(res.data);
@@ -223,8 +218,6 @@ const rowSelect = (source) => {
 
   source = "";
 
-  
-
   for(let i = minNum; i <= maxNum; i++){
     source += newSource[i];
     source += (i == maxNum ? "":"\n");
@@ -235,7 +228,7 @@ const rowSelect = (source) => {
 
 const toggle_explain = () => {
   let con = document.querySelector(".form div.explain_paiza");
-  
+
   if(con.style.display == "none" || con.style.display == ""){
     con.style.display = "block";
   }else{
@@ -246,7 +239,7 @@ const toggle_explain = () => {
 const endLineDeteler = (str) => {
   //文字列の末尾の改行を削除
   newstr = str;
-  
+
   while(newstr.endsWith('\n')){
     newstr = newstr.slice(0,newstr.length - 1);
   }
@@ -311,7 +304,6 @@ const register = async() => {
   [source,rowSelectErrorFlag] = rowSelect(source);
   count = counter(source);
 
-
   if(source[0] == ' ' || source[0] == '\t'){
     isWhiteSpaceAtbeginningOfLine = true;
   }
@@ -323,7 +315,6 @@ const register = async() => {
   comment = encodeURIComponent(comment);
 
   let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment ? comment : "\'\'"}&paiza=${paiza}`;
-
 
   if(confirm("登録しますか?")){
     if(rowSelectErrorFlag){
@@ -354,7 +345,6 @@ const resize = () => {
     textarea[0].style.width = "100%";
     textarea[1].style.width = "100%";
   }
-
 }
 
 const toggleQID = () => {
@@ -378,7 +368,6 @@ const checkBasename = async() => {
 
   let used = res_data.includes(value);
 
-
   if(!used){
     alert(`${value}は使用可能です`);
   }else{
@@ -388,19 +377,16 @@ const checkBasename = async() => {
 
 const checkPaiza = async() => {
   let value = document.querySelector("#paiza").value;
+
   const urlPattern = "https://paiza.io/projects/e/";
   let isVaildUrl = value.startsWith(urlPattern);
-
-
-  await query("/getALLPaizaio");
-
-  let used = res_data.includes(value);
-
   if(!isVaildUrl){
     alert(`${value}は使用不可能です(URL不適切)`);
     return;
   }
 
+  await query("/getALLPaizaio");
+  let used = res_data.includes(value);
   if(!used){
     alert(`${value}は使用可能です`);
   }else{
@@ -411,4 +397,4 @@ const checkPaiza = async() => {
 generateID();
 
 </script>
-</html>
+</body> </html>
