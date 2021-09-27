@@ -108,6 +108,20 @@ const server = app.listen(sv_settings.port, () => {
             })
         }
     
+        const getQuestion2 = (id) => {
+            const q = {
+                text: 'select * from question where question_id=$1',
+                values: [id]
+            }
+            doQuery(q, r => {
+                if (r.rowCount <= 0) {
+                    res.end(err_msg)
+                } else {
+                    res.end(JSON.stringify(r.rows[0]))
+                }
+            })
+        }
+    
         const showTable = (tab) => {
             const q = {
                 text: `select * from ${tab}`
@@ -412,8 +426,10 @@ const server = app.listen(sv_settings.port, () => {
             getResponseByQid(u.query.qid)
         } else {
             res.writeHead(200, {'Content-Type': 'text/plain; charset=UTF-8'})
-            if (u.pathname == '/getq' && u.query.id) {
-                getQuestion(u.query.id)
+            if (u.pathname == '/getq' && (u.query.id || u.query.qid)) {
+                getQuestion(u.query.qid ? u.query.qid : u.query.id)
+            } else if (u.pathname == '/getq2' && (u.query.id || u.query.qid)) {
+                getQuestion2(u.query.qid ? u.query.qid : u.query.id)
             } else if (u.pathname == '/startr' && u.query.qid && u.query.sid) {
                 startResponse(u.query.qid, u.query.sid)
             } else if (u.pathname == '/endr' && u.query.id && u.query.miss) {
