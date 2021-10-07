@@ -58,7 +58,7 @@ const showQuestionForChoice = () => {
         if (s.cnt == "0") {
           line += ' (未実施)';
         } else {
-          line += ` (${s.cnt}回実施)`;
+          line += ` (${s.cnt}回実施、<a href="commentary.html?qid=${s.question_id}">解説へ</a>)`;
         }
       }
       table += line;
