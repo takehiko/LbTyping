@@ -18,6 +18,21 @@ div {
   width:1500px;
   font-size: 40px;
 }
+table {
+  border-collapse: collapse;
+}
+table th, td {
+  border: 1px solid #e3ecf5;
+  padding: 8px;
+}
+table th {
+  border: 1px solid #e3ecf5;
+  color: #fff;
+  background: #1f8ef5;
+}
+table tr:nth-child(odd) {
+  background: #e3ecf5;
+}
 </style>
 </head>
 <body>
@@ -26,7 +41,7 @@ div {
 </div>
 <div style="font-size: 32px; position: relative; left: 150px; top: 10px">問題選択</div>
 
-<div id="result" style="font-size: 32px; position: relative; left: 200px; top: 20px"></div>
+<div id="result" style="font-size: 20px; position: relative; left: 200px; top: 20px"></div>
 
 <script src="axios.min.js"></script>
 <script>
@@ -34,6 +49,7 @@ div {
 let sid = null;
 let res_data = null;
 const flag_show_result = false;
+const flag_show_by_table = true;
 
 // pathに基づきサーバに問い合わせる
 const origin = location.origin;
@@ -49,7 +65,7 @@ const query = async (path) => {
 // res_dataに基づきすべての問題（の一部の属性）を表形式で表示する
 const showQuestionForChoice = () => {
   const a = (res_data instanceof Array) ? res_data : [res_data];
-  if (a.forEach) {
+  if (a.forEach && !flag_show_by_table) {
     let table = '<ul>';
     res_data.forEach((s) => {
       let line = '<li>';
@@ -64,6 +80,33 @@ const showQuestionForChoice = () => {
       table += line;
     });
     table += '</ul>'
+    document.getElementById('result').innerHTML += table;
+  }
+  if (a.forEach && flag_show_by_table) {
+    let table = '<table border="1">';
+    a.forEach((s) => {
+      const sname = s.name.replace(/[&'"<>]/g, function(match) {
+        return { '&': '&amp;', "'": '&#039;', '"': '&quot;',
+        '<': '&lt;', '>': '&gt;' }[match];
+      });
+      const flag_untyped = (!s.cnt || s.cnt == "0");
+      let line = '<tr>';
+      line += `<td>${sname}</td>`;
+      if (flag_untyped) {
+        line += '<td>未実施</td>';
+      } else {
+        line += `<td>${s.cnt}回実施</td>`;
+      }
+      line += `<td><button onclick="location.href='typing.html?id=${s.question_id}'">Go!</button></td>`
+      if (flag_untyped) {
+        line += '<td>&nbsp;</td>';
+      } else {
+        line += `<td><button onclick="location.href='commentary.html?qid=${s.question_id}'">解説</button></td>`;
+      }
+      line += '</tr>';
+      table += line;
+    });
+    table += '</table>'
     document.getElementById('result').innerHTML += table;
   }
 }

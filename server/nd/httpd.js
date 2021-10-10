@@ -138,7 +138,7 @@ const server = app.listen(sv_settings.port, () => {
     
         const showTableBySid = (sid) => {
             const q = {
-                text: 'select q.question_id as question_id,name,(select count(*) from response where q.question_id=response.question_id and student_id=$1) as cnt from question q order by q.question_id;',
+                text: 'select q.question_id as question_id,name,(select count(*) from response where q.question_id=response.question_id and student_id=$1 and finish_at is not null) as cnt from question q order by q.question_id;',
             values: [sid]
             }
             doQuery(q, r => res.end(JSON.stringify(r.rows)))
