@@ -41,15 +41,17 @@ table tr:nth-child(odd) {
 </div>
 <div style="font-size: 32px; position: relative; left: 150px; top: 10px">問題選択</div>
 
-<div id="result" style="font-size: 20px; position: relative; left: 200px; top: 20px"></div>
+<div id="result" style="font-size: 20px; position: relative; left: 100px; top: 20px"></div>
+<div id="caution" style="font-size: 20px; width: 600px; position: relative; margin-top: 50px; border: medium solid #c99; padding: 10px; background-color: #fffff4; display: none"></div>
 
 <script src="axios.min.js"></script>
 <script>
 // グローバル変数（いくつかの関数内で参照・更新する）
 let sid = null;
 let res_data = null;
-const flag_show_result = false;
-const flag_show_by_table = true;
+const flag_show_resdata = false; // res.dataを表示させるなら真(デバッグ用)
+const flag_show_by_table = true; // 問題選択をテーブルで表示させるなら真
+const flag_show_caution = false; // 学籍番号の確認メッセージを表示させるなら真
 
 // pathに基づきサーバに問い合わせる
 const origin = location.origin;
@@ -57,7 +59,7 @@ const path_base = location.pathname.replace(/\/[^\/]*$/,"")
 const query = async (path) => {
   let res = await axios.get(origin + path_base + path);
   res_data = res.data;
-  if (flag_show_result) {
+  if (flag_show_resdata) {
     document.getElementById('result').innerHTML = JSON.stringify(res.data);
   }
 }
@@ -150,6 +152,12 @@ const getsidAndshowQuestion = async () => {
   } else {
     await query('/showsid?sid=' + sid);
     showQuestionForChoice();
+
+    if (flag_show_caution) {
+      const e = document.getElementById('caution');
+      e.innerHTML += `【ご確認ください】学籍番号は <span style="font-weight: bold">${sid}</span> で合っていますか?<br>間違っている場合には、<a href="top.html">トップページ</a>で設定し直してください。`;
+      e.style.display = "block";
+    }
   }
 }
 getsidAndshowQuestion();
