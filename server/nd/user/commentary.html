@@ -76,6 +76,11 @@ const getC2 = async (rid) => {
   await query('/getc2?id=' + rid);
 }
 
+// question_idに基づき問題番号・解説・URLを獲得する
+const getQ2 = async (qid) => {
+  await query('/getq2?qid=' + qid);
+}
+
 const get_response = async() => {
   if (location.search.indexOf("?id=") == 0) {
     rid = location.search.replace(/\?id=/,"");
@@ -107,6 +112,49 @@ const get_response = async() => {
     elem_retry.setAttribute("onclick", `location.href='typing.html?id=${qid}'`)
   }
 }
-get_response();
+//get_response();
+
+const get_response_by_qid = async() => {
+  if (location.search.indexOf("?qid=") == 0) {
+    qid = location.search.replace(/\?qid=/,"");
+    await getQ2(qid);
+    commentary = res_data.commentary;
+    url = res_data.url;
+  }
+
+  if (url) {
+    const msg1 = `<iframe src="${url}?theme=twilight" width="100%" height="500" scrolling="no" seamless="seamless"></iframe>`;
+    const msg2 = `（<a href="${url}" target="_blank">paiza.ioで実行結果を見る</a>）`;
+    elem_msg1.innerHTML = msg1 + '<br>' + msg2;
+  } else {
+    elem_msg1.style.display = "none";
+  }
+  elem_msg2.innerHTML = commentary;
+}
+//get_response_by_qid();
+
+// 学籍番号をクッキーから読み出す
+// (設定されていないときは，アラートのあとトップページに戻る)
+// id=値があれば，それをresponse_idとして解説を獲得し表示する
+// qid=値があれば，それをquestion_idとして解説を獲得し表示する
+// いずれでもなければ，アラートのあとトップページに戻る
+const getsidAndshowCommentary = async () => {
+  document.cookie.split(/; */).forEach((s) => {
+    const v = s.split(/=/);
+    if (v[0] == 'sid') sid = v[1];
+  });
+  if (sid == null) {
+    window.alert('学籍番号を設定していません。トップページに戻ります。');
+    location.href = 'top.html';
+  } else if (location.search.indexOf("?id=") == 0) {
+    get_response();
+  } else if (location.search.indexOf("?qid=") == 0) {
+    get_response_by_qid();
+  } else {
+    window.alert('出題が不明です。トップページに戻ります。');
+    location.href = 'top.html';
+  }
+}
+getsidAndshowCommentary();
 </script>
 </body> </html>
