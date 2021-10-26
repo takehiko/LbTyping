@@ -36,10 +36,10 @@ const server = app.listen(sv_settings.port, () => {
                 .then(() => client.end())
         }
 
-        const registerQuestion = (id,qname,source,count,basename,comment,paiza) => {
+        const registerQuestion = (id,qname,source,count,basename,comment,paiza,diff) => {
             const q = {
-                text: 'INSERT INTO question(question_id,name,Type_content,count,basename,commentary,url) VALUES($1,$2,$3,$4,$5,$6,$7)',
-                values : [id,qname,source,count,basename,comment,paiza]
+                text: 'INSERT INTO question(question_id,name,Type_content,count,difficulty,basename,commentary,url) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',
+                values : [id,qname,source,count,diff,basename,comment,paiza]
             }
 
             doQuery(q, r => res.end(JSON.stringify({"ok":1})))
@@ -453,9 +453,9 @@ const server = app.listen(sv_settings.port, () => {
             } else if (u.pathname == '/register_question'){
                 console.log("register_questionに関するqueryを受信");
                 console.log(u.query);
-                if(u.query.qid && u.query.qname && u.query.source && u.query.count && u.query.basename && u.query.comment && u.query.paiza){
+                if(u.query.qid && u.query.qname && u.query.source && u.query.count && u.query.basename && u.query.comment && u.query.paiza && u.query.diff){
                     console.log("if passed");
-                    registerQuestion(u.query.qid,u.query.qname,u.query.source,u.query.count,u.query.basename,u.query.comment,u.query.paiza);
+                    registerQuestion(u.query.qid,u.query.qname,u.query.source,u.query.count,u.query.basename,u.query.comment,u.query.paiza,u.query.diff);
                 }
             } else if (u.pathname == '/getALLQuestionID'){
                 getALLQuestionID();

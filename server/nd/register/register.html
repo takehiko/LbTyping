@@ -305,6 +305,7 @@ const register = async() => {
   let basename = document.querySelector("#basename").value;
   let comment = document.querySelector("#comment").value;
   let paiza = document.querySelector("#paiza").value;
+  let diff = document.querySelector("#diff").value;
   let rowSelectErrorFlag = false;
   let isWhiteSpaceAtbeginningOfLine = false;
 
@@ -322,7 +323,7 @@ const register = async() => {
   source = encodeURIComponent(source);
   comment = encodeURIComponent(comment);
 
-  let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment ? comment : "\'\'"}&paiza=${paiza}`;
+  let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment ? comment : "\'\'"}&paiza=${paiza}&diff=${diff ? diff : "NONE"}`;
 
   if(confirm("登録しますか?")){
     if(rowSelectErrorFlag){
@@ -425,7 +426,8 @@ const res_dataToSQL = () => {
     if (typeof val == 'number') {
       values.push(val);
     } else if (key == 'commentary') {
-      let val2 = val.replace(/[&'"<>]/g, function(match) {
+      let val2 = val.replaceAll("'","''");
+      val2 = val2.replace(/[&'"<>]/g, function(match) {
         return { '&': '&amp;', "'": '&#039;', '"': '&quot;',
           '<': '&lt;', '>': '&gt;' }[match];
       });
