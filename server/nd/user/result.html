@@ -72,6 +72,7 @@ let q_count;
 let m_count;
 let diffTime;
 let diffSecond;
+const be = 'beforeend';
 const flag_show_result = false;
 const flag_display_rank = false;
 
@@ -104,20 +105,20 @@ const get_response_id = async() => {
 
     qid = res_data.question_id;
     q_name = res_data.name;
-    title.insertAdjacentHTML('beforeend', q_name);
+    title.insertAdjacentHTML(be, q_name);
     m_count = res_data.miss_count;
-    miss_count.insertAdjacentHTML('beforeend', m_count);
+    miss_count.insertAdjacentHTML(be, m_count);
 
     const start_at = Date.parse(res_data.start_at);
     const finish_at = Date.parse(res_data.finish_at);
     diffTime = finish_at - start_at;
     diffSecond = Math.floor(diffTime / 1000);
     const diffMill = diffTime - diffSecond * 1000;
-    time.insertAdjacentHTML('beforeend', diffSecond + "秒" + diffMill);
+    time.insertAdjacentHTML(be, diffSecond + "秒" + diffMill);
 
     await getQ(qid);
     q_count = res_data.count;
-    t_count.insertAdjacentHTML('beforeend', q_count);
+    t_count.insertAdjacentHTML(be, q_count);
 
     if (flag_display_rank) {
       display_rank();
@@ -129,31 +130,37 @@ const get_response_id = async() => {
 const display_rank = () => {
   document.getElementById("e0").style.display = "block";
 
-  if (m_count <= q_count / 25) {
-    if (diffSecond < q_count / 2) {
-      judge.insertAdjacentHTML('beforeend', "【ランクA】この調子で頑張ろう！");
-      rankup.insertAdjacentHTML('beforeend', "一番上のランク！この調子！");
-    } else if (diffSecond > q_count) {
-      judge.insertAdjacentHTML('beforeend', "【ランクD】もう少し速くタイピングできるように頑張ろう！");
-      rankup.insertAdjacentHTML('beforeend', "ランクアップするには<br>あと"　+ (diffSecond - q_count) + "秒タイムを縮めよう！");
+  const t2 = q_count / 2; // ランクA・Cになるためのタイプ時間の上限
+  const m2 = Math.floor(q_count / 25); // ランクA・Bになるための誤タイプ数の上限
+  const t_gap_d = diffSecond - q_count; // ランクDからBになるための縮めるタイプ時間
+  const t_gap = diffSecond - t2; // ランクAになるための縮めるタイプ時間
+  const m_gap = Math.ceil(m_count - m2); // ランクA・Bになるための減らす誤タイプ数
+
+  if (m_count <= m2) {
+    if (diffSecond < t2) {
+      judge.insertAdjacentHTML(be, "【ランクA】この調子で頑張ろう！");
+      rankup.insertAdjacentHTML(be, "一番上のランク！この調子！");
+    } else if (t_gap_d > 0) {
+      judge.insertAdjacentHTML(be, "【ランクD】もう少し速くタイピングできるように頑張ろう！");
+      rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + t_gap_d + "秒タイムを縮めよう！");
     } else {
-      judge.insertAdjacentHTML('beforeend', "【ランクB】正確性はいい感じ。このままタイムを短くしていこう！");
-      rankup.insertAdjacentHTML('beforeend', "ランクアップするには<br>あと"　+ (diffSecond - q_count / 2) + "秒タイムを縮めよう！");
+      judge.insertAdjacentHTML(be, "【ランクB】正確性はいい感じ。このままタイムを短くしていこう！");
+      rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + t_gap + "秒タイムを縮めよう！");
     }
   } else {
-    if (diffSecond < q_count / 2) {
-      judge.insertAdjacentHTML('beforeend', "【ランクC】あせらずミスを少なくなるように心がけよう！");
-      rankup.insertAdjacentHTML('beforeend', "ランクアップするには<br>あと"　+ Math.ceil(m_count - q_count / 25) + "回ミスを減らそう");
+    if (diffSecond < t2) {
+      judge.insertAdjacentHTML(be, "【ランクC】あせらずミスを少なくなるように心がけよう！");
+      rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + m_gap + "回ミスを減らそう");
     } else {
-      judge.insertAdjacentHTML('beforeend', "【ランクD】ゆっくりでもミスが少なくなるようにタイプしてみよう！");
-      rankup.insertAdjacentHTML('beforeend', "ランクアップするには<br>あと"　+ Math.ceil(m_count - q_count / 25) + "回ミスを減らそう");
+      judge.insertAdjacentHTML(be, "【ランクD】ゆっくりでもミスが少なくなるようにタイプしてみよう！");
+      rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + m_gap + "回ミスを減らそう");
     }
   }
 
-  border.insertAdjacentHTML('beforeend',
-    "A：タイプ時間" + q_count / 2 + "秒以内 かつ 誤タイプ数"+ Math.floor(q_count / 25) + "回以下<br>"
-    + "B：タイプ時間" + q_count + "秒以内 かつ 誤タイプ数"+ Math.floor(q_count / 25) + "回以下<br>"
-    + "C：タイプ時間" + q_count / 2 + "秒以内<br>"
+  border.insertAdjacentHTML(be,
+    "A：タイプ時間" + t2 + "秒以内 かつ 誤タイプ数" + m2 + "回以下<br>"
+    + "B：タイプ時間" + q_count + "秒以内 かつ 誤タイプ数" + m2 + "回以下<br>"
+    + "C：タイプ時間" + t2 + "秒以内<br>"
     + "D：上記以外");
 }
 
