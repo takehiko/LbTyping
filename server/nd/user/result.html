@@ -141,18 +141,18 @@ const display_rank = () => {
       judge.insertAdjacentHTML(be, "【ランクA】この調子で頑張ろう！");
       rankup.insertAdjacentHTML(be, "一番上のランク！この調子！");
     } else if (t_gap_d > 0) {
-      judge.insertAdjacentHTML(be, "【ランクD】もう少し速くタイピングできるように頑張ろう！");
+      judge.insertAdjacentHTML(be, "【ランクD】もう少し速くタイピング<br>できるように頑張ろう！");
       rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + t_gap_d + "秒タイムを縮めよう！");
     } else {
-      judge.insertAdjacentHTML(be, "【ランクB】正確性はいい感じ。このままタイムを短くしていこう！");
+      judge.insertAdjacentHTML(be, "【ランクB】正確性はいい感じ。<br>このままタイムを短くしていこう！");
       rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + t_gap + "秒タイムを縮めよう！");
     }
   } else {
     if (diffSecond < t2) {
-      judge.insertAdjacentHTML(be, "【ランクC】あせらずミスを少なくなるように心がけよう！");
+      judge.insertAdjacentHTML(be, "【ランクC】あせらずミスを少なく<br>なるように心がけよう！");
       rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + m_gap + "回ミスを減らそう");
     } else {
-      judge.insertAdjacentHTML(be, "【ランクD】ゆっくりでもミスが少なくなるようにタイプしてみよう！");
+      judge.insertAdjacentHTML(be, "【ランクD】ゆっくりでもミスが少なく<br>なるようにタイプしてみよう！");
       rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + m_gap + "回ミスを減らそう");
     }
   }
