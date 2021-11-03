@@ -21,10 +21,8 @@
     font-size: 40px;
   }
   button:hover {
-    /* 背景色を明るい青色に指定 */
     background-color: #24d;
-    /* 文字色を白色に指定 */
-  color: #fff;
+    color: #fff;
   }
 
   dialog {
@@ -53,9 +51,7 @@
   <dialog id="dialog">
     <p id= "f" class="Rankup" style="font-size: 30px"></p>
     <p id= "g" class="Border" style="font-size: 20px">各ランクの条件<br></p>
-    <button type="button" onclick="document.getElementById('dialog').close();" style="font-size: 30px">
-      閉じる
-    </button>
+    <button type="button" onclick="document.getElementById('dialog').close();" style="font-size: 30px">閉じる</button>
   </dialog>
 
 <script src="axios.min.js"></script>
@@ -71,9 +67,13 @@ let time = document.getElementById("d");
 let judge = document.getElementById("e");
 let rankup  = document.getElementById("f");
 let border = document.getElementById("g");
+let q_name;
+let q_count;
+let m_count;
+let diffTime;
+let diffSecond;
 const flag_show_result = false;
-const display_rank = false;
-
+const flag_display_rank = false;
 
 // pathに基づきサーバに問い合わせる
 const origin = location.origin;
@@ -91,17 +91,13 @@ const getQ = async (qid) => {
   await query('/getq?id=' + qid);
 }
 
-//response_idに基づき解答状況を獲得する
+// response_idに基づき解答状況を獲得する
 const getR = async (rid) => {
   await query('/getr?id=' + rid);
 }
 
-const get_response_id=async() => {
-  let q_name;
-  let q_count;
-  let m_count;
-  let diffTime;
-
+// 結果を表示する
+const get_response_id = async() => {
   if (location.search.indexOf("?id=") == 0) {
     rid = location.search.replace(/\?id=/,"");
     await getR(rid);
@@ -109,54 +105,56 @@ const get_response_id=async() => {
     qid = res_data.question_id;
     q_name = res_data.name;
     title.insertAdjacentHTML('beforeend', q_name);
-    m_count = res_data.miss_count
+    m_count = res_data.miss_count;
     miss_count.insertAdjacentHTML('beforeend', m_count);
 
-    let start_at = Date.parse(res_data.start_at);
-    let finish_at = Date.parse(res_data.finish_at);
+    const start_at = Date.parse(res_data.start_at);
+    const finish_at = Date.parse(res_data.finish_at);
     diffTime = finish_at - start_at;
-    let diffSecond = Math.floor(diffTime / (1000));
-    let diffMill = diffTime - diffSecond * 1000;
+    diffSecond = Math.floor(diffTime / 1000);
+    const diffMill = diffTime - diffSecond * 1000;
     time.insertAdjacentHTML('beforeend', diffSecond + "秒" + diffMill);
 
     await getQ(qid);
     q_count = res_data.count;
     t_count.insertAdjacentHTML('beforeend', q_count);
 
-    if(display_rank){
-      document.getElementById("e0").style.display ="block";
-    }else{
-      return;
+    if (flag_display_rank) {
+      display_rank();
     }
+  }
+}
 
-    if (m_count <= q_count / 25) {
-      if(diffSecond < q_count / 2) {
-        judge.insertAdjacentHTML('beforeend', "【ランクA】この調子で頑張ろう！");
-        rankup.insertAdjacentHTML('beforeend', "一番上のランク！この調子！");
-      }else if (diffSecond > q_count){
-        judge.insertAdjacentHTML('beforeend', "【ランクD】もう少し速くタイピングできるように頑張ろう！");
-        rankup.insertAdjacentHTML('beforeend', "ランクアップするには<br>あと"　+ (diffSecond - q_count) + "秒タイムを縮めよう！");
-      }else {
-        judge.insertAdjacentHTML('beforeend', "【ランクB】正確性はいい感じ。このままタイムを短くしていこう！");
-        rankup.insertAdjacentHTML('beforeend', "ランクアップするには<br>あと"　+ (diffSecond - q_count / 2) + "秒タイムを縮めよう！");
-      }
-    }else{
-      if(diffSecond < q_count / 2) {
-        judge.insertAdjacentHTML('beforeend', "【ランクC】あせらずミスを少なくなるように心がけよう！");
-        rankup.insertAdjacentHTML('beforeend', "ランクアップするには<br>あと"　+ Math.ceil(m_count - q_count / 25) + "回ミスを減らそう");
-      }else {
-        judge.insertAdjacentHTML('beforeend', "【ランクD】ゆっくりでもミスが少なくなるようにタイプしてみよう！");
-        rankup.insertAdjacentHTML('beforeend', "ランクアップするには<br>あと"　+ Math.ceil(m_count - q_count / 25) + "回ミスを減らそう");
-      }
+// ランクを表示する
+const display_rank = () => {
+  document.getElementById("e0").style.display = "block";
+
+  if (m_count <= q_count / 25) {
+    if (diffSecond < q_count / 2) {
+      judge.insertAdjacentHTML('beforeend', "【ランクA】この調子で頑張ろう！");
+      rankup.insertAdjacentHTML('beforeend', "一番上のランク！この調子！");
+    } else if (diffSecond > q_count) {
+      judge.insertAdjacentHTML('beforeend', "【ランクD】もう少し速くタイピングできるように頑張ろう！");
+      rankup.insertAdjacentHTML('beforeend', "ランクアップするには<br>あと"　+ (diffSecond - q_count) + "秒タイムを縮めよう！");
+    } else {
+      judge.insertAdjacentHTML('beforeend', "【ランクB】正確性はいい感じ。このままタイムを短くしていこう！");
+      rankup.insertAdjacentHTML('beforeend', "ランクアップするには<br>あと"　+ (diffSecond - q_count / 2) + "秒タイムを縮めよう！");
     }
-
-    border.insertAdjacentHTML('beforeend', "A：タイプ時間" + q_count / 2 + "秒以内 かつ 誤タイプ数"+ Math.floor(q_count / 25) + "回以下<br>" 
-    　　　　　　　　　　　　　　+ "B：タイプ時間" + q_count + "秒以内 かつ 誤タイプ数"+ Math.floor(q_count / 25) + "回以下<br>"
-                              + "C：タイプ時間" + q_count / 2 + "秒以内<br>"
-                              + "D：上記以外");
-
+  } else {
+    if (diffSecond < q_count / 2) {
+      judge.insertAdjacentHTML('beforeend', "【ランクC】あせらずミスを少なくなるように心がけよう！");
+      rankup.insertAdjacentHTML('beforeend', "ランクアップするには<br>あと"　+ Math.ceil(m_count - q_count / 25) + "回ミスを減らそう");
+    } else {
+      judge.insertAdjacentHTML('beforeend', "【ランクD】ゆっくりでもミスが少なくなるようにタイプしてみよう！");
+      rankup.insertAdjacentHTML('beforeend', "ランクアップするには<br>あと"　+ Math.ceil(m_count - q_count / 25) + "回ミスを減らそう");
+    }
   }
 
+  border.insertAdjacentHTML('beforeend',
+    "A：タイプ時間" + q_count / 2 + "秒以内 かつ 誤タイプ数"+ Math.floor(q_count / 25) + "回以下<br>"
+    + "B：タイプ時間" + q_count + "秒以内 かつ 誤タイプ数"+ Math.floor(q_count / 25) + "回以下<br>"
+    + "C：タイプ時間" + q_count / 2 + "秒以内<br>"
+    + "D：上記以外");
 }
 
 get_response_id();
