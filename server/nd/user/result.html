@@ -21,11 +21,14 @@
     font-size: 40px;
   }
   button:hover {
-    /* 背景色を明るい青色に指定 */
     background-color: #24d;
-    /* 文字色を白色に指定 */
-  color: #fff;
+    color: #fff;
   }
+
+  dialog {
+    font-size: 30px;
+  }
+
 </style>
 </head>
 <body>
@@ -37,22 +40,41 @@
   <div id= "b" class="chalacter_number" style="font-size: 30px; position: relative; left: 300px; top: 30px">入力文字数: </div>
   <div id= "c" class="miss_cnt" style="font-size: 30px; position: relative; left: 300px; top: 40px">誤タイプ数: </div>
   <div id= "d" class="Time" style="font-size: 30px; position: relative; left: 300px; top: 50px">タイプ時間: </div>
+  <a href="#" onclick="document.getElementById('dialog').show();" id="e0" style="display:none"><div id= "e" class="Judge" style="font-size: 30px; position: relative; left: 300px; top: 60px"></div></a>
   <div>
   <button type="button" id="c2_page" onclick="location.href= `commentary.html?id=${rid}`" style="font-size: 30px; width:200px; height:100px; position: relative; top: 200px; left:200px;margin: 0 auto">解説画面へ</button>
   <button type="button" id="t_page" onclick="location.href= 'top.html'" style="font-size: 30px; width:200px; height:100px; position: relative; top: 200px; left:200px;margin: 0 auto">トップ画面へ</button>
   <button type="button" id="c_page" onclick="location.href= 'choice.html'" style="font-size: 30px;  width:230px; height:100px; position: relative; top: 200px; display: inline-block; left: 200px;margin: 0 auto">問題選択画面へ</button>
   </div>
 
+  
+  <dialog id="dialog">
+    <p id= "f" class="Rankup" style="font-size: 30px"></p>
+    <p id= "g" class="Border" style="font-size: 20px">各ランクの条件<br></p>
+    <button type="button" onclick="document.getElementById('dialog').close();" style="font-size: 30px">閉じる</button>
+  </dialog>
+
 <script src="axios.min.js"></script>
 <script type="text/javascript">
 let qid;
 let rid;
+let rank;
 let res_data = null;
 let title = document.getElementById("a");
 let t_count = document.getElementById("b");
 let miss_count = document.getElementById("c");
 let time = document.getElementById("d");
+let judge = document.getElementById("e");
+let rankup  = document.getElementById("f");
+let border = document.getElementById("g");
+let q_name;
+let q_count;
+let m_count;
+let diffTime;
+let diffSecond;
+const be = 'beforeend';
 const flag_show_result = false;
+const flag_display_rank = false;
 
 // pathに基づきサーバに問い合わせる
 const origin = location.origin;
@@ -70,38 +92,76 @@ const getQ = async (qid) => {
   await query('/getq?id=' + qid);
 }
 
-//response_idに基づき解答状況を獲得する
+// response_idに基づき解答状況を獲得する
 const getR = async (rid) => {
   await query('/getr?id=' + rid);
 }
 
-const get_response_id=async() => {
-  let q_name;
-  let q_count;
-  let m_count;
-  let diffTime;
-
+// 結果を表示する
+const get_response_id = async() => {
   if (location.search.indexOf("?id=") == 0) {
     rid = location.search.replace(/\?id=/,"");
     await getR(rid);
 
     qid = res_data.question_id;
     q_name = res_data.name;
-    title.insertAdjacentHTML('beforeend', q_name);
-    m_count = res_data.miss_count
-    miss_count.insertAdjacentHTML('beforeend', m_count);
+    title.insertAdjacentHTML(be, q_name);
+    m_count = res_data.miss_count;
+    miss_count.insertAdjacentHTML(be, m_count);
 
-    let start_at = Date.parse(res_data.start_at);
-    let finish_at = Date.parse(res_data.finish_at);
+    const start_at = Date.parse(res_data.start_at);
+    const finish_at = Date.parse(res_data.finish_at);
     diffTime = finish_at - start_at;
-    let diffSecond = Math.floor(diffTime / (1000));
-    let diffMill = diffTime - diffSecond * 1000;
-    time.insertAdjacentHTML('beforeend', diffSecond + "秒" + diffMill);
+    diffSecond = Math.floor(diffTime / 1000);
+    const diffMill = diffTime - diffSecond * 1000;
+    time.insertAdjacentHTML(be, diffSecond + "秒" + diffMill);
 
     await getQ(qid);
     q_count = res_data.count;
-    t_count.insertAdjacentHTML('beforeend', q_count);
+    t_count.insertAdjacentHTML(be, q_count);
+
+    if (flag_display_rank) {
+      display_rank();
+    }
   }
+}
+
+// ランクを表示する
+const display_rank = () => {
+  document.getElementById("e0").style.display = "block";
+
+  const t2 = q_count / 2; // ランクA・Cになるためのタイプ時間の上限
+  const m2 = Math.floor(q_count / 25); // ランクA・Bになるための誤タイプ数の上限
+  const t_gap_d = diffSecond - q_count; // ランクDからBになるための縮めるタイプ時間
+  const t_gap = diffSecond - t2; // ランクAになるための縮めるタイプ時間
+  const m_gap = Math.ceil(m_count - m2); // ランクA・Bになるための減らす誤タイプ数
+
+  if (m_count <= m2) {
+    if (diffSecond < t2) {
+      judge.insertAdjacentHTML(be, "【ランクA】この調子で頑張ろう！");
+      rankup.insertAdjacentHTML(be, "一番上のランク！この調子！");
+    } else if (t_gap_d > 0) {
+      judge.insertAdjacentHTML(be, "【ランクD】もう少し速くタイピング<br>できるように頑張ろう！");
+      rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + t_gap_d + "秒タイムを縮めよう！");
+    } else {
+      judge.insertAdjacentHTML(be, "【ランクB】正確性はいい感じ。<br>このままタイムを短くしていこう！");
+      rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + t_gap + "秒タイムを縮めよう！");
+    }
+  } else {
+    if (diffSecond < t2) {
+      judge.insertAdjacentHTML(be, "【ランクC】あせらずミスを少なく<br>なるように心がけよう！");
+      rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + m_gap + "回ミスを減らそう");
+    } else {
+      judge.insertAdjacentHTML(be, "【ランクD】ゆっくりでもミスが少なく<br>なるようにタイプしてみよう！");
+      rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + m_gap + "回ミスを減らそう");
+    }
+  }
+
+  border.insertAdjacentHTML(be,
+    "A：タイプ時間" + t2 + "秒以内 かつ 誤タイプ数" + m2 + "回以下<br>"
+    + "B：タイプ時間" + q_count + "秒以内 かつ 誤タイプ数" + m2 + "回以下<br>"
+    + "C：タイプ時間" + t2 + "秒以内<br>"
+    + "D：上記以外");
 }
 
 get_response_id();
