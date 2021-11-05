@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>プログラミングを学ぶ - Replay</title>
+<style type="text/css">
+.qname {
+  font-family: serif;
+  font-size: 50px;
+}
+.typed {color:navy; font-weight:bold}
+.misstyped {color:red}
+.untyped {color:darkgray}
+.backspace {
+    color:red;
+    height: 22px;
+}
+.clear {
+    height: 22px;
+}
+</style>
+</head>
+<body>
+
+<div style="margin-bottom: 10px;">
+    <div style="margin-left: 100px">
+        <div style="font-size:40px">リプレイ</div>
+        <div id="f" class="qname" style="font-size:40px"></div>
+        <div style="font-size:20px">
+            <span style="font-size: 24px">タイム</span>
+            <span class="cnter">
+                【 <span id = "cnter_m">00</span> : <span id = "cnter_s">00.000</span> 】
+            </span>
+            <span id = "cnter_err" style = "display:none">エラー</span>
+            <input type="button" id="start" value="スタート" onclick="OnButtonClick();"/>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: center">
+        <div style="width: 48%; margin: 20px">
+            <span style="font-size: 24px">自分</span>
+            <div id="typing" style="padding: 10px; border: 1px solid #333333; font-family: Courier New; font-size: 22px;">
+                <span id = "a" class= "typed"></span><span id = "c" class= "misstyped"></span><span id = "b" class= "untyped"></span>
+                <div id = "e" class= "backspace">&nbsp</div>
+                <div id = "d" class= "clear" style="font-family: Lucida Grande">&nbsp</div>
+            </div>
+        </div>
+        <div style="width: 48%; margin: 20px">
+            <span style="font-size: 24px">手本</span>
+            <div id="typing2" style="padding: 10px; border: 1px solid #333333; font-family: Courier New; font-size: 22px;">
+                <span id = "a2" class= "typed"></span><span id = "c2" class= "misstyped"></span><span id = "b2" class= "untyped"></span>
+                <div id = "e2" class= "backspace">&nbsp</div>
+                <div id = "d2" class= "clear" style="font-family: Lucida Grande">&nbsp</div>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin: 20px 100px">
+        <p><a href="top.html">トップ画面へ</a></p>
+        <p><a href="replay-q-choice.html">リプレイ問題選択画面へ</a></p>
+    </div>
+</div>
+
+<script src="axios.min.js"></script>
+<script type="text/javascript">
+
+// グローバル変数（いくつかの関数内で参照・更新する）
+let textList = "";
+const qname = document.getElementById("f");
+const start = document.getElementById("start");
+const cnter = document.getElementById("cnter");
+const cnter_m = document.getElementById("cnter_m");
+const cnter_s = document.getElementById("cnter_s");
+const cnter_err = document.getElementById("cnter_err");
+let counter_interval_id = null;
+let replay1;
+let replay2;
+
+class Replay {
+  #e_untyped;
+  get e_untyped() {return this.#e_untyped;}
+  #e_typed;
+  get e_typed() {return this.#e_typed;}
+  #elem_untyped;
+  get elem_untyped() {return this.#elem_untyped;}
+  #elem_typed;
+  get elem_typed() {return this.#elem_typed;}
+  #miss_typed;
+  get miss_typed() {return this.#miss_typed;}
+  #miss_a;
+  get miss_a() {return this.#miss_a;}
+  #clear;
+  get clear() {return this.#clear;}
+  #backspace;
+  get backspace() {return this.#backspace;}
+  #miss_cnt;
+  get miss_cnt() {return this.#miss_cnt;}
+  #style;
+  get style() {return this.#style;}
+  #res;
+  get res() {return this.#res;}
+
+  constructor(
+    elem_untyped,
+    elem_typed,
+    miss_typed,
+    clear,
+    backspace,
+    style,
+    res_data,
+    e_untyped = "",
+    e_typed = "",
+    miss_a = "",
+    miss_cnt = 0,
+  ) {
+    this.#elem_untyped = elem_untyped;
+    this.#elem_typed = elem_typed;
+    this.#miss_typed = miss_typed;
+    this.#clear = clear;
+    this.#backspace = backspace;
+    this.#style = style;
+    this.#res = this.convertResData(res_data);
+    this.#e_untyped = e_untyped;
+    this.#e_typed = e_typed;
+    this.#miss_a = miss_a;
+    this.#miss_cnt = miss_cnt;
+  }
+
+  convertResData(data) {
+    const res = {}
+    res.rid = data.response_id;
+    res.qid = data.question_id;
+    res.note = data.note;
+    res.startAt = Date.parse(data.start_at);
+    res.finishAt = Date.parse(data.finish_at);
+    res.diffTime = (res.finishAt - res.startAt) / 1000;
+    return res;
+  }
+
+  setUntyped(question) {
+    this.#e_untyped = question.join("\n");
+    this.#elem_untyped.innerHTML = this.#e_untyped.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
+    this.#elem_untyped.innerHTML = this.#elem_untyped.innerText.replace(/(\S)/g, "<span>$&</span>").replace(/\n/g,"<br>");
+  }
+
+  async start() {
+    const times = this.res.note.split(';').map(s => {const t = s.split(','); return [String.fromCharCode(parseInt(t[0].substring(0,2), 16)) + (t[0].length > 2 ? t[0].substring(2) : ''), parseFloat(t[1])]})
+    const type = () => {
+      this.#e_typed = this.#e_typed + this.#e_untyped[0]
+      this.#e_untyped = this.#e_untyped.substring(1 ,this.#e_untyped.Length)
+      this.#elem_untyped.innerHTML = this.#e_untyped.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;')
+      this.#elem_untyped.innerHTML = this.#elem_untyped.innerText.replace(/(\S)/g, "<span>$&</span>").replace(/\n/g,"<br>");
+      this.#elem_typed.innerHTML = this.#e_typed.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;')
+    }
+    const missType = (key) => {
+      this.#miss_a += key
+      this.#miss_typed.innerHTML = this.#miss_a
+      this.#miss_cnt++
+      this.#backspace.innerHTML = `backspaceを${this.#miss_cnt}回押してください`;
+    }
+
+    for (const [char, time] of times) {
+      while (this.#e_untyped[0] == '\n' || this.#e_untyped[0] == ' ') type()
+      await sleep(time * 1000)
+      if (char == 'RET' || char == 'SPC') {
+      } else if (char == 'BS') {
+        if (this.#miss_cnt > 0) {
+          this.#miss_a = this.#miss_a.slice(0, -1)
+          this.#miss_typed.innerHTML = this.#miss_a
+          this.#miss_cnt--
+          if (this.#miss_cnt == 0) {
+            this.#backspace.innerHTML = "&nbsp"
+          } else {
+            this.#backspace.innerHTML = `backspaceを${this.#miss_cnt}回押してください`
+          }
+        }
+      } else if (char.length == 1) {
+        type()
+      } else {
+        missType(char[0])
+      }
+    }
+    stopCounter()
+    this.#clear.innerHTML = "Complete!! (タイム: " + this.#res.diffTime + ")"; 
+  }
+}
+
+// pathに基づきサーバに問い合わせる
+const origin = location.origin;
+const path_base = location.pathname.replace(/\/[^\/]*$/,"")
+const query = async (path) => {
+  const res = await axios.get(origin + path_base + path);
+  return res.data;
+}
+
+// response_idに基づき解答状況を獲得する
+const getR = async (rid) => {
+  return await query('/getr?id=' + rid);
+}
+
+// question_idに基づき問題を獲得する
+const getQ = async (qid) => {
+  return await query('/getq?id=' + qid);
+}
+
+const sleep = async (time) => {
+  return new Promise((resolve) => {
+    setTimeout(() => { resolve(); }, time)
+  })
+}
+
+const setup_replay = async() => {
+  const params = new URL(location.href).searchParams;
+  const r1id = params.get('r1id');
+  const resData1 = await getR(r1id);
+  replay1 = new Replay(
+    document.getElementById("b"),
+    document.getElementById("a"),
+    document.getElementById("c"),
+    document.getElementById("d"),
+    document.getElementById("e"),
+    document.getElementById("typing").style,
+    resData1,
+  );
+  const r2id = params.get('r2id');
+  const resData2 = await getR(r2id);
+  replay2 = new Replay(
+    document.getElementById("b2"),
+    document.getElementById("a2"),
+    document.getElementById("c2"),
+    document.getElementById("d2"),
+    document.getElementById("e2"),
+    document.getElementById("typing2").style,
+    resData2,
+  );
+  const q_data = await getQ(replay1.res.qid);
+  qname.innerHTML = q_data.name;
+  const question = q_data.type_content.replace(/\\\\/g, "￥").split(/\\n/).map(s => s.replace(/￥/g, "\\"));
+  replay1.setUntyped(question);
+  replay2.setUntyped(question);
+}
+
+const startCounter = async () => {
+  const countUp = () => {
+    let cnt_m = parseInt(cnter_m.innerText);
+    let cnt_s = parseFloat(cnter_s.innerText);
+    cnt_s = Math.floor(cnt_s * 100) / 100.0; // 少数第3位を除去
+    cnt_s += 0.01
+    if (parseInt(cnt_s) == 60) {
+      cnt_m++;
+      cnt_s = 0;
+    }
+    let sum = cnt_m * 60 + cnt_s;
+    if (cnt_m >= 100) {
+      cnter.style.display = "none";
+      cnter_err.style.display = "";
+      stopCounter();
+      return
+    }
+    const limit = Math.max(replay1.res.diffTime, replay2.res.diffTime);;
+    if (sum >= limit) {
+      let m = Math.floor(limit / 60);
+      let s = limit - m * 60;
+      cnter_m.innerText = ('00' + m).slice(-2);
+      cnter_s.innerText = ('00.000' + s.toFixed(3)).slice(-6);
+      stopCounter();
+      return
+    }
+    cnter_m.innerText = ('00' + cnt_m).slice(-2);
+    let s_end = parseInt(cnter_s.innerText.slice(-1)); // 秒の末尾(小数第3位)
+    s_end = (s_end + 3) % 10;
+    cnter_s.innerText = ('00.00' + cnt_s.toFixed(2)).slice(-5) + s_end;
+  }
+  counter_interval_id = setInterval(countUp, 10);
+  replay1.start();
+  replay2.start();
+}
+
+let stopCounter_calledCount = 0;
+const stopCounter = () => {
+  stopCounter_calledCount++;
+  if (stopCounter_calledCount < 2) return;
+  clearInterval(counter_interval_id);
+  counter_interval_id = null;
+}
+
+const OnButtonClick = () => {
+  start.disabled = true;
+  startCounter();
+}
+
+setup_replay();
+
+</script>
+
+</body>
+</html>
