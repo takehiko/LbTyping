@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="0" />
+<title>プログラミングを学ぶ - Choice replay</title>
+
+<style type="text/css">
+.container {
+  margin-left: 400px;
+  margin-bottom: 10px;
+}
+table {
+  border-collapse: collapse;
+}
+table th, td {
+  border: 1px solid #d9ebe2;
+  padding: 8px;
+  font-weight: normal;
+}
+table tr:nth-child(odd) {
+  background: #d9ebe2;
+}
+td label {
+  display: block;
+  padding: 8px;
+}
+</style>
+
+</head>
+<body>
+<div class="container">
+  <p style="font-size: 32px">リプレイ選択</p>
+  <p>問題: <span id="qname"></span></p>
+  <p>
+    リプレイを選択してください。リプレイは自分のリプレイと手本のリプレイの2種類があります。
+    <br>同時リプレイ数が1の場合、2種類のリプレイの中から1つ選択できます。
+    <br>同時リプレイ数が2の場合、それぞれの種類のリプレイを1つずつ、合わせて2つ選択できます。
+    <br>選択後にリプレイボタンを押すとリプレイ画面へ移ります。
+  </p>
+  <hr>
+  <p style="margin-bottom: 30px">
+    同時リプレイ数:
+    <label onclick="updateReplayList()"><input type="radio" name="replay-num" autocomplete="off" checked>1</label>
+    <label onclick="updateReplayList()"><input type="radio" name="replay-num" autocomplete="off">2</label>
+    <br>
+    並び順キー:
+    <label onclick="updateReplayList()"><input type="radio" name="sort-key" autocomplete="off" checked>プレイ日時</label>
+    <label onclick="updateReplayList()"><input type="radio" name="sort-key" autocomplete="off">タイプ時間</label>
+    <label onclick="updateReplayList()"><input type="radio" name="sort-key" autocomplete="off">誤タイプ数</label>
+  </p>
+  <p style="font-size: 20px; margin-bottom: 10px">自分のリプレイ</p>
+  <p id="choices-mine" style="margin: 0 0 30px 0"></p>
+  <p style="font-size: 20px; margin-bottom: 10px">手本のリプレイ</p>
+  <p id="choices-model" style="margin: 0 0 30px 0"></p>
+  <input id="replay" type="button" value="リプレイ" onclick="replay()" disabled>
+  
+  <p style="margin-top: 40px"><a href="top.html">トップ画面へ</a></p>
+  <p><a href="replay-q-choice.html">リプレイ問題選択画面へ</a></p>
+</div>
+
+<script src="axios.min.js"></script>
+<script>
+// グローバル変数（いくつかの関数内で参照・更新する）
+let res_data = null;
+let sid = null;
+const qid = location.search.replace(/\?qid=/,"");
+
+// pathに基づきサーバに問い合わせる
+const origin = location.origin;
+const path_base = location.pathname.replace(/\/[^\/]*$/,"");
+const query = async (path) => {
+  let res = await axios.get(origin + path_base + path);
+  res_data = res.data;
+}
+query('/getq?id=' + qid).then(() => document.getElementById("qname").innerHTML = res_data.name);
+
+// 学籍番号をクッキーから読み出す
+// 設定されていないときは，トップページに戻る
+const getSid = () => {
+  document.cookie.split(/; */).forEach((s) => {
+    const v = s.split(/=/);
+    if (v[0] == 'sid') sid = v[1];
+  })
+  if (sid == null) {
+    alert('学籍番号を設定していません。トップページに戻ります。');
+    location.href = 'top.html';
+  }
+}
+getSid();
+
+const replay = () => {
+  const replayNum = document.getElementsByName('replay-num')[0].checked ? 1 : 2;
+  if (replayNum == 1) {
+    for (const r of document.getElementsByName('r')) {
+      if (r.checked) location.href = `replay.html?rid=${r.value}`;
+    }
+  } else {
+    const rids = [];
+    for (const name of ['r-mine', 'r-model']) {
+      for (const r of document.getElementsByName(name)) {
+        if (r.checked) rids.push(r.value)
+      }
+    }
+    location.href = `replay2.html?r1id=${rids[0]}&r2id=${rids[1]}`;
+  }
+}
+
+const setChoices = async (choices, isMine) => {
+  const path = isMine 
+    ? ('/getr2?sid=' + sid + '&qid=' + qid) 
+    : ('/getmr?qid=' + qid);
+  choices.innerHTML = "";
+
+  await query(path);
+  let replayList = [];
+  res_data.forEach((r) => {
+    if (r.finish_at == null) return;
+    const startAt = new Date(r.start_at);
+    const finishAt = new Date(r.finish_at);
+    const diffTime = (finishAt - startAt) / 1000;
+    // startAt.setHours(startAt.getHours() + 9);
+    let replayData = {};
+    replayData.rid = r.response_id;
+    replayData.startAt = startAt;
+    replayData.time = diffTime;
+    replayData.missCount = r.miss_count;
+    replayList.push(replayData);
+  })
+
+  if (replayList.length == 0) {
+    choices.innerHTML = 'リプレイデータがありません';
+    return 0;
+  }
+
+  if (document.getElementsByName('sort-key')[0].checked) {
+    replayList.sort((a, b) => a.startAt >= b.startAt ? -1 : 0);
+  } else if (document.getElementsByName('sort-key')[1].checked) {
+    replayList.sort((a, b) => a.time - b.time);
+  } else {
+    replayList.sort((a, b) => a.missCount - b.missCount);
+  }
+
+  const replayNum = document.getElementsByName('replay-num')[0].checked ? 1 : 2;
+  let table = '<table border="1">';
+  table += '<tr>';
+  table += '<th>プレイ日時</th>';
+  table += '<th>タイプ時間(秒)</th>';
+  table += '<th>誤タイプ数</th>';
+  table += '<th></th>';
+  table += '</tr>';
+  replayList.forEach((r, idx) => {
+    let line = '<tr>';
+    line += '<td>' + r.startAt.getFullYear() + '/' + (parseInt(r.startAt.getMonth()) + 1) + '/' + r.startAt.getDate() + ' ' + r.startAt.getHours() + ':' + r.startAt.getMinutes() + ':' + r.startAt.getSeconds() + '</td>';
+    line += '<td align="right">' + r.time + '</td>';
+    line += '<td  align="right">' + r.missCount + '</td>';
+    let name = 'r';
+    if (replayNum == 2) {
+      name = isMine ? 'r-mine' : 'r-model';
+    }
+    line += '<td style="padding: 0"><label>' + `<input type="radio" name="${name}" value="` + r.rid + '"';
+    if (replayNum == 1) {
+      if (idx == 0 && isMine) line += 'checked';
+    } else {
+      if (idx == 0) line += 'checked';
+    }
+    line += '>';
+    line += '</label></td>';
+    line += '</tr>';
+    table += line;
+  })
+  table += '</table>';
+  choices.innerHTML = table;
+  return replayList.length;
+}
+
+const updateReplayList = async () => {
+  const replayNum = document.getElementsByName('replay-num')[0].checked ? 1 : 2;
+  const choicesMine = document.getElementById('choices-mine');
+  const choicesModel = document.getElementById('choices-model');
+  const lenMine = await setChoices(choicesMine, true);
+  const lenModel = await setChoices(choicesModel, false);
+  if (replayNum == 1) {
+    document.getElementById('replay').disabled = (lenMine == 0 && lenModel == 0);
+  } else {
+    document.getElementById('replay').disabled = (lenMine == 0 || lenModel == 0);
+  }
+}
+updateReplayList();
+
+</script>
+
+</body> </html>
