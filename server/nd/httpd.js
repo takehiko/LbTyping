@@ -240,6 +240,14 @@ const server = app.listen(sv_settings.port, () => {
                 }
             })
         }
+
+        const getResponse2 = (sid, qid) => {
+            const q = {
+                text: "SELECT * FROM response WHERE response.student_id = $1 AND response.question_id = $2 ORDER BY response.response_id DESC",
+                values: [sid, qid]
+            }
+            doQuery(q, r => res.end(JSON.stringify(r.rows)))
+        }
     
         const getCommentary1 = (rid) => {
             const q = {
@@ -377,6 +385,22 @@ const server = app.listen(sv_settings.port, () => {
             })
         }
 
+        const getModelResponse = (qid) => {
+            const q = {
+                text: "SELECT * FROM response WHERE question_id = $1 AND EXISTS(SELECT * FROM model WHERE model.response_id = response.response_id) ORDER BY response_id DESC",
+                values: [qid]
+            }
+            doQuery(q, r => res.end(JSON.stringify(r.rows)))
+        }
+
+        const addModel = (rid) => {
+            const q = {
+                text: 'INSERT INTO model(response_id) VALUES($1)',
+                values: [rid]
+            }
+            doQuery(q, r => res.end(JSON.stringify({"ok":1})))
+        }
+
         const u = Url.parse(req.url, true)
         if (u.pathname == '' || u.pathname == '/' || u.pathname == '/1') {
             res.writeHead(200, {'Content-Type': 'text/plain; charset=UTF-8'})
@@ -414,11 +438,27 @@ const server = app.listen(sv_settings.port, () => {
                 const Fs = require('fs')
                 const html = Fs.readFileSync("user/commentary.html")
                 res.end(html)
-            } else if (u.pathname == "/axios.min.js") {
+            } else if (u.pathname == "/replay.html") {
                 const Fs = require('fs')
-                const html = Fs.readFileSync("user/axios.min.js")
+                const html = Fs.readFileSync("user/replay.html")
                 res.end(html)
-                /* 他のhtmlファイルを読み出したい場合はその都度else ifを書く */
+            } else if (u.pathname == "/replay2.html") {
+                const Fs = require('fs')
+                const html = Fs.readFileSync("user/replay2.html")
+                res.end(html)
+            } else if (u.pathname == "/replay-q-choice.html") {
+                const Fs = require('fs')
+                const html = Fs.readFileSync("user/replay-q-choice.html")
+                res.end(html)
+            } else if (u.pathname == "/replay-choice.html") {
+                const Fs = require('fs')
+                const html = Fs.readFileSync("user/replay-choice.html")
+                res.end(html)
+        } else if (u.pathname == "/axios.min.js") {
+            const Fs = require('fs')
+            const html = Fs.readFileSync("user/axios.min.js")
+            res.end(html)
+            /* 他のhtmlファイルを読み出したい場合はその都度else ifを書く */
             } else {
                 res.end("<body>sorry</body>")
             }
@@ -446,6 +486,12 @@ const server = app.listen(sv_settings.port, () => {
                 showHistory(u.query.sid)
             } else if (u.pathname == '/getr' && (u.query.id || u.query.rid)) {
                 getResponse(u.query.rid ? u.query.rid : u.query.id)
+            } else if (u.pathname == '/getr2' && (u.query.sid && u.query.qid)) {
+                getResponse2(u.query.sid, u.query.qid)
+            } else if (u.pathname == '/getmr' && u.query.qid) {
+                getModelResponse(u.query.qid)
+            } else if (u.pathname == '/addm' && u.query.rid) {
+                addModel(u.query.rid)
             } else if (u.pathname == '/getc1' && (u.query.id || u.query.rid)) {
                 getCommentary1(u.query.rid ? u.query.rid : u.query.id)
             } else if (u.pathname == '/getc2' && (u.query.id || u.query.rid)) {

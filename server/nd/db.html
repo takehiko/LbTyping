@@ -26,6 +26,8 @@ note = <input type="text" name="note" id="note" size="20">
 <hr>
 <div id="result"></div>
 <hr>
+model_response_id = <input type="text" id="model-rid" size="10">
+<input type="button" value="add model" onclick="addModel()">
 <h2>使い方など</h2>
 <ul>
   <li>「all question」または「all response」のボタンを押すと、データベースにアクセスし、テーブルの内容を、JSON形式で表示します。
@@ -36,6 +38,7 @@ note = <input type="text" name="note" id="note" size="20">
   <li>student_idの値をセットしてから、「question_id =」の右に値を入力して、「start」ボタンを押すと、responseテーブルに対して挿入（解答開始）を行います。
   <li>「response_id =」と「miss =」の右にそれぞれ値を入力し、「end」ボタンを押すと、responseテーブルの更新（解答終了）を行います。
   <li>「clear」ボタンを押すと、結果表示を消去します。
+  <li>「model_response_id =」の右に値を入力し、「add model」ボタンを押すと、モデルのresponse_idを管理するテーブルに新たなレコードを挿入します。
 </ul>
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -49,6 +52,7 @@ const qid_id = 'qid';
 const rid_id = 'rid';
 const miss_id = 'miss';
 const note_id = 'note';
+const model_rid_id = 'model-rid';
 let null_string = '&nbsp;'
 const flag_show_result = true;
 // オリジンの変更
@@ -242,6 +246,14 @@ const showHistoryByStudent = async () => {
 
 // resultを消去する
 const clearResult = () => { document.getElementById('result').innerHTML = '' };
+
+// 手本のタイピングを追加する
+const addModel = async () => { 
+  const rid = document.getElementById(model_rid_id).value;
+  // if (!rid.match(/^\d+$/)) return;
+  await query('/addm?rid=' + rid);
+  if (res_data.error) alert("モデルを追加できませんでした。");
+};
 
 // student_idに基づき設定する
 const setsid = () => {
