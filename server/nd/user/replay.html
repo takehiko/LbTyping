@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>プログラミングを学ぶ - Replay</title>
+<style type="text/css">
+.title {
+  font-family: serif;
+  font-size: 70px;
+}
+.title2 {
+  font-family: serif;
+  font-size: 50px;
+}
+div {
+   margin: 0 auto;
+   width: 900px;
+}
+h2 {
+  font-size: 40px;
+  font-family: Lucida Grande;
+}
+h3 {
+  font-size: 40px;
+  font-family: Lucida Grande;
+}
+
+.open1 {
+  float:right;
+}
+#commentary1 {
+  float:right;
+}
+
+textarea {
+  width:100%;
+  height:300px;
+  resize:vertical;
+  font-size: 80px;
+}
+.typed {color:navy; font-weight:bold}
+.misstyped {color:red}
+.untyped {color:darkgray}
+.backspace {color:red}
+</style>
+</head>
+<body>
+<div style="font-size:40px; top: 5px">リプレイ</div>
+<div id = "f" class="title2" style="font-size:40px; top: 5px"></div>
+<div style="font-size:20px">
+  <span style="font-size: 24px">タイム</span>
+  <span class="cnter">
+    【 <span id = "cnter_m">00</span> : <span id = "cnter_s">00.000</span> 】
+  </span>
+  <span id = "cnter_err" style = "display:none">エラー</span>
+  <input type="button" id="start" value="スタート" onclick="OnButtonClick();"/>
+</div>
+<h2 class="problem1"></h2>
+
+<div id="typing" style="padding: 18px; margin-bottom: 10px; border: 1px solid #333333; position: relative; left: 0px; top: -20px; font-family: Courier New; font-size: 28px; ">
+<span id = "a" class= "typed"></span><span id = "c" class= "misstyped"></span><span id = "b" class= "untyped"></span>
+<div id = "e" class= "backspace"></div>
+<p id = "d" class= "clear" style="font-family: Lucida Grande"></p>
+</div>
+
+<p style="position: relative; left: 250px; top: 70px"><a href="top.html">トップ画面へ</a></p>
+<p style="position: relative; left: 250px; top: 70px"><a href="replay-q-choice.html">リプレイ問題選択画面へ</a></p>
+<br>
+
+<script src="axios.min.js"></script>
+<script type="text/javascript">
+
+// グローバル変数（いくつかの関数内で参照・更新する）
+let textList = "";
+let e_untyped;
+let e_typed = "";
+let q_name;
+let title = document.getElementById("f");
+let elem_untyped = document.getElementById("b");
+let elem_typed = document.getElementById("a");
+let miss_typed = document.getElementById("c");
+let miss_a = "";
+let clear = document.getElementById("d");
+let backspace = document.getElementById("e");
+let start = document.getElementById("start");
+let cnter = document.getElementById("cnter");
+let cnter_m = document.getElementById("cnter_m");
+let cnter_s = document.getElementById("cnter_s");
+let cnter_err = document.getElementById("cnter_err");
+let miss_cnt = 0;
+let counter_interval_id=null;
+let startAt;
+let finishAt;
+let diffTime;　// 単位は秒
+let res_data = null;
+let qid;
+let sid;
+let rid;
+let note;
+
+// pathに基づきサーバに問い合わせる
+const origin = location.origin;
+const path_base = location.pathname.replace(/\/[^\/]*$/,"")
+const query = async (path) => {
+  let res = await axios.get(origin + path_base + path);
+  res_data = res.data;
+}
+
+// response_idに基づき解答状況を獲得する
+const getR = async (rid) => {
+  await query('/getr?id=' + rid);
+}
+
+// question_idに基づき問題を獲得する
+const getQ = async (qid) => {
+  await query('/getq?id=' + qid);
+}
+
+const get_question = async() => {
+  rid = location.search.replace(/\?rid=/,"")
+  await getR(rid)
+  qid = res_data.question_id
+  note = res_data.note
+  startAt = Date.parse(res_data.start_at)
+  finishAt = Date.parse(res_data.finish_at)
+  diffTime = (finishAt - startAt) / 1000
+  await getQ(qid)
+  q_name = res_data.name
+  title.innerHTML = q_name
+  textList = res_data.type_content.replace(/\\\\/g, "￥").split(/\\n/).map(s => s.replace(/￥/g, "\\"))
+  e_untyped = textList.join("\n")
+  elem_untyped.innerHTML = e_untyped.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
+  elem_untyped.innerHTML = elem_untyped.innerText.replace(/(\S)/g, "<span>$&</span>").replace(/\n/g,"<br>");
+}
+
+const startCounter = async () => {
+  const countUp = () => {
+    let cnt_m = parseInt(cnter_m.innerText)
+    let cnt_s = parseFloat(cnter_s.innerText)
+    cnt_s = Math.floor(cnt_s * 100) / 100.0 // 少数第3位を除去
+    cnt_s += 0.01
+    if (parseInt(cnt_s) == 60) {
+      cnt_m++
+      cnt_s = 0
+    }
+    let sum = cnt_m * 60 + cnt_s
+    if (cnt_m >= 100) {
+      cnter.style.display = "none"
+      cnter_err.style.display = ""
+      stopCounter()
+      return
+    }
+    if (sum >= diffTime) {
+      let diffM = Math.floor(diffTime / 60)
+      let diffS = diffTime - diffM * 60
+      cnter_m.innerText = ('00' + diffM).slice(-2)
+      cnter_s.innerText = ('00.000' + diffS.toFixed(3)).slice(-6)
+      stopCounter()
+      return
+    }
+    cnter_m.innerText = ('00' + cnt_m).slice(-2)
+    let s_end = parseInt(cnter_s.innerText.slice(-1)) // 秒の末尾(小数第3位)
+    s_end = (s_end + 3) % 10
+    cnter_s.innerText = ('00.00' + cnt_s.toFixed(2)).slice(-5) + s_end
+  }
+  counter_interval_id = setInterval(countUp, 10);
+  replay()
+}
+
+const stopCounter = () => {
+  clearInterval(counter_interval_id)
+  counter_interval_id = null
+}
+
+const replay = async () => {
+  const times = note.split(';').map(s => {t = s.split(','); return [String.fromCharCode(parseInt(t[0].substring(0,2), 16)) + (t[0].length > 2 ? t[0].substring(2) : ''), parseFloat(t[1])]})
+
+  const type = () => {
+    e_typed = e_typed + e_untyped[0]
+    e_untyped = e_untyped.substring(1,e_untyped.Length)
+    elem_untyped.innerHTML = e_untyped.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;')
+    elem_untyped.innerHTML = elem_untyped.innerText.replace(/(\S)/g, "<span>$&</span>").replace(/\n/g,"<br>");
+    elem_typed.innerHTML = e_typed.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;')
+  }
+
+  const missType = (key) => {
+    miss_a += key
+    miss_typed.innerHTML = miss_a
+    miss_cnt++
+    backspace.innerHTML = `backspaceを${miss_cnt}回押してください`;
+  }
+
+  const sleep = async (time) => {
+    return new Promise((resolve) => {
+      setTimeout(() => { resolve(); }, time)
+    })
+  }
+
+  for (const [char, time] of times) {
+    while(e_untyped[0] == '\n' || e_untyped[0] == ' ') type()
+    await sleep(time * 1000)
+    if (char == 'RET' || char == 'SPC') {
+    } else if (char == 'BS') {
+      if (miss_cnt > 0) {
+        miss_a = miss_a.slice(0, -1)
+        miss_typed.innerHTML = miss_a
+        miss_cnt--
+        if (miss_cnt == 0) {
+          backspace.innerHTML = ""
+        } else {
+          backspace.innerHTML = `backspaceを${miss_cnt}回押してください`
+        }
+      }
+    } else if (char.length == 1) {
+      type()
+    } else {
+      missType(char[0])
+    }
+  }
+  stopCounter()
+  clear.innerHTML = "Complete!!"
+}
+
+const OnButtonClick = () => {
+  start.disabled = true;
+  startCounter();
+}
+
+get_question();
+
+</script>
+
+</body>
+</html>
