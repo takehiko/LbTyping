@@ -310,6 +310,7 @@ const register = async() => {
   let isWhiteSpaceAtbeginningOfLine = false;
 
   source = endLineDeteler(source);
+  comment = endLineDeteler(comment);
   [source,rowSelectErrorFlag] = rowSelect(source);
   count = counter(source);
 
