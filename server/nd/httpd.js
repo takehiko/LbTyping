@@ -145,27 +145,20 @@ const server = app.listen(sv_settings.port, () => {
         }
     
         const startResponse = async (qid, sid) => {
-            const q1 = {
-                text: 'INSERT INTO response(student_id,question_id) VALUES($1,$2)',
+            const q = {
+                text: 'INSERT INTO response(student_id,question_id) VALUES($1,$2) RETURNING response_id AS rid',
                 values: [sid, qid]
-            }
-            const q2 = {
-                text: 'SELECT MAX(response_id) as rid FROM response'
             }
             let result_json = '{"rid":-1}';
             const client = initClient()
             await client.connect()
     
             try {
-            await client.query("begin")
-            await client.query(q1)
-            await client.query(q2)
+            await client.query(q)
                     .then(r => {
                         result_json = JSON.stringify({"rid":r.rows[0].rid})
                     })
-            await client.query("commit")
             } catch (e) {
-            await client.query('ROLLBACK')
             throw e
             } finally {
             client.end()
