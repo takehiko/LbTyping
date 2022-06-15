@@ -11,9 +11,9 @@ RUN npm install pg \
     && npm install xlsx
 
 RUN mkdir user srcimg response register
-COPY ["httpd.js", "db.html", "/root/"]
-COPY ["user/choice.html", "user/result.html", "user/top.html", "user/typing.html", "user/commentary.html", "/root/user/"]
-COPY ["register/register.html","/root/register"]
 ADD ["https://unpkg.com/axios/dist/axios.min.js", "/root/user/axios.min.js"]
+COPY ["httpd.js", "db.html", "/root/"]
+COPY ["user/choice.html", "user/result.html", "user/top.html", "user/typing.html", "user/commentary.html", "user/performance.html", "/root/user/"]
+COPY ["register/register.html","/root/register"]
 
 CMD ["nodemon", "httpd.js"]

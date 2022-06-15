@@ -43,6 +43,7 @@ table tr:nth-child(odd) {
 
 <div id="result" style="font-size: 20px; position: relative; left: 100px; top: 20px"></div>
 <div id="caution" style="font-size: 20px; width: 600px; position: relative; margin-top: 50px; border: medium solid #c99; padding: 10px; background-color: #fffff4; display: none"></div>
+<button type="button" id="c_page" onclick="location.href='performance.html'" style="font-size: 30px; width: 300px; height: 100px; position: relative; top: 50px; display: inline-block; left: 200px; margin: 0 auto">実績確認</button>
 
 <script src="axios.min.js"></script>
 <script>
@@ -51,7 +52,7 @@ let sid = null;
 let res_data = null;
 const flag_show_resdata = false; // res.dataを表示させるなら真(デバッグ用)
 const flag_show_by_table = true; // 問題選択をテーブルで表示させるなら真
-const flag_show_caution = false; // 学籍番号の確認メッセージを表示させるなら真
+const flag_show_caution = true; // 学籍番号の確認メッセージを表示させるなら真
 
 // pathに基づきサーバに問い合わせる
 const origin = location.origin;

@@ -407,6 +407,10 @@ const server = app.listen(sv_settings.port, () => {
                 const Fs = require('fs')
                 const html = Fs.readFileSync("user/commentary.html")
                 res.end(html)
+            } else if (u.pathname == "/performance.html") {
+                const Fs = require('fs')
+                const html = Fs.readFileSync("user/performance.html")
+                res.end(html)
             } else if (u.pathname == "/axios.min.js") {
                 const Fs = require('fs')
                 const html = Fs.readFileSync("user/axios.min.js")
