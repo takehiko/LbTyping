@@ -24,3 +24,11 @@ CREATE TABLE response (
    FOREIGN KEY (question_id)
    REFERENCES  question (question_id)
 );
+
+CREATE TABLE model (
+    response_id int NOT NULL,
+
+    PRIMARY KEY (response_id),
+    FOREIGN KEY (response_id)
+    REFERENCES  response (response_id)
+);

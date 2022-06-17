@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="0" />
+<title>プログラミングを学ぶ - Replay (1)</title>
+<style type="text/css">
+div {
+   margin: 0 auto;
+   width: 900px;
+}
+.header{
+  text-align:center;
+  background-color: #bdf7f1;
+  height:50px;
+  width:1500px;
+  font-size: 40px;
+}
+table {
+  border-collapse: collapse;
+}
+table td {
+  border: 1px solid #d9ebe2;
+  padding: 8px;
+}
+table tr:nth-child(odd) {
+  background: #d9ebe2;
+}
+</style>
+</head>
+<body>
+<div style="font-size: 32px; position: relative; left: 150px; top: 10px">リプレイ問題選択</div>
+<div style="position: relative; left: 150px; top: 30px">
+  リプレイ機能とは、自分や手本となる人のタイピングを画面上で再現する機能です。
+  <br>自分のタイピングの特徴を把握し、または手本の優れたタイピングを参考にして、
+  <br>プログラムの理解に役立ててください。
+</div>
+<div style="font-size: 24px; position: relative; left: 150px; top: 50px">問題を選択してください</div>
+<div style="position: relative; left: 150px; top: 60px">
+  <label><input type="checkbox" id="checkbox" onclick="showQuestions(!event.target.checked);">手本が登録済みの問題のみ表示</label>
+</div>
+<div id="result" style="font-size: 20px; position: relative; left: 150px; top: 70px"></div>
+<div style="position: relative; left: 150px; top: 80px; margin-bottom: 100px"><a href="top.html">トップ画面へ</a></div>
+
+<script src="axios.min.js"></script>
+<script>
+// グローバル変数（いくつかの関数内で参照・更新する）
+let sid = null;
+let res_data = null;
+
+// pathに基づきサーバに問い合わせる
+const origin = location.origin;
+const path_base = location.pathname.replace(/\/[^\/]*$/,"")
+const query = async (path) => {
+  let res = await axios.get(origin + path_base + path);
+  res_data = res.data;
+}
+
+// res_dataに基づきすべての問題（の一部の属性）を表形式で表示する
+const showQuestionForChoice = () => {
+  const a = (res_data instanceof Array) ? res_data : [res_data];
+  if (a.forEach) {
+    let table = '<table border="1">';
+    a.forEach((s) => {
+      const sname = s.name.replace(/[&'"<>]/g, function(match) {
+        return { '&': '&amp;', "'": '&#039;', '"': '&quot;',
+        '<': '&lt;', '>': '&gt;' }[match];
+      });
+      let line = '<tr>';
+      line += `<td>${sname}</td>`;
+      line += `<td><button onclick="location.href='replay-c.html?qid=${s.question_id}'">選ぶ</button></td>`
+      line += '</tr>';
+      table += line;
+    });
+    table += '</table>'
+    document.getElementById('result').innerHTML = table;
+  }
+}
+
+// 問題を表示する
+const showQuestions = async (all = true) => {
+  await query(`/getrqs?all=${all}`);
+  showQuestionForChoice();
+}
+showQuestions();
+
+</script>
+
+</body> </html>

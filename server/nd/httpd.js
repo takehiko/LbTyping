@@ -93,7 +93,7 @@ const server = app.listen(sv_settings.port, () => {
                 return res.end(JSON.stringify(array));
             })
         }
-    
+
         const getQuestion = (id) => {
             const q = {
                 text: 'select question_id,name,Type_content,count,difficulty from question where question_id=$1',
@@ -107,7 +107,7 @@ const server = app.listen(sv_settings.port, () => {
                 }
             })
         }
-    
+
         const getQuestion2 = (id) => {
             const q = {
                 text: 'select * from question where question_id=$1',
@@ -121,21 +121,21 @@ const server = app.listen(sv_settings.port, () => {
                 }
             })
         }
-    
+
         const showTable = (tab) => {
             const q = {
                 text: `select * from ${tab}`
             }
             doQuery(q, r => res.end(JSON.stringify(r.rows)))
         }
-    
+
         const showTableSorted = (tab, key) => {
             const q = {
                 text: `select * from ${tab} order by ${key}`
             }
             doQuery(q, r => res.end(JSON.stringify(r.rows)))
         }
-    
+
         const showTableBySid = (sid) => {
             const q = {
                 text: 'select q.question_id as question_id,name,(select count(*) from response where q.question_id=response.question_id and student_id=$1 and finish_at is not null) as cnt from question q order by q.question_id;',
@@ -143,7 +143,7 @@ const server = app.listen(sv_settings.port, () => {
             }
             doQuery(q, r => res.end(JSON.stringify(r.rows)))
         }
-    
+
         const startResponse = async (qid, sid) => {
             const q = {
                 text: 'INSERT INTO response(student_id,question_id) VALUES($1,$2) RETURNING response_id AS rid',
@@ -152,7 +152,7 @@ const server = app.listen(sv_settings.port, () => {
             let result_json = '{"rid":-1}';
             const client = initClient()
             await client.connect()
-    
+
             try {
             await client.query(q)
                     .then(r => {
@@ -163,10 +163,10 @@ const server = app.listen(sv_settings.port, () => {
             } finally {
             client.end()
             }
-    
+
             res.end(result_json)
         }
-    
+
         const endResponseOld = (id, miss) => {
             const q = {
                 text: 'update response set finish_at=current_timestamp, miss_count=$1 where response_id=$2',
@@ -176,7 +176,7 @@ const server = app.listen(sv_settings.port, () => {
                 res.end(JSON.stringify({"rid":id, "miss":miss}))
             })
         }
-    
+
         const endResponse = async (id, miss, note) => {
             note = decodeURIComponent(note || '');
             const q1 = {
@@ -190,7 +190,7 @@ const server = app.listen(sv_settings.port, () => {
             let result_json = '{"rid":-1}';
             const client = initClient()
             await client.connect()
-    
+
             try {
             await client.query(q1)
             await client.query(q2)
@@ -202,10 +202,10 @@ const server = app.listen(sv_settings.port, () => {
             } finally {
             client.end()
             }
-    
+
             res.end(result_json)
         }
-    
+
         const showResponse = (sid) => {
             const q = {
                 text: "select * from response where student_id=$1",
@@ -219,7 +219,7 @@ const server = app.listen(sv_settings.port, () => {
                 }
             })
         }
-    
+
         const getResponse = (rid) => {
             const q = {
                 text: "select response_id,student_id,response.question_id as question_id,start_at,finish_at,miss_count,extract(epoch from (finish_at-start_at)) as time,note,name from response,question where question.question_id=response.question_id and response_id=$1",
@@ -233,7 +233,15 @@ const server = app.listen(sv_settings.port, () => {
                 }
             })
         }
-    
+
+        const getResponse2 = (sid, qid) => {
+            const q = {
+                text: "SELECT * FROM response WHERE response.student_id = $1 AND response.question_id = $2 ORDER BY response.response_id DESC",
+                values: [sid, qid]
+            }
+            doQuery(q, r => res.end(JSON.stringify(r.rows)))
+        }
+
         const getCommentary1 = (rid) => {
             const q = {
                 text: "select question.question_id as qid,commentary,url from response,question where response_id=$1 and response.question_id=question.question_id",
@@ -247,7 +255,7 @@ const server = app.listen(sv_settings.port, () => {
                 }
             })
         }
-    
+
         const getCommentary2 = (rid) => {
             const q = {
                 text: "select count(*) as trial from response where student_id=(select student_id from response where response_id=$1) and question_id=(select question_id from response where response_id=$2)",
@@ -261,7 +269,7 @@ const server = app.listen(sv_settings.port, () => {
                 }
             })
         }
-    
+
         const showHistory = (sid) => {
             const q = {
                 text: "select question_id,count(*) as count,min(miss_count) as miss,min(extract(epoch from (finish_at-start_at))) as time,max(finish_at) as last from response where student_id=$1 and finish_at is not null group by question_id order by question_id",
@@ -275,7 +283,7 @@ const server = app.listen(sv_settings.port, () => {
                 }
             })
         }
-    
+
         const getValue = (id) => {
             const q = {
                 text: 'select val from ' + tab_read + ' where id=$1',
@@ -289,7 +297,7 @@ const server = app.listen(sv_settings.port, () => {
                 }
             })
         }
-    
+
         const addValue = (val) => {
             const q = {
                 text: 'insert into ' + tab_write + '(val) values($1)',
@@ -363,11 +371,42 @@ const server = app.listen(sv_settings.port, () => {
                 sheet['!cols'] = cols
                 XLSX.utils.book_append_sheet(book, sheet)
                 XLSX.writeFile(book, path)
-                
+
                 const Fs = require('fs')
                 const file = Fs.readFileSync(path)
                 res.end(file)
             })
+        }
+
+        const getModelResponse = (qid) => {
+            const q = {
+                text: "SELECT * FROM response WHERE question_id = $1 AND EXISTS(SELECT * FROM model WHERE model.response_id = response.response_id) ORDER BY response_id DESC",
+                values: [qid]
+            }
+            doQuery(q, r => res.end(JSON.stringify(r.rows)))
+        }
+
+        const addModel = (rid) => {
+            const q = {
+                text: 'INSERT INTO model(response_id) VALUES($1)',
+                values: [rid]
+            }
+            doQuery(q, r => res.end(JSON.stringify({"ok":1})))
+        }
+
+        const getReplayQuestions = (all) => {
+            if (all) {
+                showTableSorted('question','question_id');
+                return;
+            }
+            const q = {
+                text: `SELECT * FROM question q WHERE EXISTS(
+                    SELECT * FROM (
+                        SELECT * FROM response, model WHERE response.response_id = model.response_id
+                    ) r WHERE q.question_id = r.question_id
+                ) ORDER BY question_id`
+            }
+            doQuery(q, r => res.end(JSON.stringify(r.rows)))
         }
 
         const u = Url.parse(req.url, true)
@@ -411,6 +450,22 @@ const server = app.listen(sv_settings.port, () => {
                 const Fs = require('fs')
                 const html = Fs.readFileSync("user/performance.html")
                 res.end(html)
+            } else if (u.pathname == "/replay-q.html") {
+                const Fs = require('fs')
+                const html = Fs.readFileSync("user/replay-q.html")
+                res.end(html)
+            } else if (u.pathname == "/replay-c.html") {
+                const Fs = require('fs')
+                const html = Fs.readFileSync("user/replay-c.html")
+                res.end(html)
+            } else if (u.pathname == "/replay1.html") {
+                const Fs = require('fs')
+                const html = Fs.readFileSync("user/replay1.html")
+                res.end(html)
+            } else if (u.pathname == "/replay2.html") {
+                const Fs = require('fs')
+                const html = Fs.readFileSync("user/replay2.html")
+                res.end(html)
             } else if (u.pathname == "/axios.min.js") {
                 const Fs = require('fs')
                 const html = Fs.readFileSync("user/axios.min.js")
@@ -427,6 +482,8 @@ const server = app.listen(sv_settings.port, () => {
                 getQuestion(u.query.qid ? u.query.qid : u.query.id)
             } else if (u.pathname == '/getq2' && (u.query.id || u.query.qid)) {
                 getQuestion2(u.query.qid ? u.query.qid : u.query.id)
+            } else if (u.pathname == '/getrqs' && (u.query.all !== undefined)) {
+                getReplayQuestions(u.query.all === 'true')
             } else if (u.pathname == '/startr' && u.query.qid && u.query.sid) {
                 startResponse(u.query.qid, u.query.sid)
             } else if (u.pathname == '/endr' && u.query.id && u.query.miss) {
@@ -443,6 +500,12 @@ const server = app.listen(sv_settings.port, () => {
                 showHistory(u.query.sid)
             } else if (u.pathname == '/getr' && (u.query.id || u.query.rid)) {
                 getResponse(u.query.rid ? u.query.rid : u.query.id)
+            } else if (u.pathname == '/getr2' && (u.query.sid && u.query.qid)) {
+                getResponse2(u.query.sid, u.query.qid)
+            } else if (u.pathname == '/getmr' && u.query.qid) {
+                getModelResponse(u.query.qid)
+            } else if (u.pathname == '/addm' && u.query.rid) {
+                addModel(u.query.rid)
             } else if (u.pathname == '/getc1' && (u.query.id || u.query.rid)) {
                 getCommentary1(u.query.rid ? u.query.rid : u.query.id)
             } else if (u.pathname == '/getc2' && (u.query.id || u.query.rid)) {

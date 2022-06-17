@@ -53,6 +53,7 @@ Webアプリケーションです。数行のプログラムコードを打ち�
 </p>
 
 <p id="msgsid2" style="position: relative; left: 400px; top: 70px"><a href="choice.html">問題選択画面へ</a></p>
+<p id="msgsid3" style="position: relative; left: 400px; top: 70px"><a href="replay-q.html">リプレイ問題選択画面へ</a></p>
 
 <script>
 // グローバル変数（いくつかの関数内で参照・更新する）
@@ -69,6 +70,7 @@ const setsid = () => {
     sid = null;
     document.getElementById("msgsid1").removeAttribute("hidden");
     document.getElementById("msgsid2").setAttribute("hidden", "hidden");
+    document.getElementById("msgsid3").setAttribute("hidden", "hidden");
     alert("おそれいりますが、\n学籍番号は数字のみで記入してください。");
     return;
   }
@@ -89,9 +91,11 @@ const getsid = () => {
     document.getElementById(sid_id).value = sid;
     document.getElementById("msgsid1").setAttribute("hidden", "hidden");
     document.getElementById("msgsid2").removeAttribute("hidden");
+    document.getElementById("msgsid3").removeAttribute("hidden");
   } else {
     document.getElementById("msgsid1").removeAttribute("hidden");
     document.getElementById("msgsid2").setAttribute("hidden", "hidden");
+    document.getElementById("msgsid3").setAttribute("hidden", "hidden");
   }
   return sid;
 }
