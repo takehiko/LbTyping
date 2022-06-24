@@ -109,8 +109,8 @@ input:hover {
 </div>
 <p id = "g" class= "log"></p>
 
-<button type="button" id="r_page" name="name" value="value" onclick="confirmation()" style="font-size: 30px;  width:200px; height:100px; position: relative; left: 750px; top: -10px">あきらめる</button>
-<button type="button" id="retire" name="name" value="value" onclick="location.href= `result.html?id=${rid}`" style="font-size: 30px;  width:250px; height:100px; position: relative; left: 750px; top: -10px; display:none;">結果画面へ</button>
+<button type="button" id="retire" name="name" value="value" onclick="confirmation()" style="font-size: 30px;  width:200px; height:100px; position: relative; left: 750px; top: -10px">あきらめる</button>
+<button type="button" id="r_page" name="name" value="value" onclick="location.href= `result.html?id=${rid}`" style="font-size: 30px;  width:250px; height:100px; position: relative; left: 750px; top: -10px; display:none;">結果画面へ</button>
 
 <script src="axios.min.js"></script>
 <script type="text/javascript">
@@ -127,8 +127,8 @@ let start_button = document.getElementById("start");
 let miss_a = "";
 let clear = document.getElementById("d");
 let backspace = document.getElementById("e");
-let elem1 = document.getElementById("r_page");
-let elem2 = document.getElementById("retire");
+let elem1 = document.getElementById("retire");
+let elem2 = document.getElementById("r_page");
 let n_page = document.getElementById("g");
 let log = document.getElementById("g");
 let problem;
@@ -155,6 +155,7 @@ let miss;
 let time_a;
 
 elem1.style.display = "none";
+start_button.focus();
 
 // 学籍番号をクッキーから読み出す
 // 設定されていないときは，トップページに戻る確認画面を表示する
@@ -196,7 +197,7 @@ const get_question_id=async() =>{
     q_name = res_data.name;
     title.innerHTML = q_name;
     textList = res_data.type_content.replace(/\\\\/g, "￥").split(/\\n/).map(s => s.replace(/￥/g, "\\"));
-    document.onkeydown = typeGame;
+    // document.onkeydown = typeGame;
   }
 }
 
@@ -251,6 +252,7 @@ function start_timer() {
       changeColor();
       time_a = performance.now()
       startR();
+      document.onkeydown = typeGame;
     }
   }
 }
@@ -301,10 +303,12 @@ function typeGame(evt) {
         e_untyped = e_untyped.substring(1,e_untyped.Length);
         if (!e_untyped) {
           clear.innerHTML = "Complete!!";
+          document.onkeydown = null;
           elem_untyped.innerHTML = e_untyped.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
           elem_typed.innerHTML = e_typed.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
           elem1.style.display = "none";
           elem2.style.display = "";
+          elem2.focus();
           changeColor();
           endR();
         }
