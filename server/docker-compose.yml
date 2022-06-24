@@ -21,6 +21,9 @@ services:
 #    volumes:
 #      - ./pg/data:/var/lib/postgresql/data
   cnnd:
-    build: nd
+    build:
+      context: nd
+      args:
+        - DISPLAY_RANK
     ports:
       - "21337:80"

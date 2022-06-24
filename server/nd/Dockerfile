@@ -17,4 +17,7 @@ COPY ["user/choice.html", "user/result.html", "user/top.html", "user/typing.html
 COPY ["user/replay-q.html", "user/replay-c.html", "user/replay1.html", "user/replay2.html", "/root/user/"]
 COPY ["register/register.html","/root/register"]
 
+ARG DISPLAY_RANK
+RUN sed -ie "s/const flag_display_rank = .*/const flag_display_rank = ${DISPLAY_RANK:-true};/" /root/user/result.html && echo flag_display_rank = ${DISPLAY_RANK:-true} in result.html
+
 CMD ["nodemon", "httpd.js"]
