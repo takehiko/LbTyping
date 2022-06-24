@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>プログラミングを学ぶ - Performance</title>
+<script src="https://www.w3schools.com/lib/w3.js"></script>
+</head>
+<style>
+.child {
+  display: inline;
+}
+
+/* 共通設定 */
+.child {
+  color: #fff;
+  text-align: center;
+  line-height: 100px;
+  width: 100px;
+  height: 100px;
+  background-color: #777;
+}
+
+.sorttbl{
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    display: table;
+}
+.sorttbl tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.sorttbl th:first-child,
+.sorttbl td:first-child{
+    padding-left: 16px;
+}
+.sorttbl td,
+.sorttbl th{
+    padding: 8px 8px;
+    display: table-cell;
+    text-align: left;
+    vertical-align: top;
+}
+.sorttbl th{
+    color: #fff!important;
+    background-color: #616161!important;
+}
+
+/*--- list css ---*/
+
+.sort-btn{
+    border: none;
+    display: inline-block;
+    padding: 8px 16px;
+    vertical-align: middle;
+    overflow: hidden;
+    text-decoration: none;
+    color: #FFFFFF;
+    background-color: #4CAF50;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+ul.sortlist{
+    list-style-type: none;
+}
+ul.sortlist li{
+    padding: 7px;
+    border-bottom: dotted 1px #454545;
+}
+table {
+  border-collapse: collapse;
+}
+.price caption {
+  color: #orange;
+}
+table th, td {
+  border: 1px solid #e3ecf5;
+  padding: 8px;
+}
+table th {
+  border: 1px solid #e3ecf5;
+  color: #fff;
+  background: #1f8ef5;
+}
+table tr:nth-child(odd) {
+  background: #e3ecf5;
+}
+</style>
+<body>
+<h1>実績確認</h1>
+
+<span>あなたの学生番号 </span><span id="si" name="sid"></span><span id="sid" name="sid"></span>
+<div id="today" name="today"></div>
+<form><input type="text" name="sd" id="sd"  size="10"><form><input type="button" value="日付検索" onClick="kensaku()"><input type="button" value="本日の実績を表示" onclick="showResponseByDay()"><input type="button" value="最新の３件" onclick="kouzyun()"><input type="button" value="今までの実績を表示" onclick="showResponseByStudent()"><br>
+
+<hr>
+<div id="result"></div>
+<p>最後までタイプした課題のみを表示しています。<br>たまに表の表示が乱れることがあります。その際には、再読み込みをしてください。</p>
+<hr>
+<button type="button" id="c_page" onclick="location.href= 'choice.html'" style="font-size: 30px;  width:300px; height:100px; position: relative; top: 50px; display: inline-block; left: 200px;margin: 0 auto">問題選択画面へ</button>
+
+<script src="axios.min.js"></script>
+<script>
+// グローバル変数（いくつかの関数内で参照・更新する）
+let sid = null;
+let res_data = null; // query呼び出しで格納
+let hist = null; // setupHist呼び出しで格納
+const origin_id = 'origin'
+const sid_id = 'sid';
+const qid_id = 'qid';
+const rid_id = 'rid';
+const miss_id = 'miss';
+const note_id = 'note';
+let null_string = '&nbsp;'
+const flag_show_resdata = false; // res.dataを表示させるなら真(デバッグ用)
+var mondai = [];
+var u = 0;
+
+// pathに基づきサーバに問い合わせる
+const origin = location.origin;
+const path_base = location.pathname.replace(/\/[^\/]*$/,"")
+const query = async (path) => {
+  let res = await axios.get(origin + path_base + path);
+  res_data = res.data;
+  if (flag_show_resdata) {
+    document.getElementById('result').innerHTML = JSON.stringify(res.data);
+  }
+}
+
+//今日の日付を表示する関数
+const todaytable = () => {
+  var hiduke = new Date(); 
+
+  //年・月・日・曜日を取得する
+  var year = hiduke.getFullYear();
+  var month = hiduke.getMonth() + 1;
+  var week = hiduke.getDay();
+  var day = hiduke.getDate();
+  var yobi= new Array("日", "月", "火", "水", "木", "金", "土");
+  var to=year+'-'+('0'+month).slice(-2)+'-'+('0'+day).slice(-2);
+  document.getElementById('today').innerHTML =to;
+}
+
+// res_dataの値に基づき表を作成するdocument.getElementById('sid').innerHTML='sid';
+// red_dataは，responseテーブルまたはその配列のJavaScriptオブジェクト
+const showResponseTable = () => {
+  clearResult();
+  const a = (res_data instanceof Array) ? res_data : [res_data];
+  var i=0;
+  var narabi = [];
+  let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col" align="right">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  a.forEach((s) => {
+    narabi[i] = [ toshiString(s.finish_at),
+                  tString(s.start_at),
+                  s.question_id,
+                  s.miss_count,
+                  worktimeString(s.start_at, s.finish_at) ];
+    i++;
+  });
+  narabi.sort(function(a, b) {
+    return (a[0] < b[0] ? 1 : -1);
+  });
+  for(var z = 0; z < i; z++) {
+    let line = '<tr class="item">';
+    line += '<td>' + narabi[z][0] + ' ' + narabi[z][1] + '</td>';
+    for(var w = 0; w < u; w++) {
+      if(narabi[z][2]==mondai[w][0]) {
+        line += '<td>' + mondai[w][1] + '</td>';
+      }
+    }
+    line += '<td align="right">' + narabi[z][3] + '</td>';
+    line += '<td>' + narabi[z][4] + '</td>';
+    line += '</tr>';
+    table += line;
+  }
+  table += '<table></div>'
+  document.getElementById('result').innerHTML =table ;
+  if (!narabi[0][2]) {
+    document.getElementById('result').innerHTML = "実績がありませんでした";
+  } else {
+    document.getElementById('result').innerHTML = table;
+  }
+}
+
+// "2019-09-03T13:10:00.000Z"のような文字列(UTC)を
+// "2019年9月3日(火) 22時10分0秒"のような文字列(JST)に変換する
+const dateString = (d) => {
+  if (d == null || d == '') return null_string;
+  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  const date = new Date(d);
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日${daytable[date.getDay()]} ${date.getHours()}時${date.getMinutes()}分${date.getSeconds()}秒`
+}
+
+//時間のみに変更
+const keikaString = (d) => {
+  if (d == null || d == '') return null_string;
+  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  const date = new Date(d);
+  return ` ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+}
+
+//日付表示に変更
+const hiString = (d) => {
+  if (d == null || d == '') return null_string;
+  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  const date = new Date(d);
+  return `${date.getMonth() + 1}月${date.getDate()}日`
+}
+
+//年月日付を表示
+const toshiString = (d) => {
+  if (d == null || d == '') return null_string;
+  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  const date = new Date(d);
+  return `${date.getFullYear()}-${('0'+(date.getMonth() + 1)).slice(-2)}-${('0'+date.getDate()).slice(-2)}`
+}
+
+const timeString = (d) => {
+  if (d == null || d == '') return null_string;
+  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  const date = new Date(d);
+  return ` ${date.getHours()}時${date.getMinutes()}分${date.getSeconds()}秒`
+}
+
+const tString = (d) => {
+  if (d == null || d == '') return null_string;
+  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  const date = new Date(d);
+  return ` ${('0'+date.getHours()).slice(-2)}:${('0'+date.getMinutes()).slice(-2)}:${('0'+date.getSeconds()).slice(-2)}`
+}
+
+// 開始時刻d1と終了時刻d2の経過時間を"4分0秒"のような文字列にする
+const worktimeString = (d1, d2) => {
+  if (d1 == null || d1 == '' || d2 == null || d2 == '') return null_string;
+  const t1 = Date.parse(d1);
+  const t2 = Date.parse(d2);
+  const t12 = t2 - t1;
+  let sec = Math.floor(t12 / 1000);
+  const msec = t12 - sec * 1000;
+  const min = Math.floor(sec / 60);
+  sec -= min * 60
+  return min + '分' + sec + '秒';
+}
+
+// stringをHTMLエスケープして返す
+// https://qiita.com/saekis/items/c2b41cd8940923863791
+const escape_html = (string) => {
+  if (typeof string !== 'string') {
+    return string;
+  }
+  return string.replace(/[&'`"<>]/g, function(match) {
+    return {
+      '&': '&amp;',
+      "'": '&#x27;',
+      '`': '&#x60;',
+      '"': '&quot;',
+      '<': '&lt;',
+      '>': '&gt;',
+    }[match]
+  });
+}
+
+// question_idに基づき問題を獲得する
+const getQ = () => {
+  const id = document.getElementById(qid_id).value;
+  if (id == null || id == '') return;
+  query('/getq?id=' + id);
+}
+
+// question_id, student_idに基づき解答を開始する
+const startR = async () => {
+  const qid = document.getElementById(qid_id).value;
+  const sid = document.getElementById(sid_id).value;
+  if (qid == null || qid == '' || sid == null || sid == '') return;
+  await query(`/startr?qid=${qid}&sid=${sid}`);
+  const sleep = (time) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => { resolve(); }, time);
+    });
+  };
+  await sleep(100);
+  if (flag_show_result) {
+    document.getElementById(rid_id).value = res_data.rid;
+    document.getElementById(miss_id).value = "10";
+  }
+}
+
+// response_id, missに基づき解答を終了する
+const endR = async () => {
+  const id = document.getElementById(rid_id).value;
+  const miss = document.getElementById(miss_id).value;
+  const note = encodeURIComponent(document.getElementById(note_id).value || '');
+  if (id == null || id == '' || miss == null || miss == '') return;
+  await query(`/endr?id=${id}&miss=${miss}&note=${note}`);
+  showResponseTable();
+}
+
+// student_idに基づき解答を表示するResponsebyStudentが押されたら実行
+const showResponseByStudent = async () => {
+  const sid = document.getElementById(sid_id).value;
+  if (sid == null || sid == '') return;
+  await query('/resp?sid=' + sid);
+  showResponseTable();
+}
+
+// resultを消去する
+const clearResult = () => {
+  document.getElementById('result').innerHTML = '';
+};
+
+// student_idに基づき設定する
+const setsid = () => {
+  let sid = document.getElementById(sid_id).value;
+  if (sid == null || sid == '') {
+    sid = 'sid=;max-age=0'
+  }
+  document.cookie = `sid=${sid}`;
+}
+
+// student_idをクッキーから読み出す
+const getsid = () => {
+  let sid = null;
+  document.cookie.split(/; */).forEach((s) => {
+    const v = s.split(/=/);
+    if (v[0] == 'sid') {
+      sid = v[1];
+    }
+  });
+  if (sid) document.getElementById(sid_id).value = sid;
+  return sid;
+}
+getsid();
+
+// question_idに基づき解答結果を取得し、Excel形式で出力する
+const exportInExcelFormat = async () => {
+  let qid = document.getElementById(qid_id).value
+  if (qid == null || qid == '') return
+
+  const origin = document.getElementById('origin').value.replace(/\/$/, '')
+  const path = '/respbyq?qid=' + qid
+  await axios({
+      url: origin + path,
+      method: 'GET',
+      responseType: 'blob',
+  })
+  .then(res => {
+    const url = URL.createObjectURL(new Blob([res.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'response.xlsx')
+    document.body.appendChild(link)
+    link.click()
+    URL.revokeObjectURL(url)
+
+    console.log(res)
+  });
+}
+
+const getsidAndshowQuestion = async () => {
+  document.cookie.split(/; */).forEach((s) => {
+    const v = s.split(/=/);
+    if (v[0] == 'sid') sid = v[1];
+  });
+  if (sid == null) {
+    if (window.confirm('学籍番号を設定していません。トップページに戻りますか？\n（キャンセルを押すと解答がサーバに記録されません。）')) {
+      location.href = 'top.html';
+    }
+  } else {
+    await query('/showsid?sid=' + sid);
+  }
+}
+
+const kyou = () =>{
+  var hi=new Date(); 
+  //年・月・日・曜日を取得する
+  var nen = hi.getFullYear();
+  var tuki = ('0' + (hi.getMonth() + 1)).slice(-2);
+  var niti = ('0' + hi.getDate()).slice(-2);
+  var m = nen + '-' + tuki + '-' + niti;
+  return m;
+}
+
+//今日の結果
+const showResponseByDay = async () => {
+  const sid = document.getElementById(sid_id).value;
+  if (sid == null || sid == '') return;
+  await query('/resp?sid=' + sid);
+  showResponsekyouTable();
+}
+
+const showResponsekyouTable = () => {
+  clearResult()
+  var k = kyou();//今日の日付を格納
+  var i = 0;
+  var h = 0;
+  var narabi = [];
+  const a = (res_data instanceof Array) ? res_data : [res_data];
+
+  let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1" ><tr><th scope="col"">日付<i class="fa fa-sort"></i></th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  a.forEach((s) => {
+    narabi[i]=[toshiString(s.finish_at),tString(s.start_at),s.question_id,s.miss_count,worktimeString(s.start_at, s.finish_at)];
+    i++;
+  });
+  narabi.sort(function(a, b) {
+    return (a[0] < b[0] ? 1 : -1);
+  });
+
+  for(var z = 0; z < i; z++) {
+    if ( narabi[z][0] == k) {
+      h++;
+      let line = '<tr class="item">';
+      line += '<td>' + narabi[z][0] + ' ' + narabi[z][1] + '</td>';
+      for(var w=0;w<u;w++) {
+        if (narabi[z][2] == mondai[w][0]) {
+          line += '<td>' + mondai[w][1] + '</td>';
+        }
+      }
+      line += '<td align="right">' + narabi[z][3] + '</td>';
+      line += '<td>' + narabi[z][4] + '</td>';
+      line += '</tr>';
+      table += line;
+    }
+  }
+
+  //sqlの中。この中に処理を書く
+  table += '<table></div>';
+  document.getElementById('result').innerHTML += table;
+  if(!narabi[0][2]) {
+    document.getElementById('result').innerHTML = "実績がありませんでした";
+  } else if (h < 1) {
+    document.getElementById('result').innerHTML = "条件に一致する実績がありませんでした";
+  } else {
+    document.getElementById('result').innerHTML = table;
+  }
+  //今日の結果表示テーブル終わり
+}
+
+//日付の検索表示
+const kensaku= () => {
+  showResponseBykensaku();
+}
+
+const showResponseBykensaku = async () => {
+  const sid = document.getElementById(sid_id).value;
+  if (sid == null || sid == '') return;
+  await query('/resp?sid=' + sid);
+  showResponsekensakuTable();
+}
+
+//コメントフォームから検索した日付を表示
+const showResponsekensakuTable = () => {
+  clearResult()
+  var v=document.getElementById('sd').value; //コメントフォームの値を格納
+  const a = (res_data instanceof Array) ? res_data : [res_data];
+
+  let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  var i = 0;
+  var narabi = [];
+  var h = 0;
+
+  a.forEach((s) => {
+    narabi[i] = [
+      toshiString(s.finish_at),
+      tString(s.start_at),
+      s.question_id,
+      s.miss_count,
+      worktimeString(s.start_at, s.finish_at)
+    ];
+    i++;
+  });
+
+  narabi.sort(function(a, b) {
+    return (a[0] < b[0] ? 1 : -1);
+  });
+
+  for(var z = 0; z < i; z++) {
+    if(narabi[z][0] == v) {
+      h++;
+      let line = '<tr class="item">';
+      line += '<td>' + narabi[z][0] + ' ' + narabi[z][1] + '</td>';
+      for(var w = 0; w < u; w++) {
+        if(narabi[z][2] == mondai[w][0]) {
+          line += '<td>' + mondai[w][1] + '</td>';
+        }
+      }
+      line += '<td align="right">' + narabi[z][3] + '</td>';
+      line += '<td>' + narabi[z][4] + '</td>';
+      line += '</tr>';
+      table += line;
+    }
+  }
+  //sqlの中。この中に処理を書く
+  table += '<table></div>';
+
+  document.getElementById('result').innerHTML += table;
+  if (!narabi[0][2]) {
+    document.getElementById('result').innerHTML = "実績がありませんでした";
+  } else if (h < 1) {
+    document.getElementById('result').innerHTML = "条件に一致する実績がありませんでした";
+  } else {
+    document.getElementById('result').innerHTML = table;
+  }
+}
+//日付の検索表示テーブルの終わり
+
+//日付を降順に表示するテーブルを作成
+const kouzyun= () => {
+  showResponseBykouzyun();
+}
+
+//sqlを取得
+const showResponseBykouzyun = async () => {
+  const sid = document.getElementById(sid_id).value;
+  if (sid == null || sid == '') return;
+  await query('/resp?sid=' + sid);
+  showResponsekouzyunTable();
+}
+
+//降順のテーブルを表示
+const showResponsekouzyunTable = () => {
+  clearResult()
+  const a = (res_data instanceof Array) ? res_data : [res_data];
+  if (res_data == null) {
+    document.getElementById('result').innerHTML = "実績がありませんでした";
+  } else {
+    let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+    var i = 0;
+    var h = 0;
+    var narabi = [];
+
+    a.forEach((s) => {
+      narabi[i] = [
+        toshiString(s.finish_at),
+        tString(s.start_at),
+        s.question_id,
+        s.miss_count,
+        worktimeString(s.start_at, s.finish_at)
+      ];
+      i++;
+    });//sqlの中。この中に処理を書く
+    narabi.sort(function(a, b) {
+      return (a[0] < b[0] ? 1 : -1);
+    });
+
+    for(var z = 0; z < i; z++) {
+      let line = '<tr class="item">';
+
+      line += '<td>' + narabi[z][0] + ' ' + narabi[z][1] + '</td>';
+      for(var w = 0; w < u; w++) {
+        if (narabi[z][2] == mondai[w][0]) {
+          line += '<td>' + mondai[w][1] + '</td>';
+        }
+      }
+
+      line += '<td align="right">' + narabi[z][3] + '</td>';
+      line += '<td>' + narabi[z][4] + '</td>';
+      line += '</tr>';
+      table += line; 
+      if(z==2) break;
+    } 
+    table += '<table></div>'
+
+    if (!narabi[0][2]) {
+      document.getElementById('result').innerHTML = "実績がありませんでした";
+    } else {
+      document.getElementById('result').innerHTML =table;
+    }
+  }
+}
+//降順表示の終わり
+
+//問題IDと問題名の取得
+const showQuestionForChoice = () => {
+  //clearResult()
+  const a = (res_data instanceof Array) ? res_data : [res_data];
+  if (a.forEach) {
+    let table = '<br><table border="1"><tr><th>question_id</th><th>名前</th><th>difficulty</th></tr>';
+    res_data.forEach((s) => {
+      mondai[u] = [s.question_id, s.name, s.difficulty];
+      u++;
+    });
+    return mondai;
+  }
+}
+
+// すべての問題を表示する
+const showQuestion = async () => {
+  await query('/show?tab=question');
+  showQuestionForChoice();
+} 
+//問題取得の終わり
+
+const showResponseBymon = async () => {
+  const sid = document.getElementById(sid_id).value;
+  if (sid == null || sid == '') return;
+  await query('/resp?sid=' + sid);
+  showResponsemon();
+}
+
+const showResponsemon = () => {
+  clearResult()
+
+  const a = (res_data instanceof Array) ? res_data : [res_data];
+
+  let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  var i = 0;
+  var narabi = [];
+
+  a.forEach((s) => {
+    narabi[i] = [
+      toshiString(s.finish_at),
+      tString(s.start_at),
+      s.question_id,
+      s.miss_count,
+      worktimeString(s.start_at, s.finish_at)
+    ];
+    i++;
+  });//sqlの中。この中に処理を書く
+  narabi.sort(function(a, b) {
+    return (a[0] < b[0] ? 1 : -1);
+  });
+
+  // for(var l=0;l<1000;l++){}
+  for(var z = 0; z < 5; z++) {
+    let line = '<tr class="item">';
+    line += '<td>' + narabi[z][0] + ' ' + narabi[z][1] + '</td>';
+    for(var w = 0; w < u; w++) {
+      if(narabi[z][2] == mondai[w][0]) {
+        line += '<td>' + mondai[w][1] + '</td>';
+      }
+    }
+
+    line += '<td align="right">' + narabi[z][3] + '</td>';
+    line += '<td>' + narabi[z][4] + '</td>';
+    line += '</tr>';
+    table += line; 
+  } 
+  table += '<table></div>'
+  document.getElementById('result').innerHTML = table;
+}
+
+getsid();
+getsidAndshowQuestion();
+showQuestion();
+document.getElementById('sid').innerHTML = sid_id;
+document.getElementById('si').innerHTML = '<span>' + sid + '</span>';
+document.getElementById('sid').innerHTML ="";
+kouzyun();
+//showResponseByStudent();
+todaytable();
+</script>
+
+</body> </html>

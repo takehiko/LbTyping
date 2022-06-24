@@ -1,31 +1,3 @@
-CREATE TABLE question (
-    question_id  SERIAL NOT NULL,
-    name         text     UNIQUE,
-    Type_content text     NOT NULL,
-    count        int      DEFAULT 0,
-    difficulty   VARCHAR(10)     DEFAULT 'NONE',
-    basename     text     DEFAULT '',
-    commentary   text     DEFAULT '',
-    url          text     DEFAULT '',
-
-    PRIMARY KEY (question_id)
-);
-
-CREATE TABLE response (
-   response_id  SERIAL NOT NULL,
-   student_id   int  NOT NULL,
-   question_id  int  NOT NULL,
-   start_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-   finish_at    TIMESTAMP WITH TIME ZONE,
-   miss_count   int  DEFAULT 0,
-   note         TEXT DEFAULT '',
-
-   PRIMARY KEY (response_id),
-   FOREIGN KEY (question_id)
-   REFERENCES  question (question_id)
-
-);
-
 INSERT INTO question(question_id,name,Type_content,count,basename,commentary,url) VALUES
 (500,'No.1 Hello','#include <stdio.h>\nint main(void){\n    printf("Hello\\n");\n}',50,'hello','タイピングの動作確認用のプログラムです。<br>3行目の途中、「H」を大文字できちんとタイプできましたか？','https://paiza.io/projects/e/ky0Xb0eS5Z6_FuPNMDIHzg');
 INSERT INTO question(question_id,name,Type_content,count,basename,commentary,url) VALUES

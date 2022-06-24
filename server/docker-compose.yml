@@ -8,7 +8,12 @@ version: '3'
 
 services:
   cnpg:
-    build: pg
+    build:
+      context: pg
+      args:
+        - KEEP_IP2A2020
+        - KEEP_JAVA
+        - DELETE_IP2A2021
     environment:
       POSTGRES_HOST_AUTH_METHOD: 'trust'
     ports:
@@ -16,6 +21,9 @@ services:
 #    volumes:
 #      - ./pg/data:/var/lib/postgresql/data
   cnnd:
-    build: nd
+    build:
+      context: nd
+      args:
+        - DISPLAY_RANK
     ports:
       - "21337:80"
