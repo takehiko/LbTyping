@@ -25,5 +25,7 @@ services:
       context: nd
       args:
         - DISPLAY_RANK
+        - ENABLE_REPLAY
+        - ENABLE_PERFORMANCE
     ports:
       - "21337:80"
