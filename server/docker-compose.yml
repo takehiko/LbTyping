@@ -27,5 +27,6 @@ services:
         - DISPLAY_RANK
         - ENABLE_REPLAY
         - ENABLE_PERFORMANCE
+        - DISPLAY_RETRY
     ports:
       - "21337:80"
