@@ -57,6 +57,7 @@ let elem_msg2 = document.getElementById("msgsid2");
 let elem_msg3 = document.getElementById("msgsid3");
 let elem_retry = document.getElementById("retry_page");
 const flag_show_result = false;
+const flag_display_retry = false;
 
 // pathに基づきサーバに問い合わせる
 const origin = location.origin;
@@ -107,11 +108,12 @@ const get_response = async() => {
   }
   elem_msg2.innerHTML = commentary;
 
-  // 「もう1回」の表示をしない
-  if (true || trial >= 2) {
+  if (!flag_display_retry || trial >= 2) {
     elem_msg3.style.display = "none";
     elem_retry.style.display = "none";
-  } else if (qid) {
+  } else {
+    elem_msg3.style.display = "block";
+    elem_retry.style.display = "inline-block";
     elem_retry.setAttribute("onclick", `location.href='typing.html?id=${qid}'`)
   }
 }
@@ -159,5 +161,6 @@ const getsidAndshowCommentary = async () => {
   }
 }
 getsidAndshowCommentary();
+document.getElementById("c_page").focus();
 </script>
 </body> </html>

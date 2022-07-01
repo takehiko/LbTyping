@@ -19,5 +19,11 @@ COPY ["register/register.html","/root/register"]
 
 ARG DISPLAY_RANK
 RUN sed -ie "s/const flag_display_rank = .*/const flag_display_rank = ${DISPLAY_RANK:-true};/" /root/user/result.html && echo flag_display_rank = ${DISPLAY_RANK:-true} in result.html
+ARG ENABLE_REPLAY
+RUN sed -ie "s/const flag_enable_replay = .*/const flag_enable_replay = ${ENABLE_REPLAY:-true};/" /root/user/top.html && echo flag_enable_replay = ${ENABLE_REPLAY:-true} in result.html
+ARG ENABLE_PERFORMANCE
+RUN sed -ie "s/const flag_enable_performance = .*/const flag_enable_performance = ${ENABLE_PERFORMANCE:-true};/" /root/user/choice.html && echo flag_enable_performance = ${ENABLE_PERFORMANCE:-true} in choice.html
+ARG DISPLAY_RETRY
+RUN sed -ie "s/const flag_display_retry = .*/const flag_display_retry = ${DISPLAY_RETRY:-false};/" /root/user/commentary.html && echo flag_display_retry = ${DISPLAY_RETRY:-false} in commentary.html
 
 CMD ["nodemon", "httpd.js"]
