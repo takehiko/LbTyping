@@ -10,7 +10,6 @@
 <style type="text/css">
 div {
    margin: 0 auto;
-   width: 900px;
 }
 .header{
   position: relative; 
@@ -18,42 +17,58 @@ div {
   top: 0px;
   background-color: #bdf7f1;
   height:50px;
-  width:1500px;
+  max-width:1500px;
   font-size: 40px;
 }
+
+.header-logo{
+  margin: 0 auto;
+  padding-left:100px;
+}
+
+.wrapper{
+  /* border:1px solid black; */
+  display:block;
+  max-width:1500px;
+  margin:0 auto;
+  padding-left:100px;
+}
+
 </style>
 
 </head>
 <body>
 <div class ="header">
-  <div class="header-logo" style="position: relative; left: 100px; top: 0px">プログラミングを学ぶ</div>
+  <div class="header-logo">プログラミングを学ぶ</div>
 </div>
 
-<p style="position: relative; left: 400px; top: 20px">
-本システムは、「写経型学習（写経型プログラミング）」のための<br>
-Webアプリケーションです。数行のプログラムコードを打ち込むと、<br>
-タイプ時間と誤タイプ数を表示します。<br>
-<!--
-ご利用にあたり、学籍番号の入力をお願いしています。タイピング状況は1文字単位で<br>
-研究室内のデータベースに格納しますが、流出のないよう細心の注意を払って<br>
-管理します。また統計処理を行いながら、学籍番号を含む個人情報（プライバシー情報）<br>
-を適切に除外し、論文執筆・学会発表などに活用する予定です。<br>
--->
-<br>
-注意事項　以下の2点をご確認ください。<br>
-1.ブラウザの幅に関して、このページの文章が右端まで見えていない場合には、すべて<br>表示されるよう調節してください。<br>
-2.プログラムを記述する上で人それぞれやりやすい書き方等あると思いますが、<br>
-本システムでは表示されている順にタイピングしてください。大文字・小文字は区別<br>されます。また「<span lang="en" style="font-family: Courier New; font-size: 24px;">\</span>」が表示される箇所は、円記号(￥)を、「<span lang="en" style="font-family: Courier New; font-size: 24px;">*</span>」が表示される箇所は、<br>アスタリスクを、打ち込んでください。<br>
-</p>
-
-<p id="msgsid1" style="position: relative; left: 400px; top: 50px">はじめに学籍番号を入力してください</p>
-<p style="position: relative; left: 400px; top: 60px">
-学籍番号 <input type="text" name="sid" id="sid" size="10">
-<input type="button" value="設定する" onclick="setsid()">
-</p>
-
-<p id="msgsid2" style="position: relative; left: 400px; top: 70px"><a href="choice.html">問題選択画面へ</a></p>
-<p id="msgsid3" style="position: relative; left: 400px; top: 70px"><a href="replay-q.html">リプレイ問題選択画面へ</a></p>
+<div class="wrapper">
+  <p>
+  本システムは、「写経型学習（写経型プログラミング）」のための<br>
+  Webアプリケーションです。数行のプログラムコードを打ち込むと、<br>
+  タイプ時間と誤タイプ数を表示します。<br>
+  <!--
+  ご利用にあたり、学籍番号の入力をお願いしています。タイピング状況は1文字単位で<br>
+  研究室内のデータベースに格納しますが、流出のないよう細心の注意を払って<br>
+  管理します。また統計処理を行いながら、学籍番号を含む個人情報（プライバシー情報）<br>
+  を適切に除外し、論文執筆・学会発表などに活用する予定です。<br>
+  -->
+  <br>
+  注意事項　以下の2点をご確認ください。<br>
+  1.ブラウザの幅に関して、このページの文章が右端まで見えていない場合には、すべて<br>表示されるよう調節してください。<br>
+  2.プログラムを記述する上で人それぞれやりやすい書き方等あると思いますが、<br>
+  本システムでは表示されている順にタイピングしてください。大文字・小文字は区別<br>されます。また「<span lang="en" style="font-family: Courier New; font-size: 24px;">\</span>」が表示される箇所は、円記号(￥)を、「<span lang="en" style="font-family: Courier New; font-size: 24px;">*</span>」が表示される箇所は、<br>アスタリスクを、打ち込んでください。<br>
+  </p>
+  
+  <p id="msgsid1">はじめに学籍番号を入力してください</p>
+  <p>
+  学籍番号 <input type="text" name="sid" id="sid" size="10">
+  <input type="button" value="設定する" onclick="setsid()">
+  </p>
+  
+  <p id="msgsid2"><a href="choice.html">問題選択画面へ</a></p>
+  <p id="msgsid3"><a href="replay-q.html">リプレイ問題選択画面へ</a></p>
+</div>
 
 <script>
 // グローバル変数（いくつかの関数内で参照・更新する）

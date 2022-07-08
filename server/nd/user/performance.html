@@ -76,9 +76,7 @@ ul.sortlist li{
 table {
   border-collapse: collapse;
 }
-.price caption {
-  color: #orange;
-}
+
 table th, td {
   border: 1px solid #e3ecf5;
   padding: 8px;
@@ -91,19 +89,61 @@ table th {
 table tr:nth-child(odd) {
   background: #e3ecf5;
 }
+
+/* デザイン統一 */
+.header{
+  margin:0 auto;
+  background-color: #bdf7f1;
+  height:50px;
+  max-width:1500px;
+  font-size: 40px;
+}
+
+.header-logo{
+  margin: 0 auto;
+  padding-left:100px;
+}
+
+.wrapper{
+  /* border:1px solid black; */
+  display:block;
+  max-width:1500px;
+  margin:0 auto;
+}
+
+button#c_page{
+
+  font-size:30px;
+  width:300px;
+  height:100px;
+  display:inline-block;
+  margin: 0 auto;
+}
+
 </style>
+
 <body>
-<h1>実績確認</h1>
+<div class ="header">
+  <div class="header-logo">実績確認</div>
+</div>
 
-<span>あなたの学生番号 </span><span id="si" name="sid"></span><span id="sid" name="sid"></span>
-<div id="today" name="today"></div>
-<form><input type="text" name="sd" id="sd"  size="10"><form><input type="button" value="日付検索" onClick="kensaku()"><input type="button" value="本日の実績を表示" onclick="showResponseByDay()"><input type="button" value="最新の３件" onclick="kouzyun()"><input type="button" value="今までの実績を表示" onclick="showResponseByStudent()"><br>
-
-<hr>
-<div id="result"></div>
-<p>最後までタイプした課題のみを表示しています。<br>たまに表の表示が乱れることがあります。その際には、再読み込みをしてください。</p>
-<hr>
-<button type="button" id="c_page" onclick="location.href= 'choice.html'" style="font-size: 30px;  width:300px; height:100px; position: relative; top: 50px; display: inline-block; left: 200px;margin: 0 auto">問題選択画面へ</button>
+<div class="wrapper">
+  <span>あなたの学生番号 </span>
+  <span id="si" name="sid"></span>
+  <span id="sid" name="sid"></span>
+  <div id="today" name="today"></div>
+  <input type="text" name="sd" id="sd"  size="10">
+  <input type="button" value="日付検索" onclick="kensaku()">
+  <input type="button" value="本日の実績を表示" onclick="showResponseByDay()">
+  <input type="button" value="最新の３件" onclick="kouzyun()">
+  <input type="button" value="今までの実績を表示" onclick="showResponseByStudent()"><br>
+  
+  <hr>
+  <div id="result"></div>
+  <p>最後までタイプした課題のみを表示しています。<br>たまに表の表示が乱れることがあります。その際には、再読み込みをしてください。</p>
+  <hr>
+  <button type="button" id="c_page" onclick="location.href= 'choice.html'">問題選択画面へ</button>
+</div>
 
 <script src="axios.min.js"></script>
 <script>
