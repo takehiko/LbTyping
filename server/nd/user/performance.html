@@ -442,7 +442,7 @@ const showResponsekyouTable = () => {
   var narabi = [];
   const a = (res_data instanceof Array) ? res_data : [res_data];
 
-  let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1" ><tr><th scope="col"">日付<i class="fa fa-sort"></i></th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1" ><tr><th scope="col"">日付<i class="fa fa-sort"></i></th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
   a.forEach((s) => {
     narabi[i]=[toshiString(s.finish_at),tString(s.start_at),s.question_id,s.miss_count,worktimeString(s.start_at, s.finish_at)];
     i++;
