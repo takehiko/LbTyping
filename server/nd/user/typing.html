@@ -89,6 +89,33 @@ input:hover {
   animation: borderFlashing 0.6s linear infinite alternate;
 }
 .backspace {color:red}
+
+h1.title2{
+  font-size:40px;
+
+}
+
+div#typing{
+  padding:18px;
+  margin-top:-10px;
+  margin-bottom: 10px;
+  border:1px solid #333333;
+  font-family:'Courier New';
+  font-size:28px;
+}
+
+input#start{
+  display:block;
+  width:200px;
+  height:100px;
+  font-size:30px;
+  /* position:relative;
+  left:250px;
+  top:35px; */
+  margin:0 auto;
+  margin-top:20px;
+}
+
 </style>
 </head>
 <body>
@@ -96,13 +123,13 @@ input:hover {
 <!--  <div class="header-logo">プログラミングを学ぶ</div> -->
 </div>
 <div class="wrapper">
-  <h1 id = "f" class="title2" style="font-size:40px;position: relative; top: 5px"></h1>
+  <h1 id = "f" class="title2"></h1>
   <div id="disp"></div>
-    <h2 class="problem1"></h2>
-    <p style="font-size: 20px; position: relative; left: 0px; top: 10px">正しく打つと次の文字に進みます。最後まで入力できたら終了です。<br>空白と改行はタイプしなくてかまいません。タイプしても無視されます。<br>テンキーは使用できません。</p><br>
+  <h2 class="problem1"></h2>
+  <p style="font-size: 20px; position: relative; left: 0px; top: 10px">正しく打つと次の文字に進みます。最後まで入力できたら終了です。<br>空白と改行はタイプしなくてかまいません。タイプしても無視されます。<br>テンキーは使用できません。</p><br>
   
-  <div id="typing" style="padding: 18px; margin-bottom: 10px; border: 1px solid #333333; position: relative; left: 0px; top: -30px; font-family: Courier New; font-size: 28px; ">
-  <input type="button" id="start" value="スタート" onclick="OnButtonClick();" style="width:200px;height:100px; font-size:30px; position: relative; left: 250px; top: 35px"/>
+  <div id="typing">
+  <input type="button" id="start" value="スタート" onclick="OnButtonClick();"/>
   <div id="timer"></div>
   <span id = "a" class= "typed"></span><span id = "c" class= "misstyped"></span><span id = "b" class= "untyped"></span>
   <div id = "e" class= "backspace"></div>

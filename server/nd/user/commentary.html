@@ -21,6 +21,10 @@ div {
   width:1500px;
   font-size: 40px;
 }
+
+.explain{
+  text-align:center;
+}
 span:lang(en) {
   font-family: "Courier New", monospace;
 }
@@ -29,18 +33,22 @@ span:lang(en) {
 </head>
 <body>
 <div class ="header">
+  <div class="explain">プログラム解説</div>
 </div>
 
-<p style="font-size: 32px; position: relative; left: 400px; top: 10px">プログラム解説</p>
+<div class="wrapper">
+  
+  <div id="msgsid1" style="position: relative; top: 10px"></div>
+  
+  <p id="msgsid2" style="position: relative; top: 10px"></p>
+  
+  <p id="msgsid3" style="display: none; position: relative; top: 10px">内容を確認したら、もう1回、タイプしてみましょう。</p>
 
-<div id="msgsid1" style="position: relative; left: 40px; top: 10px"></div>
-
-<p id="msgsid2" style="position: relative; left: 40px; top: 10px"></p>
-
-<p id="msgsid3" style="display: none; position: relative; left: 40px; top: 10px">内容を確認したら、もう1回、タイプしてみましょう。</p>
   <button type="button" id="retry_page" onclick="location.href= 'choice.html'" style="display: none; font-size: 30px; width:200px; height:100px;">もう1回する</button>
+
   <button type="button" id="t_page" onclick="location.href= 'top.html'" style="font-size: 30px; width:200px; height:100px;">トップ画面へ</button>
   <button type="button" id="c_page" onclick="location.href= 'choice.html'" style="font-size: 30px;  width:230px; height:100px;">問題選択画面へ</button>
+</div>
 
 <script src="axios.min.js"></script>
 <script type="text/javascript">

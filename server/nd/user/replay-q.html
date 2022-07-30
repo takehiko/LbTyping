@@ -9,14 +9,6 @@
 <style type="text/css">
 div {
    margin: 0 auto;
-   width: 900px;
-}
-.header{
-  text-align:center;
-  background-color: #bdf7f1;
-  height:50px;
-  width:1500px;
-  font-size: 40px;
 }
 table {
   border-collapse: collapse;
@@ -28,21 +20,61 @@ table td {
 table tr:nth-child(odd) {
   background: #d9ebe2;
 }
+
+.header{
+  position: relative; 
+  left: 0px; 
+  top: 0px;
+  background-color: #bdf7f1;
+  height:50px;
+  max-width:1500px;
+  font-size: 40px;
+}
+
+.header-logo{
+  margin: 0 auto;
+  text-align:center;
+}
+
+.wrapper{
+  max-width:1500px;
+  margin: 30px auto 0;
+}
+
+.wrapper p{
+  display:table;
+  padding-top:10px;
+  margin:auto;
+  text-align:left;
+}
+
+button[type=button]{
+  display:block;
+  margin:0 auto;
+}
+
+div#result table{
+  margin:0 auto;
+}
 </style>
 </head>
 <body>
-<div style="font-size: 32px; position: relative; left: 150px; top: 10px">リプレイ問題選択</div>
-<div style="position: relative; left: 150px; top: 30px">
-  リプレイ機能とは、自分や手本となる人のタイピングを画面上で再現する機能です。
-  <br>自分のタイピングの特徴を把握し、または手本の優れたタイピングを参考にして、
-  <br>プログラムの理解に役立ててください。
+<div class ="header">
+  <div class="header-logo">リプレイ問題選択</div>
 </div>
-<div style="font-size: 24px; position: relative; left: 150px; top: 50px">問題を選択してください</div>
-<div style="position: relative; left: 150px; top: 60px">
-  <label><input type="checkbox" id="checkbox" onclick="showQuestions(!event.target.checked);">手本が登録済みの問題のみ表示</label>
+<div class="wrapper">
+  <p class="explain">
+    リプレイ機能とは、自分や手本となる人のタイピングを画面上で再現する機能です。
+    <br>自分のタイピングの特徴を把握し、または手本の優れたタイピングを参考にして、
+    <br>プログラムの理解に役立ててください。
+  </p>
+  <p>問題を選択してください</p>
+  <p>
+    <label><input type="checkbox" id="checkbox" onclick="showQuestions(!event.target.checked);">手本が登録済みの問題のみ表示</label>
+  </p>
+  <div id="result"></div>
+  <button type="button" onclick="location.href='top.html'">トップ画面へ</button>
 </div>
-<div id="result" style="font-size: 20px; position: relative; left: 150px; top: 70px"></div>
-<div style="position: relative; left: 150px; top: 80px; margin-bottom: 100px"><a href="top.html">トップ画面へ</a></div>
 
 <script src="axios.min.js"></script>
 <script>

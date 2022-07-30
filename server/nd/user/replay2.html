@@ -24,13 +24,29 @@
 #start {
   margin-right: 5px;
 }
+
+.header{
+  margin:0 auto;
+  background-color: #bdf7f1;
+  height:50px;
+  max-width:1500px;
+  font-size: 40px;
+}
+
+.header-logo{
+  text-align:center;
+  margin:0;
+  padding:0;
+}
 </style>
 </head>
 <body>
+<header class ="header">
+  <p class="header-logo">リプレイ</p>
+</header>
 
 <div style="margin-bottom: 10px;">
-    <div style="margin-left: 100px">
-        <div style="font-size:40px">リプレイ</div>
+    <div style="margin: 0 auto; max-width:1500px;">
         <div id="f" class="qname" style="font-size:40px"></div>
         <div style="font-size:20px">
             <span style="font-size: 24px">タイム</span>
@@ -63,8 +79,8 @@
     </div>
 
     <div style="margin: 20px 100px">
-        <p><a href="top.html">トップ画面へ</a></p>
-        <p><a href="replay-q.html">リプレイ問題選択画面へ</a></p>
+        <p><button type="button" onclick="location.href='top.html'">トップ画面へ</button></p>
+        <p><button type="button" onclick="location.href='replay-q.html'">リプレイ問題選択画面へ</button></p>
     </div>
 </div>
 

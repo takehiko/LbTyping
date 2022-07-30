@@ -100,8 +100,9 @@ table tr:nth-child(odd) {
 }
 
 .header-logo{
-  margin: 0 auto;
-  padding-left:100px;
+  text-align:center;
+  margin:0;
+  padding:0;
 }
 
 .wrapper{
@@ -124,7 +125,7 @@ button#c_page{
 
 <body>
 <div class ="header">
-  <div class="header-logo">実績確認</div>
+  <p class="header-logo">実績確認</p>
 </div>
 
 <div class="wrapper">
@@ -194,7 +195,7 @@ const showResponseTable = () => {
   const a = (res_data instanceof Array) ? res_data : [res_data];
   var i=0;
   var narabi = [];
-  let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col" align="right">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col" align="right">誤タイプ数</th><th scope="col">解答時間</th></tr>';
   a.forEach((s) => {
     narabi[i] = [ toshiString(s.finish_at),
                   tString(s.start_at),
@@ -499,7 +500,7 @@ const showResponsekensakuTable = () => {
   var v=document.getElementById('sd').value; //コメントフォームの値を格納
   const a = (res_data instanceof Array) ? res_data : [res_data];
 
-  let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
   var i = 0;
   var narabi = [];
   var h = 0;
@@ -569,7 +570,7 @@ const showResponsekouzyunTable = () => {
   if (res_data == null) {
     document.getElementById('result').innerHTML = "実績がありませんでした";
   } else {
-    let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+    let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
     var i = 0;
     var h = 0;
     var narabi = [];
@@ -648,7 +649,7 @@ const showResponsemon = () => {
 
   const a = (res_data instanceof Array) ? res_data : [res_data];
 
-  let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
   var i = 0;
   var narabi = [];
 
