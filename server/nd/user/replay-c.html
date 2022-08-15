@@ -9,8 +9,8 @@
 
 <style type="text/css">
 .container {
-  margin-left: 400px;
-  margin-bottom: 10px;
+  margin: 0 auto;
+  max-width:1200px;
 }
 table {
   border-collapse: collapse;
@@ -27,12 +27,27 @@ td label {
   display: block;
   padding: 8px;
 }
+
+.header{
+  margin: 0 auto;
+  background-color: #bdf7f1;
+  height:50px;
+  max-width:1500px;
+  font-size: 40px;
+}
+
+.header-logo{
+  margin: 0 auto;
+  text-align:center;
+}
 </style>
 
 </head>
 <body>
+<div class ="header">
+  <div class="header-logo">リプレイ選択</div>
+</div>
 <div class="container">
-  <p style="font-size: 32px">リプレイ選択</p>
   <p>問題: <span id="qname"></span></p>
   <p>
     リプレイを選択してください。リプレイは自分のリプレイと手本のリプレイの2種類があります。
@@ -58,8 +73,8 @@ td label {
   <p id="choices-model" style="margin: 0 0 30px 0"></p>
   <input id="replay" type="button" value="リプレイ" onclick="replay()" disabled>
   
-  <p style="margin-top: 40px"><a href="top.html">トップ画面へ</a></p>
-  <p><a href="replay-q.html">リプレイ問題選択画面へ</a></p>
+  <p style="margin-top: 40px"><button type="button" onclick="location.href='top.html'">トップ画面へ</button></p>
+  <p><button type="button" onclick="location.href='replay-q.html'">リプレイ問題選択画面へ</button></p>
 </div>
 
 <script src="axios.min.js"></script>

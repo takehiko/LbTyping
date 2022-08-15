@@ -49,31 +49,48 @@ textarea {
 #start {
   margin-right: 5px;
 }
+
+.header{
+  margin:0 auto;
+  background-color: #bdf7f1;
+  height:50px;
+  max-width:1500px;
+  font-size: 40px;
+}
+
+.header-logo{
+  text-align:center;
+  padding:0;
+  margin:0;
+}
 </style>
 </head>
 <body>
-<div style="font-size:40px; top: 5px">リプレイ</div>
-<div id = "f" class="title2" style="font-size:40px; top: 5px"></div>
-<div style="font-size:20px">
-  <span style="font-size: 24px">タイム</span>
-  <span class="cnter">
-    【 <span id = "cnter_m">00</span> : <span id = "cnter_s">00.000</span> 】
-  </span>
-  <span id = "cnter_err" style = "display:none">エラー</span>
-  <input type="button" id="start" value="スタート" onclick="OnButtonClick();"/>
-  <input type="button" value="リセット" onclick="location.reload();"/>
+<header class="header">
+  <p class="header-logo">リプレイ</p>
+</header>
+<div class="wrapper">  
+  <div id = "f" class="title2" style="font-size:40px; top: 5px"></div>
+  <div style="font-size:20px">
+    <span style="font-size: 24px">タイム</span>
+    <span class="cnter">
+      【 <span id = "cnter_m">00</span> : <span id = "cnter_s">00.000</span> 】
+    </span>
+    <span id = "cnter_err" style = "display:none">エラー</span>
+    <input type="button" id="start" value="スタート" onclick="OnButtonClick();"/>
+    <input type="button" value="リセット" onclick="location.reload();"/>
+  </div>
+  <h2 class="problem1"></h2>
+  
+  <div id="typing" style="padding: 18px; margin-bottom: 10px; border: 1px solid #333333; position: relative; left: 0px; top: -20px; font-family: Courier New; font-size: 28px; ">
+  <span id = "a" class= "typed"></span><span id = "c" class= "misstyped"></span><span id = "b" class= "untyped"></span>
+  <div id = "e" class= "backspace"></div>
+  <p id = "d" class= "clear" style="font-family: Lucida Grande"></p>
+  </div>
+  
+  <p style="position: relative; top: 70px"><button type="button" onclick="location.href='top.html'">トップ画面へ</button></p>
+  <p style="position: relative; top: 70px"><button type="button" onclick="location.href='replay-q.html'">リプレイ問題選択画面へ</button></p>
 </div>
-<h2 class="problem1"></h2>
-
-<div id="typing" style="padding: 18px; margin-bottom: 10px; border: 1px solid #333333; position: relative; left: 0px; top: -20px; font-family: Courier New; font-size: 28px; ">
-<span id = "a" class= "typed"></span><span id = "c" class= "misstyped"></span><span id = "b" class= "untyped"></span>
-<div id = "e" class= "backspace"></div>
-<p id = "d" class= "clear" style="font-family: Lucida Grande"></p>
-</div>
-
-<p style="position: relative; left: 250px; top: 70px"><a href="top.html">トップ画面へ</a></p>
-<p style="position: relative; left: 250px; top: 70px"><a href="replay-q.html">リプレイ問題選択画面へ</a></p>
-<br>
 
 <script src="axios.min.js"></script>
 <script type="text/javascript">

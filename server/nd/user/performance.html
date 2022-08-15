@@ -76,9 +76,7 @@ ul.sortlist li{
 table {
   border-collapse: collapse;
 }
-.price caption {
-  color: #orange;
-}
+
 table th, td {
   border: 1px solid #e3ecf5;
   padding: 8px;
@@ -91,19 +89,62 @@ table th {
 table tr:nth-child(odd) {
   background: #e3ecf5;
 }
+
+/* デザイン統一 */
+.header{
+  margin:0 auto;
+  background-color: #bdf7f1;
+  height:50px;
+  max-width:1500px;
+  font-size: 40px;
+}
+
+.header-logo{
+  text-align:center;
+  margin:0;
+  padding:0;
+}
+
+.wrapper{
+  /* border:1px solid black; */
+  display:block;
+  max-width:1500px;
+  margin:0 auto;
+}
+
+button#c_page{
+
+  font-size:30px;
+  width:300px;
+  height:100px;
+  display:inline-block;
+  margin: 0 auto;
+}
+
 </style>
+
 <body>
-<h1>実績確認</h1>
+<div class ="header">
+  <p class="header-logo">実績確認</p>
+</div>
 
-<span>あなたの学生番号 </span><span id="si" name="sid"></span><span id="sid" name="sid"></span>
-<div id="today" name="today"></div>
-<form><input type="text" name="sd" id="sd"  size="10"><form><input type="button" value="日付検索" onClick="kensaku()"><input type="button" value="本日の実績を表示" onclick="showResponseByDay()"><input type="button" value="最新の３件" onclick="kouzyun()"><input type="button" value="今までの実績を表示" onclick="showResponseByStudent()"><br>
-
-<hr>
-<div id="result"></div>
-<p>最後までタイプした課題のみを表示しています。<br>たまに表の表示が乱れることがあります。その際には、再読み込みをしてください。</p>
-<hr>
-<button type="button" id="c_page" onclick="location.href= 'choice.html'" style="font-size: 30px;  width:300px; height:100px; position: relative; top: 50px; display: inline-block; left: 200px;margin: 0 auto">問題選択画面へ</button>
+<div class="wrapper">
+  <span>あなたの学生番号 </span>
+  <span id="si" name="sid"></span>
+  <span id="sid" name="sid"></span>
+  <div id="today" name="today"></div>
+  <input type="text" name="sd" id="sd"  size="10">
+  <input type="button" value="日付検索" onclick="kensaku()">
+  <input type="button" value="本日の実績を表示" onclick="showResponseByDay()">
+  <input type="button" value="最新の３件" onclick="kouzyun()">
+  <input type="button" value="今までの実績を表示" onclick="showResponseByStudent()"><br>
+  
+  <hr>
+  <div id="result"></div>
+  <p>最後までタイプした課題のみを表示しています。<br>たまに表の表示が乱れることがあります。その際には、再読み込みをしてください。</p>
+  <hr>
+  <button type="button" id="c_page" onclick="location.href= 'choice.html'">問題選択画面へ</button>
+</div>
 
 <script src="axios.min.js"></script>
 <script>
@@ -154,7 +195,7 @@ const showResponseTable = () => {
   const a = (res_data instanceof Array) ? res_data : [res_data];
   var i=0;
   var narabi = [];
-  let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col" align="right">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col" align="right">誤タイプ数</th><th scope="col">解答時間</th></tr>';
   a.forEach((s) => {
     narabi[i] = [ toshiString(s.finish_at),
                   tString(s.start_at),
@@ -402,7 +443,7 @@ const showResponsekyouTable = () => {
   var narabi = [];
   const a = (res_data instanceof Array) ? res_data : [res_data];
 
-  let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1" ><tr><th scope="col"">日付<i class="fa fa-sort"></i></th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1" ><tr><th scope="col"">日付<i class="fa fa-sort"></i></th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
   a.forEach((s) => {
     narabi[i]=[toshiString(s.finish_at),tString(s.start_at),s.question_id,s.miss_count,worktimeString(s.start_at, s.finish_at)];
     i++;
@@ -459,7 +500,7 @@ const showResponsekensakuTable = () => {
   var v=document.getElementById('sd').value; //コメントフォームの値を格納
   const a = (res_data instanceof Array) ? res_data : [res_data];
 
-  let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
   var i = 0;
   var narabi = [];
   var h = 0;
@@ -529,7 +570,7 @@ const showResponsekouzyunTable = () => {
   if (res_data == null) {
     document.getElementById('result').innerHTML = "実績がありませんでした";
   } else {
-    let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+    let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
     var i = 0;
     var h = 0;
     var narabi = [];
@@ -608,7 +649,7 @@ const showResponsemon = () => {
 
   const a = (res_data instanceof Array) ? res_data : [res_data];
 
-  let table = '<div style="height:300px; width:2000px; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
   var i = 0;
   var narabi = [];
 
