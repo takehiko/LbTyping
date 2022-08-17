@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="0" />
 <meta charset="UTF-8">
 <title>プログラミングを学ぶ - Type!</title>
+
 <style type="text/css">
 @keyframes borderFlashing {
   0% {
@@ -15,7 +19,6 @@
     border-bottom: visible;
   }
 }
-
 .title {
   font-family: serif;
   font-size: 70px;
@@ -132,7 +135,7 @@ input#start{
 </div>
 <div id="wrapper2" style="position: relative; left: 0px; top: 10px">
   <input type="button" id="bnote" value="注意事項を表示する" style="font-size: 20px" onclick="onNoteClick();">
-  <p id="note" style="font-size: 20px; display: none">上の枠がすべて表示されるよう、ブラウザのサイズを調節してください。<br>スタートボタンを押して3秒後に、枠内にプログラムコードが表示されます。<br>正しく打つと次の文字に進みます。最後まで入力できたら終了です。<br>空白と改行はタイプしなくてかまいません。タイプしても無視されます。<br>テンキーは使用できません。</p>
+  <div id="note" style="font-size: 20px; display: none"><ul><li>上の枠がすべて表示されるよう、ブラウザのサイズを調節してください。</li><li>スタートボタンを押して3秒後に、枠内にプログラムコードが表示されます。正しく打つと次の文字に進みます。最後まで入力できたら終了です。</li><li>大文字・小文字は区別されます。また「<span lang="en" style="font-family: Courier New; font-size: 24px;">\</span>」が表示される箇所は、円記号(￥)を、<br>「<span lang="en" style="font-family: Courier New; font-size: 24px;">*</span>」が表示される箇所は、アスタリスクを、打ち込んでください。</li><li>空白と改行はタイプしなくてかまいません。タイプしても無視されます。</li><!--テンキーは使用できません。--><li>カッコ等の先行入力や自動補完の機能はありません。表示されている順にタイピングしてください。</li></ul></div>
 </div>
 
 <script src="axios.min.js"></script>
@@ -166,7 +169,7 @@ let restart = 0;
 let kc;
 let key;
 let shift_key;
-let interval_id=null;
+let interval_id = null;
 let time = [];
 
 // グローバル変数（いくつかの関数内で参照・更新する）
@@ -214,8 +217,9 @@ const getQ = async (qid) => {
   await query('/getq?id=' + qid);
 }
 
-const get_question_id=async() =>{
-  if(location.search.indexOf("?id=")==0){
+// URLの「id=...」に基づき問題を獲得し，表示の設定を行う
+const get_question_id = async () =>{
+  if (location.search.indexOf("?id=")==0) {
     qid = location.search.replace(/\?id=/,"");
     await getQ(qid);
     q_name = res_data.name;
@@ -259,17 +263,21 @@ time2.split(';').map(s => {t = s.split(','); return [String.fromCharCode(parseIn
 */
 }
 
+// 開始までのタイマー表示を行う
 function start_timer() {
   let timer = document.getElementById('timer');
   let starting_time = 4;
   let count_timer = starting_time;
   interval_id = setInterval(count_time, 1000);
+
+  // カウントダウン処理を行う．count_timerを参照するため，start_timer内で定義している．
   function count_time() {
-    count_timer = count_timer-1;
+    count_timer--;
     count_timer_minute = Math.floor(count_timer / 60);
     count_timer_second = Math.floor(count_timer % 60);
-    start_button.value = count_timer_second + " 秒";
-    if(count_timer <= 0){
+    start_button.value = count_timer_second + ""; // + " 秒";
+
+    if (count_timer <= 0) {
       stop_timer();
       window.onresize = null;
       start_button.style.display = "none";
@@ -287,10 +295,13 @@ function start_timer() {
   }
 }
 
+// カウントダウンの処理を止める
 function stop_timer() {
   clearInterval(interval_id);
+  interval_id = null;
 }
 
+// スタートボタンが押されたときの処理
 function OnButtonClick() {
   start_button.onclick = null;
   document.getElementById("wrapper2").style.display = "none";
@@ -298,6 +309,7 @@ function OnButtonClick() {
   start_timer();
 }
 
+// 注意事項のボタンが押されたときの処理
 function onNoteClick() {
   const note = document.getElementById("note");
   if (note.style.display == "none") {
@@ -309,6 +321,7 @@ function onNoteClick() {
   }
 }
 
+// スタートボタンを枠の中央に表示する
 function showStartButton() {
   const tp = document.getElementById("typing");
   const bo = tp.getBoundingClientRect();
@@ -320,6 +333,7 @@ window.onresize = showStartButton;
 
 get_question_id();
 
+// タイピングの処理
 function typeGame(evt) {
   key = evt.key;
   // https://www.w3.org/TR/uievents-key/#key-attribute-value
@@ -401,6 +415,7 @@ function typeGame(evt) {
   return false;
 }
 
+// 誤タイプの処理
 function missType() {
   const time_b = performance.now();
   time[t_cnt] = [key + "x" , Math.round(time_b - time_a)/1000];
