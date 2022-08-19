@@ -12,9 +12,7 @@ div {
   margin: 0 auto;
 }
 .header {
-  position: relative; 
-  left: 0px; 
-  top: 0px;
+  text-align:center;
   background-color: #bdf7f1;
   height:50px;
   max-width:1500px;
@@ -31,6 +29,14 @@ button:hover {
 dialog {
   font-size: 30px;
 }
+div#result{
+  display:block;
+  max-width:750px;
+  margin:0 auto;
+
+  position:relative;
+  left:6.5%;
+}
 </style>
 
 </head>
@@ -38,17 +44,18 @@ dialog {
   <div class ="header">
     <p class="header-logo">結果発表</p>
   </div>
-  <div id= "a" class="problem" style=" font-size: 30px; position: relative; left: 300px; top: 20px">問題: </div>
-  <div id= "b" class="chalacter_number" style="font-size: 30px; position: relative; left: 300px; top: 30px">入力文字数: </div>
-  <div id= "c" class="miss_cnt" style="font-size: 30px; position: relative; left: 300px; top: 40px">誤タイプ数: </div>
-  <div id= "d" class="Time" style="font-size: 30px; position: relative; left: 300px; top: 50px">タイプ時間: </div>
-  <a href="#" onclick="document.getElementById('dialog').show();" id="e0" style="display:none"><div id= "e" class="Judge" style="font-size: 30px; position: relative; left: 300px; top: 60px"></div></a>
-  <div>
-  <button type="button" id="c2_page" onclick="location.href= `commentary.html?id=${rid}`" style="font-size: 30px; width:200px; height:100px; position: relative; top: 200px; left:200px;margin: 0 auto">解説画面へ</button>
-  <button type="button" id="t_page" onclick="location.href= 'top.html'" style="font-size: 30px; width:200px; height:100px; position: relative; top: 200px; left:200px;margin: 0 auto">トップ画面へ</button>
-  <button type="button" id="c_page" onclick="location.href= 'choice.html'" style="font-size: 30px;  width:230px; height:100px; position: relative; top: 200px; display: inline-block; left: 200px;margin: 0 auto">問題選択画面へ</button>
+  <div id="result">
+    <div id= "a" class="problem" style=" font-size: 30px">問題: </div>
+    <div id= "b" class="chalacter_number" style="font-size: 30px">入力文字数: </div>
+    <div id= "c" class="miss_cnt" style="font-size: 30px">誤タイプ数: </div>
+    <div id= "d" class="Time" style="font-size: 30px">タイプ時間: </div>
+    <a href="#" onclick="document.getElementById('dialog').show();" id="e0" style="display:none"><div id= "e" class="Judge" style="font-size: 30px"></div></a>
+    <div>
+      <button type="button" id="c2_page" onclick="location.href= `commentary.html?id=${rid}`" style="font-size: 30px; width:200px; height:100px;margin: 0 auto">解説画面へ</button>
+      <button type="button" id="t_page" onclick="location.href= 'top.html'" style="font-size: 30px; width:200px; height:100px;margin: 0 auto">トップ画面へ</button>
+      <button type="button" id="c_page" onclick="location.href= 'choice.html'" style="font-size: 30px;  width:230px; height:100px;display: inline-block; left: 200px;margin: 0 auto">問題選択画面へ</button>
+    </div>
   </div>
-
   
   <dialog id="dialog">
     <p id= "f" class="Rankup" style="font-size: 30px"></p>
