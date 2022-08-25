@@ -8,9 +8,19 @@
 <title>プログラミングを学ぶ - Replay (2)</title>
 
 <style type="text/css">
-.container {
+div {
   margin: 0 auto;
-  max-width:1200px;
+}
+.header{
+  margin: 0 auto;
+  background-color: #bdf7f1;
+  height:50px;
+  max-width:1500px;
+  font-size: 40px;
+}
+.header-logo{
+  margin: 0 auto;
+  text-align:center;
 }
 table {
   border-collapse: collapse;
@@ -27,18 +37,15 @@ td label {
   display: block;
   padding: 8px;
 }
-
-.header{
-  margin: 0 auto;
-  background-color: #bdf7f1;
-  height:50px;
+.container {
   max-width:1500px;
-  font-size: 40px;
+  margin: 30px auto 0;
 }
-
-.header-logo{
-  margin: 0 auto;
-  text-align:center;
+.container p{
+  display:table;
+  padding-top:10px;
+  margin:auto;
+  text-align:left;
 }
 </style>
 
@@ -68,10 +75,10 @@ td label {
     <label onclick="updateReplayList()"><input type="radio" name="sort-key" autocomplete="off">誤タイプ数</label>
   </p>
   <p style="font-size: 20px; margin-bottom: 10px">自分のリプレイ</p>
-  <p id="choices-mine" style="margin: 0 0 30px 0"></p>
+  <p id="choices-mine" style="margin-bottom: 10px"></p>
   <p style="font-size: 20px; margin-bottom: 10px">手本のリプレイ</p>
-  <p id="choices-model" style="margin: 0 0 30px 0"></p>
-  <input id="replay" type="button" value="リプレイ" onclick="replay()" disabled>
+  <p id="choices-model"></p>
+  <p><input id="replay" type="button" value="リプレイ" onclick="replay()" disabled></p>
   
   <p style="margin-top: 40px"><button type="button" onclick="location.href='top.html'">トップ画面へ</button></p>
   <p><button type="button" onclick="location.href='replay-q.html'">リプレイ問題選択画面へ</button></p>
