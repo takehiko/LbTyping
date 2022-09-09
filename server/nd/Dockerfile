@@ -24,6 +24,6 @@ RUN sed -ie "s/const flag_enable_replay = .*/const flag_enable_replay = ${ENABLE
 ARG ENABLE_PERFORMANCE
 RUN sed -ie "s/const flag_enable_performance = .*/const flag_enable_performance = ${ENABLE_PERFORMANCE:-true};/" /root/user/choice.html && echo flag_enable_performance = ${ENABLE_PERFORMANCE:-true} in choice.html
 ARG DISPLAY_RETRY
-RUN sed -ie "s/const flag_display_retry = .*/const flag_display_retry = ${DISPLAY_RETRY:-false};/" /root/user/commentary.html && echo flag_display_retry = ${DISPLAY_RETRY:-false} in commentary.html
+RUN sed -ie "s/const flag_display_retry = .*/const flag_display_retry = ${DISPLAY_RETRY:-true};/" /root/user/commentary.html && echo flag_display_retry = ${DISPLAY_RETRY:-true} in commentary.html
 
 CMD ["nodemon", "httpd.js"]
