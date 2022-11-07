@@ -344,13 +344,17 @@ function typeGame(evt) {
   else if (key == "Esc")
     kc = 27;
   else if (key == "Tab")
-    kc = 8;
+    kc = 9;
   else if (key == "Delete")
     kc = 127;
-  else if ("|CapsLock|Control|Fn|NumLock|ScrollLock|Shift|".indexOf("|" + key + "|") >= 0)
+  else if (key.length > 1)
     kc = -1;
   else
     kc = key.charCodeAt(0);
+  if (kc == 0xa5) {
+    kc = 0x5c;
+    key = "\\";
+  }
 
   if (e_untyped != undefined && e_untyped[0]) {
     if (key == "Enter") {
