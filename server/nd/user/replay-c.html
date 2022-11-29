@@ -92,10 +92,10 @@ let sid = null;
 const qid = location.search.replace(/\?qid=/,"");
 
 // pathに基づきサーバに問い合わせる
-const origin = location.origin;
-const path_base = location.pathname.replace(/\/[^\/]*$/,"");
 const query = async (path) => {
-  let res = await axios.get(origin + path_base + path);
+  const origin = location.origin;
+  const path_base = location.pathname.replace(/\/[^\/]*$/,"");
+  const res = await axios.get(origin + path_base + path);
   res_data = res.data;
 }
 query('/getq?id=' + qid).then(() => document.getElementById("qname").innerHTML = res_data.name);
