@@ -18,6 +18,8 @@ const initClient = () => {
 const express = require('express')
 const app = express()
 const server = app.listen(sv_settings.port, () => {
+    app.use(express.json())
+    app.use(express.urlencoded({ extended: true }))
     app.use((req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin', '*')
         res.setHeader('Access-Control-Request-Method', '*')
@@ -410,6 +412,7 @@ const server = app.listen(sv_settings.port, () => {
         }
 
         const u = Url.parse(req.url, true)
+        u.query = { ...req.body, ...u.query }
         if (u.pathname == '' || u.pathname == '/' || u.pathname == '/1') {
             res.writeHead(200, {'Content-Type': 'text/plain; charset=UTF-8'})
             res.end("sorry")
@@ -511,11 +514,15 @@ const server = app.listen(sv_settings.port, () => {
             } else if (u.pathname == '/getc2' && (u.query.id || u.query.rid)) {
                 getCommentary2(u.query.rid ? u.query.rid : u.query.id)
             } else if (u.pathname == '/register_question'){
+                // console.logの使用は要見直し
                 console.log("register_questionに関するqueryを受信");
                 console.log(u.query);
+                console.log(req);
                 if(u.query.qid && u.query.qname && u.query.source && u.query.count && u.query.basename && u.query.comment && u.query.paiza && u.query.diff){
                     console.log("if passed");
                     registerQuestion(u.query.qid,u.query.qname,u.query.source,u.query.count,u.query.basename,u.query.comment,u.query.paiza,u.query.diff);
+                } else {
+                    res.end("sorry: " + JSON.stringify(u))
                 }
             } else if (u.pathname == '/getALLQuestionID'){
                 getALLQuestionID();
