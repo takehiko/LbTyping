@@ -208,6 +208,17 @@ const query = async (path) => {
   }
 }
 
+const queryByPOST = (path, param) => {
+  console.log("url: " + origin + path_base + path);
+  console.log({param});
+  axios.post(origin + path_base + path, param).then((res) => {
+    res_data = res.data;
+    if (flag_show_result) {
+      document.getElementById('result').innerHTML = JSON.stringify(res.data);
+    }
+  });
+}
+
 const strToArray = (str) => {
   //ex. str = "abc\ndef" -> str[0] = "abc" ,str[1] = "def" と変換する関数
   strArray = str.split('\n');
@@ -324,7 +335,13 @@ const register = async() => {
   source = encodeURIComponent(source);
   comment = encodeURIComponent(comment);
 
-  let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment ? comment : "\'\'"}&paiza=${paiza}&diff=${diff ? diff : "NONE"}`;
+  //let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment ? comment : "\'\'"}&paiza=${paiza}&diff=${diff ? diff : "NONE"}`;
+  const path = "/register_question";
+  const param = `qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment ? comment : "\'\'"}&paiza=${paiza}&diff=${diff ? diff : "NONE"}`;
+  // 以下では失敗
+  // const param = {qid, qname, source, count, basename, comment, paiza, diff};
+  // if (!param.comment) param.comment = "\'\'";
+  // if (!param.diff) param.diff = "NONE";
 
   if(confirm("登録しますか?")){
     if(rowSelectErrorFlag){
@@ -332,7 +349,8 @@ const register = async() => {
     }else if(isWhiteSpaceAtbeginningOfLine){
       alert("ソースコードの行頭に空白文字が含まれています。");
     }else{
-      await query(queryString);
+      await queryByPOST(path, param);
+      //await query(queryString);
       if(res_data.error == 1){
         alert("登録失敗");
       }else{

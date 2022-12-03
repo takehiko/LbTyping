@@ -70,29 +70,28 @@ button#c_page{
 <script src="axios.min.js"></script>
 <script>
 // グローバル変数（いくつかの関数内で参照・更新する）
-let sid = null;
-let res_data = null;
 const flag_show_resdata = false; // res.dataを表示させるなら真(デバッグ用)
 const flag_show_by_table = true; // 問題選択をテーブルで表示させるなら真
 const flag_show_caution = true; // 学籍番号の確認メッセージを表示させるなら真
 const flag_enable_performance = true; // 実績確認ページのボタンを設置するなら真
+
 if (flag_enable_performance) {
   document.getElementById("c_page").style.display = "block";
 }
 
 // pathに基づきサーバに問い合わせる
-const origin = location.origin;
-const path_base = location.pathname.replace(/\/[^\/]*$/,"")
 const query = async (path) => {
-  let res = await axios.get(origin + path_base + path);
-  res_data = res.data;
+  const origin = location.origin;
+  const path_base = location.pathname.replace(/\/[^\/]*$/,"");
+  const res = await axios.get(origin + path_base + path);
   if (flag_show_resdata) {
     document.getElementById('result').innerHTML = JSON.stringify(res.data);
   }
+  return res.data;
 }
 
 // res_dataに基づきすべての問題（の一部の属性）を表形式で表示する
-const showQuestionForChoice = () => {
+const showQuestionForChoice = (res_data) => {
   const a = (res_data instanceof Array) ? res_data : [res_data];
   if (a.forEach && !flag_show_by_table) {
     let table = '<ul>';
@@ -142,14 +141,15 @@ const showQuestionForChoice = () => {
 
 // すべての問題を表示する
 const showQuestion = async () => {
-  await query('/showsort?tab=question');
-  showQuestionForChoice();
+  const res = await query('/showsort?tab=question');
+  showQuestionForChoice(res);
 }
 //showQuestion();
 
 // 学籍番号をクッキーから読み出す
 // 設定されていないときは，トップページに戻る確認画面を表示する
 const getsid = () => {
+  let sid = null;
   document.cookie.split(/; */).forEach((s) => {
     const v = s.split(/=/);
     if (v[0] == 'sid') {
@@ -168,6 +168,7 @@ const getsid = () => {
 // (設定されていないときは，トップページに戻る確認画面を表示する)
 // すべての問題を表示する
 const getsidAndshowQuestion = async () => {
+  let sid = null;
   document.cookie.split(/; */).forEach((s) => {
     const v = s.split(/=/);
     if (v[0] == 'sid') sid = v[1];
@@ -177,8 +178,8 @@ const getsidAndshowQuestion = async () => {
       location.href = 'top.html';
     }
   } else {
-    await query('/showsid?sid=' + sid);
-    showQuestionForChoice();
+    const res = await query('/showsid?sid=' + sid);
+    showQuestionForChoice(res);
 
     if (flag_show_caution) {
       const e = document.getElementById('caution');

@@ -96,38 +96,23 @@ textarea {
 <script type="text/javascript">
 
 // グローバル変数（いくつかの関数内で参照・更新する）
-let textList = "";
 let e_untyped;
 let e_typed = "";
-let q_name;
-let title = document.getElementById("f");
 let elem_untyped = document.getElementById("b");
 let elem_typed = document.getElementById("a");
 let miss_typed = document.getElementById("c");
 let miss_a = "";
-let clear = document.getElementById("d");
 let backspace = document.getElementById("e");
-let start = document.getElementById("start");
-let cnter = document.getElementById("cnter");
-let cnter_m = document.getElementById("cnter_m");
-let cnter_s = document.getElementById("cnter_s");
-let cnter_err = document.getElementById("cnter_err");
-let miss_cnt = 0;
-let counter_interval_id=null;
-let startAt;
-let finishAt;
+let counter_interval_id= null;
 let diffTime; // 単位は秒
 let res_data = null;
-let qid;
-let sid;
-let rid;
 let note;
 
 // pathに基づきサーバに問い合わせる
-const origin = location.origin;
-const path_base = location.pathname.replace(/\/[^\/]*$/,"")
 const query = async (path) => {
-  let res = await axios.get(origin + path_base + path);
+  const origin = location.origin;
+  const path_base = location.pathname.replace(/\/[^\/]*$/,"");
+  const res = await axios.get(origin + path_base + path);
   res_data = res.data;
 }
 
@@ -142,7 +127,14 @@ const getQ = async (qid) => {
 }
 
 const get_question = async() => {
-  rid = location.search.replace(/\?rid=/,"")
+  let textList = "";
+  let q_name;
+  let title = document.getElementById("f");
+  let startAt;
+  let finishAt;
+  let qid;
+  let rid = location.search.replace(/\?rid=/,"");
+
   await getR(rid)
   qid = res_data.question_id
   note = res_data.note
@@ -159,6 +151,11 @@ const get_question = async() => {
 }
 
 const startCounter = async () => {
+  let cnter = document.getElementById("cnter");
+  let cnter_m = document.getElementById("cnter_m");
+  let cnter_s = document.getElementById("cnter_s");
+  let cnter_err = document.getElementById("cnter_err");
+
   const countUp = () => {
     let cnt_m = parseInt(cnter_m.innerText)
     let cnt_s = parseFloat(cnter_s.innerText)
@@ -193,12 +190,17 @@ const startCounter = async () => {
 }
 
 const stopCounter = () => {
+  
   clearInterval(counter_interval_id)
   counter_interval_id = null
 }
 
 const replay = async () => {
-  const times = note.split(';').map(s => {t = s.split(','); return [String.fromCharCode(parseInt(t[0].substring(0,2), 16)) + (t[0].length > 2 ? t[0].substring(2) : ''), parseFloat(t[1])]})
+  const times = note.split(';').map(s => {t = s.split(','); return [String.fromCharCode(parseInt(t[0].substring(0,2), 16)) + (t[0].length > 2 ? t[0].substring(2) : ''), parseFloat(t[1])]});
+  let miss_cnt = 0;
+  let clear = document.getElementById("d");
+
+
 
   const type = () => {
     e_typed = e_typed + e_untyped[0]
@@ -247,6 +249,7 @@ const replay = async () => {
 }
 
 const OnButtonClick = () => {
+  let start = document.getElementById("start");
   start.disabled = true;
   startCounter();
 }

@@ -70,13 +70,13 @@ div {
 
 <script>
 // グローバル変数（いくつかの関数内で参照・更新する）
-const sid_id = "sid";
+// const sid_id = "sid";
 let sid = null;
 const flag_enable_replay = true;
 
 // 学籍番号を設定する
 // nullまたは空文字列のときは設定を消去する
-const setsid = () => {
+const setsid = (sid_id = "sid") => {
   sid = document.getElementById(sid_id).value;
 
   // 学籍番号チェック
@@ -96,7 +96,7 @@ const setsid = () => {
 
 // 学籍番号をクッキーから読み出す
 // 設定されているか否かで表示内容を変える
-const getsid = () => {
+const getsid = (sid_id = "sid") => {
   document.cookie.split(/; */).forEach((s) => {
     const v = s.split(/=/);
     if (v[0] == 'sid') sid = v[1];
