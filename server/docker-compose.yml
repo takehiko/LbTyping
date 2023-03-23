@@ -10,10 +10,6 @@ services:
   cnpg:
     build:
       context: pg
-      args:
-        - KEEP_IP2A2020
-        - KEEP_JAVA
-        - DELETE_IP2A2021
     environment:
       POSTGRES_HOST_AUTH_METHOD: 'trust'
     ports:

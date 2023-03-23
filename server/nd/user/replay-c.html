@@ -80,7 +80,8 @@ td label {
   <p id="choices-model"></p>
   <p><input id="replay" type="button" value="リプレイ" onclick="replay()" disabled></p>
   
-  <p style="margin-top: 40px"><button type="button" onclick="location.href='top.html'">トップ画面へ</button></p>
+<!--  <p style="margin-top: 40px"><button type="button" onclick="location.href='top.html'">トップ画面へ</button></p>-->
+  <p style="margin-top: 40px"><button type="button" onclick="location.href='choice.html'">問題選択画面へ</button></p>
   <p><button type="button" onclick="location.href='replay-q.html'">リプレイ問題選択画面へ</button></p>
 </div>
 
@@ -92,10 +93,10 @@ let sid = null;
 const qid = location.search.replace(/\?qid=/,"");
 
 // pathに基づきサーバに問い合わせる
+const origin = location.origin;
+const path_base = location.pathname.replace(/\/[^\/]*$/,"");
 const query = async (path) => {
-  const origin = location.origin;
-  const path_base = location.pathname.replace(/\/[^\/]*$/,"");
-  const res = await axios.get(origin + path_base + path);
+  let res = await axios.get(origin + path_base + path);
   res_data = res.data;
 }
 query('/getq?id=' + qid).then(() => document.getElementById("qname").innerHTML = res_data.name);

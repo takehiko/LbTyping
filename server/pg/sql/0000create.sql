@@ -7,6 +7,7 @@ CREATE TABLE question (
     basename     text     DEFAULT '',
     commentary   text     DEFAULT '',
     url          text     DEFAULT '',
+    o_question_id   int      DEFAULT NULL,
 
     PRIMARY KEY (question_id)
 );

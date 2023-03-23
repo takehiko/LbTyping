@@ -5,7 +5,7 @@
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="expires" content="0" />
 <meta charset="UTF-8">
-<title>プログラミングを学ぶ - Top</title>
+<title>情報処理ⅡＡ タイピング - Top</title>
 
 <style type="text/css">
 div {
@@ -38,14 +38,21 @@ div {
 </head>
 <body>
 <div class ="header">
-  <div class="header-logo">プログラミングを学ぶ</div>
+  <div class="header-logo">情報処理ⅡＡ タイピング</div>
 </div>
 
 <div class="wrapper">
     <p>
-      本システムは、「写経型学習（写経型プログラミング）」のための<br>
-      Webアプリケーションです。数行のプログラムコードを打ち込むと、<br>
-      タイプ時間と誤タイプ数を表示します。<br>
+情報処理ⅡA（システム工学部、村川）では「タイピング」を通じた、<br>
+プログラミングの継続的な学習を推進しそのサポートを行います。<br>
+本サービスを使用することで、Cで書かれたプログラムの重要なポイントを<br>
+効果的・効率的に学べるようにしています。<br>
+<br>
+本サービスは、<a href="https://github.com/takehiko/LbTyping">LbTyping</a>という名称で2021年3月に公開したものをベースとして、<br>
+機能改善を図るとともに、問題（毎週少しずつ追加します）をこの授業用に<br>
+アレンジしています。1回分のタイプを終えると、タイプ時間・誤タイプ数が表示<br>
+されます。さらに、詳細な解説を読んだり、paiza.ioで編集と実行ができるように<br>
+なっています。授業時間内外を問わず、活用してください。<br>
 <br>
     実施にあたっての注意点は、タイプ開始前に「注意事項」のボタンを設けておりますので、<br>
     そこでボタンを押してご確認ください。<br>
@@ -58,6 +65,20 @@ div {
     
     <p id="msgsid2"><button type="button" onclick="location.href='choice.html'">問題選択画面へ</button></p>
     <p id="msgsid3"><button type="button" onclick="location.href='replay-q.html'">リプレイ問題選択画面へ</button></p>
+
+<p><button id="button_dialog" type="button" onclick="toggle_dialog();">更新履歴を表示する</button></p>
+  <dialog id="dialog">
+更新履歴
+<ul>
+<li>2022年11月24日：問題数を34問にしました。リプレイ中，タイプと誤タイプのときに音を鳴らすようにしました。ボタンで鳴らさないようにもできます。
+<li>2022年11月17日：問題数を28問にしました。手本や自分のタイピング状況を再現する、リプレイ機能を追加しました（問題選択画面の下部の「リプレイ」ボタンを押してください）。
+<li>2022年11月10日：問題数を22問にしました。結果発表画面で、「【ランク...】...」のところを2回クリックすると下のメッセージが消えるようにしました。更新履歴は、ボタンを押して表示・消去するようにしました。
+<li>2022年10月27日：問題数を18問にしました。問題選択画面で、補充問題を選べるよう、表示を充実させました。また、「実績確認」ボタンを設置し、これまでの実施の状況を見ることができるようにしました。
+<li>2022年10月20日：補充問題を含め、問題数を12問にしました。macOSで、￥を押して「<span lang="en" style="font-family: Courier New; font-size: 24px;">\</span>」がタイプできるようにしました。
+<li>2022年10月13日：授業で最初に提供しました。問題数は3問でした。
+</ul>
+</dialog>
+</div>
 
 <script>
 // グローバル変数（いくつかの関数内で参照・更新する）

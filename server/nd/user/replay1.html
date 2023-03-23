@@ -79,6 +79,7 @@ textarea {
     <span id = "cnter_err" style = "display:none">エラー</span>
     <input type="button" id="start" value="スタート" onclick="OnButtonClick();"/>
     <input type="button" value="リセット" onclick="location.reload();"/>
+    <input type="button" id="sebutton" value="効果音1" onclick="changeSE();"/>
   </div>
   <h2 class="problem1"></h2>
   
@@ -88,31 +89,56 @@ textarea {
   <p id = "d" class= "clear" style="font-family: Lucida Grande"></p>
   </div>
   
-  <p style="position: relative; top: 70px"><button type="button" onclick="location.href='top.html'">トップ画面へ</button></p>
-  <p style="position: relative; top: 70px"><button type="button" onclick="location.href='replay-q.html'">リプレイ問題選択画面へ</button></p>
+  <div style="margin: 20px 100px"> 
+<!--    <p><button type="button" onclick="location.href='top.html'">トップ画面へ</button></p>-->
+    <p><button type="button" onclick="location.href='choice.html'">問題選択画面へ</button></p>
+    <p><button type="button" onclick="location.href='replay-q.html'">リプレイ問題選択画面へ</button></p>
+    <p>効果音はOtoLogicの素材を使用しています。効果音のボタンを押すと、1→2→なし→1→...と変わります。</p>
+  </div>
 </div>
 
 <script src="axios.min.js"></script>
 <script type="text/javascript">
 
 // グローバル変数（いくつかの関数内で参照・更新する）
+let textList = "";
 let e_untyped;
 let e_typed = "";
+let q_name;
+let title = document.getElementById("f");
 let elem_untyped = document.getElementById("b");
 let elem_typed = document.getElementById("a");
 let miss_typed = document.getElementById("c");
 let miss_a = "";
+let clear = document.getElementById("d");
 let backspace = document.getElementById("e");
-let counter_interval_id= null;
+let start = document.getElementById("start");
+let cnter = document.getElementById("cnter");
+let cnter_m = document.getElementById("cnter_m");
+let cnter_s = document.getElementById("cnter_s");
+let cnter_err = document.getElementById("cnter_err");
+let miss_cnt = 0;
+let counter_interval_id=null;
+let startAt;
+let finishAt;
 let diffTime; // 単位は秒
 let res_data = null;
+let qid;
+let sid;
+let rid;
 let note;
+const se_a = [
+  new Audio("data:audio/mp3;base64,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"),
+  new Audio("data:audio/mp3;base64,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"),
+  new Audio("data:audio/mp3;base64,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")
+];
+let semode = 0; // 0:効果音1, 2:効果音2, -1:効果音なし
 
 // pathに基づきサーバに問い合わせる
+const origin = location.origin;
+const path_base = location.pathname.replace(/\/[^\/]*$/,"")
 const query = async (path) => {
-  const origin = location.origin;
-  const path_base = location.pathname.replace(/\/[^\/]*$/,"");
-  const res = await axios.get(origin + path_base + path);
+  let res = await axios.get(origin + path_base + path);
   res_data = res.data;
 }
 
@@ -127,14 +153,7 @@ const getQ = async (qid) => {
 }
 
 const get_question = async() => {
-  let textList = "";
-  let q_name;
-  let title = document.getElementById("f");
-  let startAt;
-  let finishAt;
-  let qid;
-  let rid = location.search.replace(/\?rid=/,"");
-
+  rid = location.search.replace(/\?rid=/,"")
   await getR(rid)
   qid = res_data.question_id
   note = res_data.note
@@ -151,11 +170,6 @@ const get_question = async() => {
 }
 
 const startCounter = async () => {
-  let cnter = document.getElementById("cnter");
-  let cnter_m = document.getElementById("cnter_m");
-  let cnter_s = document.getElementById("cnter_s");
-  let cnter_err = document.getElementById("cnter_err");
-
   const countUp = () => {
     let cnt_m = parseInt(cnter_m.innerText)
     let cnt_s = parseFloat(cnter_s.innerText)
@@ -190,17 +204,12 @@ const startCounter = async () => {
 }
 
 const stopCounter = () => {
-  
   clearInterval(counter_interval_id)
   counter_interval_id = null
 }
 
 const replay = async () => {
-  const times = note.split(';').map(s => {t = s.split(','); return [String.fromCharCode(parseInt(t[0].substring(0,2), 16)) + (t[0].length > 2 ? t[0].substring(2) : ''), parseFloat(t[1])]});
-  let miss_cnt = 0;
-  let clear = document.getElementById("d");
-
-
+  const times = note.split(';').map(s => {t = s.split(','); return [String.fromCharCode(parseInt(t[0].substring(0,2), 16)) + (t[0].length > 2 ? t[0].substring(2) : ''), parseFloat(t[1])]})
 
   const type = () => {
     e_typed = e_typed + e_untyped[0]
@@ -237,11 +246,20 @@ const replay = async () => {
         } else {
           backspace.innerHTML = `backspaceを${miss_cnt}回押してください`
         }
+        if (semode >= 0) {
+          se(semode);
+        }
       }
     } else if (char.length == 1) {
       type()
+      if (semode >= 0) {
+        se(semode);
+      }
     } else {
       missType(char[0])
+      if (semode >= 0) {
+        se(2);
+      }
     }
   }
   stopCounter()
@@ -249,9 +267,26 @@ const replay = async () => {
 }
 
 const OnButtonClick = () => {
-  let start = document.getElementById("start");
   start.disabled = true;
   startCounter();
+}
+
+const se = (se_index = 0) => {
+  se_a[se_index].load();
+  se_a[se_index].play();
+}
+
+const changeSE = () => {
+  if (semode == 0) {
+    semode = 1;
+    document.getElementById("sebutton").value = "効果音2";
+  } else if (semode == 1) {
+    semode = -1;
+    document.getElementById("sebutton").value = "効果音なし";
+  } else {
+    semode = 0;
+    document.getElementById("sebutton").value = "効果音1";
+  }
 }
 
 get_question();

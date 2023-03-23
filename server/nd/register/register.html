@@ -121,6 +121,10 @@
     border-radius: 10px;
     display: inline-block;
   }
+
+  input#similarity,label[for="similarity"]{
+    display:none;
+  }
 </style>
 </head>
 <body>
@@ -144,8 +148,14 @@
     <div class="flex qid-container">
       <label for="qid" class="required">問題ID</label>
       <button type="button" class="check" onclick="checkID()">使用可能かチェック</button>
-    </div>
+    </div>    
     <input type="text" id="qid">
+    <div>
+      <input id="toggle2" type="checkbox" onclick="toggleSimilarity()">
+      <label for="toggle2">補充問題かどうか</label>
+    </div>
+    <label for="similarity" class="required">元となる問題ID</label>
+    <input type="text" id="similarity">
     <label for="qname" class="required">問題名</label>
     <input type="text" id="qname">
     <label>動作確認</label>
@@ -208,17 +218,6 @@ const query = async (path) => {
   }
 }
 
-const queryByPOST = (path, param) => {
-  console.log("url: " + origin + path_base + path);
-  console.log({param});
-  axios.post(origin + path_base + path, param).then((res) => {
-    res_data = res.data;
-    if (flag_show_result) {
-      document.getElementById('result').innerHTML = JSON.stringify(res.data);
-    }
-  });
-}
-
 const strToArray = (str) => {
   //ex. str = "abc\ndef" -> str[0] = "abc" ,str[1] = "def" と変換する関数
   strArray = str.split('\n');
@@ -276,11 +275,7 @@ const checkID = async() => {
 
   let used = res_data.includes(value);
 
-  if(pattern.test(value) && !used){
-    alert(`${value}は使用可能です`);
-  }else{
-    alert(`${value}は使用不可能です`);
-  }
+  alert(`${value}は使用${(pattern.test(value) && !used) ? "":"不"}可能です`);
 }
 
 const generateID = async() => {
@@ -310,6 +305,8 @@ const counter = (source) => {
 
 const register = async() => {
   let qid = document.querySelector("#qid").value;
+  let similarity = document.querySelector("#similarity").value;
+  let similarityflag = document.querySelector("input#toggle2").checked;
   let qname = document.querySelector("#qname").value;
   let source = document.querySelector("#source").value;
   let count = 0;
@@ -319,6 +316,8 @@ const register = async() => {
   let diff = document.querySelector("#diff").value;
   let rowSelectErrorFlag = false;
   let isWhiteSpaceAtbeginningOfLine = false;
+
+
 
   source = endLineDeteler(source);
   comment = endLineDeteler(comment);
@@ -335,13 +334,13 @@ const register = async() => {
   source = encodeURIComponent(source);
   comment = encodeURIComponent(comment);
 
-  //let queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment ? comment : "\'\'"}&paiza=${paiza}&diff=${diff ? diff : "NONE"}`;
-  const path = "/register_question";
-  const param = `qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment ? comment : "\'\'"}&paiza=${paiza}&diff=${diff ? diff : "NONE"}`;
-  // 以下では失敗
-  // const param = {qid, qname, source, count, basename, comment, paiza, diff};
-  // if (!param.comment) param.comment = "\'\'";
-  // if (!param.diff) param.diff = "NONE";
+  let queryString;
+
+  if(similarityflag){
+    queryString = `/register_question?oqid=${similarity}&qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment}&paiza=${paiza}&diff=${diff}`;
+  }else{
+    queryString = `/register_question?qid=${qid}&qname=${qname}&source=${source}&count=${count}&basename=${basename}&comment=${comment}&paiza=${paiza}&diff=${diff}`;
+  }
 
   if(confirm("登録しますか?")){
     if(rowSelectErrorFlag){
@@ -349,13 +348,9 @@ const register = async() => {
     }else if(isWhiteSpaceAtbeginningOfLine){
       alert("ソースコードの行頭に空白文字が含まれています。");
     }else{
-      await queryByPOST(path, param);
-      //await query(queryString);
-      if(res_data.error == 1){
-        alert("登録失敗");
-      }else{
-        alert("登録完了");
-      }
+      await query(queryString);
+
+      alert(`登録${(res_data.error == 1) ? "失敗":"完了"}`);
     }
   }
 }
@@ -389,6 +384,20 @@ const toggleQID = () => {
   }
 }
 
+const toggleSimilarity = () => {
+  const flag = document.querySelector('input#toggle2').checked;
+  const RIDform = document.querySelector("label[for='similarity']");
+  const RIDform2 = document.querySelector("input#similarity");
+
+  if(flag){
+    RIDform.style.display = "block";
+    RIDform2.style.display = "block";
+  }else{
+    RIDform.style.display = "none";
+    RIDform2.style.display = "none";
+  }
+}
+
 const checkBasename = async() => {
   let value = document.querySelector("#basename").value;
 
@@ -396,11 +405,7 @@ const checkBasename = async() => {
 
   let used = res_data.includes(value);
 
-  if(!used){
-    alert(`${value}は使用可能です`);
-  }else{
-    alert(`${value}は使用不可能です`);
-  }
+  alert(`${value}は使用${(used) ? "不":""}可能です`);
 }
 
 const checkPaiza = async() => {
@@ -415,11 +420,8 @@ const checkPaiza = async() => {
 
   await query("/getALLPaizaio");
   let used = res_data.includes(value);
-  if(!used){
-    alert(`${value}は使用可能です`);
-  }else{
-    alert(`${value}は使用不可能です(登録済み）`);
-  }
+
+  alert(`${value}は使用${used ? "不" : ""}可能です${used ? "(登録済み)" : ""}`);
 }
 
 const createSQL = async() => {
@@ -441,6 +443,7 @@ const res_dataToSQL = () => {
 
   for (var key in res_data) {
     const val = res_data[key];
+    if(val == null) continue;
     attributes.push(key);
     if (typeof val == 'number') {
       values.push(val);

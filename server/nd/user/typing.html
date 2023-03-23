@@ -144,19 +144,31 @@ input#start{
 let textList = "";
 let e_untyped;
 let e_typed = "";
+let q_name;
+let title = document.getElementById("f");
 let elem_untyped = document.getElementById("b");
+let elem_typed = document.getElementById("a");
 let miss_typed = document.getElementById("c");
 let start_button = document.getElementById("start");
+let note_button = document.getElementById("note");
 let miss_a = "";
+let clear = document.getElementById("d");
 let backspace = document.getElementById("e");
 let elem1 = document.getElementById("retire");
+let elem2 = document.getElementById("r_page");
+let n_page = document.getElementById("g");
+let log = document.getElementById("g");
 let problem;
 let problem_a;
+let save = problem;
 let cnt=0;
 let t_cnt=0;
 let miss_cnt = 0;
 let total_miss_cnt = 0;
+let restart = 0;
+let kc;
 let key;
+let shift_key;
 let interval_id = null;
 let time = [];
 
@@ -207,9 +219,6 @@ const getQ = async (qid) => {
 
 // URLの「id=...」に基づき問題を獲得し，表示の設定を行う
 const get_question_id = async () =>{
-  let title = document.getElementById("f");
-  let q_name;
-  
   if (location.search.indexOf("?id=")==0) {
     qid = location.search.replace(/\?id=/,"");
     await getQ(qid);
@@ -326,12 +335,6 @@ get_question_id();
 
 // タイピングの処理
 function typeGame(evt) {
-  let clear = document.getElementById("d");
-  let elem2 = document.getElementById("r_page");
-  let elem_typed = document.getElementById("a");
-  let kc;
-  // let e_typed = "";
-
   key = evt.key;
   // https://www.w3.org/TR/uievents-key/#key-attribute-value
   if (key == "Backspace")

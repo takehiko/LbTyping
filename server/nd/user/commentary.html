@@ -47,79 +47,93 @@ span:lang(en) {
 
   <button type="button" id="t_page" onclick="location.href= 'top.html'" style="font-size: 30px; width:200px; height:100px;">トップ画面へ</button>
   <button type="button" id="c_page" onclick="location.href= 'choice.html'" style="font-size: 30px;  width:230px; height:100px;">問題選択画面へ</button>
+  <button type="button" id="r_page" onclick="getSimilarQuestion_by_qid(qid)"style="font-size: 30px;  width:230px; height:100px;">補充問題へ</button>
 </div>
 
 <script src="axios.min.js"></script>
 <script type="text/javascript">
 let rid = location.search.replace(/\?id=/,"");
+let qid = null;
+let url = null;
+let commentary = "";
+let trial = 999;
+let res_data = null;
+let res_data_c1 = null;
+let res_data_c2 = null;
+let elem_msg1 = document.getElementById("msgsid1");
+let elem_msg2 = document.getElementById("msgsid2");
+let elem_msg3 = document.getElementById("msgsid3");
+let elem_retry = document.getElementById("retry_page");
 const flag_show_result = false;
 const flag_display_retry = false;
 
 // pathに基づきサーバに問い合わせる
+const origin = location.origin;
+const path_base = location.pathname.replace(/\/[^\/]*$/,"")
 const query = async (path) => {
-  const origin = location.origin;
-  const path_base = location.pathname.replace(/\/[^\/]*$/,"");
-  const res = await axios.get(origin + path_base + path);
+  let res = await axios.get(origin + path_base + path);
+  res_data = res.data;
   if (flag_show_result) {
     document.getElementById('result').innerHTML = JSON.stringify(res.data);
   }
-  return res.data;
 }
 
 // response_idに基づき問題番号・解説・URLを獲得する
 const getC1 = async (rid) => {
-  const res = await query('/getc1?id=' + rid);
-  return [res.qid, res.commentary, res.url];
+  await query('/getc1?id=' + rid);
 }
 
 // response_idに基づき実行回数を獲得する
 const getC2 = async (rid) => {
-  const res = await query('/getc2?id=' + rid);
-  return parseInt(res.trial);
+  await query('/getc2?id=' + rid);
 }
 
 // question_idに基づき問題番号・解説・URLを獲得する
 const getQ2 = async (qid) => {
-  const res = await query('/getq2?qid=' + qid);
-  return [res.qid, res.commentary, res.url];
+  await query('/getq2?qid=' + qid);
 }
 
 const get_response = async() => {
-  let rid;
-  let qid;
-  let commentary;
-  let url;
-  let trial;
-
   if (location.search.indexOf("?id=") == 0) {
     rid = location.search.replace(/\?id=/,"");
-    [qid,commentary,url] = await getC1(rid);
-    trial = await getC2(rid);
+    await getC1(rid);
+    res_data_c1 = res_data;
+    qid = res_data.qid;
+    commentary = res_data.commentary;
+    url = res_data.url;
+
+    await getC2(rid);
+    res_data_c2 = res_data;
+    trial = parseInt(res_data.trial);
   }
 
-  makeCommentary(url,commentary);
-  checkTypingAgain(trial,qid);
+  if (url) {
+    const msg1 = `<iframe src="${url}?theme=twilight" width="100%" height="500" scrolling="no" seamless="seamless"></iframe>`;
+    const msg2 = `（<a href="${url}" target="_blank">paiza.ioで実行結果を見る</a>）`;
+    elem_msg1.innerHTML = msg1 + '<br>' + msg2;
+  } else {
+    elem_msg1.style.display = "none";
+  }
+  elem_msg2.innerHTML = commentary;
+
+  if (!flag_display_retry || trial >= 2) {
+    elem_msg3.style.display = "none";
+    elem_retry.style.display = "none";
+  } else {
+    elem_msg3.style.display = "block";
+    elem_retry.style.display = "inline-block";
+    elem_retry.setAttribute("onclick", `location.href='typing.html?id=${qid}'`)
+  }
 }
 //get_response();
 
 const get_response_by_qid = async() => {
-  let qid;
-  let commentary;
-  let url;
-
   if (location.search.indexOf("?qid=") == 0) {
     qid = location.search.replace(/\?qid=/,"");
-    [qid,commentary,url]= await getQ2(qid);
+    await getQ2(qid);
+    commentary = res_data.commentary;
+    url = res_data.url;
   }
-
-  makeCommentary(url,commentary);
-}
-//get_response_by_qid();
-
-//url,commentaryをもとに、paiza.io、解説文の埋め込みを行う
-const makeCommentary = (url,commentary)=>{
-  let elem_msg1 = document.getElementById("msgsid1");
-  let elem_msg2 = document.getElementById("msgsid2");
 
   if (url) {
     const msg1 = `<iframe src="${url}?theme=twilight" width="100%" height="500" scrolling="no" seamless="seamless"></iframe>`;
@@ -130,21 +144,7 @@ const makeCommentary = (url,commentary)=>{
   }
   elem_msg2.innerHTML = commentary;
 }
-
-//「もう一度タイピングするかどうか」の判定を行い、ボタンの表示を切り替える
-const checkTypingAgain = (trial,qid) =>{
-  let elem_retry = document.getElementById("retry_page");
-  let elem_msg3 = document.getElementById("msgsid3");
-  
-  if (!flag_display_retry || trial >= 2) {
-    elem_msg3.style.display = "none";
-    elem_retry.style.display = "none";
-  } else {
-    elem_msg3.style.display = "block";
-    elem_retry.style.display = "inline-block";
-    elem_retry.setAttribute("onclick", `location.href='typing.html?id=${qid}'`)
-  }
-}
+//get_response_by_qid();
 
 // 学籍番号をクッキーから読み出す
 // (設定されていないときは，アラートのあとトップページに戻る)
@@ -169,6 +169,48 @@ const getsidAndshowCommentary = async () => {
   }
 }
 getsidAndshowCommentary();
+
+
+//現在のページのqidをもとに，補充問題を取得し，そのページに遷移するボタンを設置
+const getSimilarQuestion_by_qid = async(qid) =>{
+  // console.log(qid);
+  await query('/getSimilar?qid=' + qid);
+  
+  const next_page = res_data.question_id;
+
+  // console.log(next_page);
+
+  if(!next_page){
+    alert("補充問題が登録されていません");
+    return;
+  }
+
+  window.location.href = 'typing.html?id=' + next_page;
+}
+
+//補充問題が存在しないなら，ボタンを非表示にする
+const checkSimilarQuestion = async() => {
+
+  if(location.search.indexOf("?id=") == 0){
+    rid = location.search.replace(/\?id=/,"");
+    await getC1(rid);
+    qid = res_data.qid;
+  }else{
+    qid = location.search.replace(/\?qid=/,"");
+  }
+
+  console.log(qid);
+
+  await query('/checkSimilarQuestion?qid=' + qid);
+
+  console.log(res_data["question_id"])
+
+  if(!res_data["question_id"]){
+    document.querySelector("#r_page").style.display = "none";
+  }
+}
+checkSimilarQuestion();
+
 document.getElementById("c_page").focus();
 </script>
 </body> </html>

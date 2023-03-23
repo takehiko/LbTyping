@@ -18,8 +18,6 @@ const initClient = () => {
 const express = require('express')
 const app = express()
 const server = app.listen(sv_settings.port, () => {
-    app.use(express.json())
-    app.use(express.urlencoded({ extended: true }))
     app.use((req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin', '*')
         res.setHeader('Access-Control-Request-Method', '*')
@@ -38,10 +36,10 @@ const server = app.listen(sv_settings.port, () => {
                 .then(() => client.end())
         }
 
-        const registerQuestion = (id,qname,source,count,basename,comment,paiza,diff) => {
+        const registerQuestion = (id,qname,source,count,basename,comment,paiza,diff,o_question_id) => {
             const q = {
-                text: 'INSERT INTO question(question_id,name,Type_content,count,difficulty,basename,commentary,url) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',
-                values : [id,qname,source,count,diff,basename,comment,paiza]
+                text: 'INSERT INTO question(question_id,name,Type_content,count,difficulty,basename,commentary,url,o_question_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+                values : [id,qname,source,count,diff,basename,comment,paiza,o_question_id]
             }
 
             doQuery(q, r => res.end(JSON.stringify({"ok":1})))
@@ -113,6 +111,36 @@ const server = app.listen(sv_settings.port, () => {
         const getQuestion2 = (id) => {
             const q = {
                 text: 'select * from question where question_id=$1',
+                values: [id]
+            }
+            doQuery(q, r => {
+                if (r.rowCount <= 0) {
+                    res.end(err_msg)
+                } else {
+                    res.end(JSON.stringify(r.rows[0]))
+                }
+            })
+        }
+
+        const getSimilarQuestion = (id) => {
+            console.log("called getSimilarQuestion");
+            const q = {
+                text: 'select question_id,name,Type_content,count,difficulty from question where o_question_id=$1',
+                values: [id]
+            }
+            doQuery(q, r => {
+                if (r.rowCount <= 0) {
+                    res.end(err_msg)
+                } else {
+                    res.end(JSON.stringify(r.rows[0]))
+                }
+            })
+        }
+
+        const checkSimilarQuestion = (id) => {
+            console.log("called checkSimilarQuestion");
+            const q = {
+                text: 'select question_id from question where o_question_id=$1',
                 values: [id]
             }
             doQuery(q, r => {
@@ -412,7 +440,6 @@ const server = app.listen(sv_settings.port, () => {
         }
 
         const u = Url.parse(req.url, true)
-        u.query = { ...req.body, ...u.query }
         if (u.pathname == '' || u.pathname == '/' || u.pathname == '/1') {
             res.writeHead(200, {'Content-Type': 'text/plain; charset=UTF-8'})
             res.end("sorry")
@@ -420,12 +447,6 @@ const server = app.listen(sv_settings.port, () => {
             res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'})
             const Fs = require('fs')
             const html = Fs.readFileSync("db.html")
-            res.end(html)
-        } else if (u.pathname == '/register') {
-            console.log("question register called");
-            res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'})
-            const Fs = require('fs')
-            const html = Fs.readFileSync("register/register.html")
             res.end(html)
         } else if (u.pathname.match(/\.(html|js)$/)) {
             res.writeHead(200, {'Content-Type': 'text/html; charset=UTF-8'})
@@ -485,6 +506,10 @@ const server = app.listen(sv_settings.port, () => {
                 getQuestion(u.query.qid ? u.query.qid : u.query.id)
             } else if (u.pathname == '/getq2' && (u.query.id || u.query.qid)) {
                 getQuestion2(u.query.qid ? u.query.qid : u.query.id)
+            } else if (u.pathname == '/getSimilar' && (u.query.qid)){
+                getSimilarQuestion(u.query.qid)
+            } else if (u.pathname == '/checkSimilarQuestion' && (u.query.qid)){
+                checkSimilarQuestion(u.query.qid)
             } else if (u.pathname == '/getrqs' && (u.query.all !== undefined)) {
                 getReplayQuestions(u.query.all === 'true')
             } else if (u.pathname == '/startr' && u.query.qid && u.query.sid) {
@@ -514,15 +539,11 @@ const server = app.listen(sv_settings.port, () => {
             } else if (u.pathname == '/getc2' && (u.query.id || u.query.rid)) {
                 getCommentary2(u.query.rid ? u.query.rid : u.query.id)
             } else if (u.pathname == '/register_question'){
-                // console.logの使用は要見直し
                 console.log("register_questionに関するqueryを受信");
                 console.log(u.query);
-                console.log(req);
                 if(u.query.qid && u.query.qname && u.query.source && u.query.count && u.query.basename && u.query.comment && u.query.paiza && u.query.diff){
                     console.log("if passed");
-                    registerQuestion(u.query.qid,u.query.qname,u.query.source,u.query.count,u.query.basename,u.query.comment,u.query.paiza,u.query.diff);
-                } else {
-                    res.end("sorry: " + JSON.stringify(u))
+                    registerQuestion(u.query.qid,u.query.qname,u.query.source,u.query.count,u.query.basename,u.query.comment,u.query.paiza,u.query.diff,(u.query.oqid ? u.query.oqid : null));
                 }
             } else if (u.pathname == '/getALLQuestionID'){
                 getALLQuestionID();
