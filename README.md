@@ -1,8 +1,8 @@
 # Learning by Typing (LbTyping)
 
-「写経型学習（写経型プログラミング）」のためのWebアプリケーションです。
+LbTyping is a web application for "learning programming by typing", which is also known as "shakyo-style learning" in Japan.
 
-## 動かすには
+## How to run
 
 ```sh
 git clone https://github.com/takehiko/LbTyping.git
@@ -11,13 +11,13 @@ docker-compose build
 docker-compose up -d
 ```
 
-ブラウザで、http&#58;//ホスト名（またはlocalhost）:21337/top.htmlにアクセスしてください。
+Access http&#58;//hostname (or localhost):21337/top.html in your browser.
 
-## 使い方など
+## How to use
 
-トップページでは、学籍番号として適当な数字を打ち込んでから、「設定する」のボタンを押してください。問題選択画面に移動できるようになります。そこで1問を選ぶと、タイピング画面になります。
+On the top page, type in the appropriate student number and then press the "Set" button. You will be able to move to the question choice screen. Choose one question there, and you will be taken to the typing screen.
 
-タイプすべき数行のプログラムコードが、薄く表示されます。順に正しくタイプすると、色が変わっていきます。またミスタイプは赤字で表示され、バックスペースキーを押して削除しないといけません。すべて打ち込むと、タイプ時間と誤タイプ数が表示されます。また、何ミリ秒でどのキーを押したかを文字ごとに記録し、データベースに格納します。
+A few lines of program code that should be typed are displayed in a lighter color. As you type correctly in sequence, the characters change the color. Mistakes are also displayed in red, and you must delete them by pressing the backspace key. When you have typed everything, the typing time and the number of erroneous types are displayed. At the same time, the system records which key was pressed in how many milliseconds for each character and stores it in the database.
 
 ![Scene 1: start](https://user-images.githubusercontent.com/57928/113510678-ee440400-9596-11eb-9fa5-65d0ab3a7b31.png)
 
@@ -27,19 +27,12 @@ docker-compose up -d
 
 ![Scene 4: completed](https://user-images.githubusercontent.com/57928/113510690-f9972f80-9596-11eb-9396-07fc337ca52d.png)
 
-プログラムコードは、あらかじめ登録されています。和歌山大学システム工学部の1年生向け授業で学生にタイピングしてもらった、C言語で書かれた6つのプログラムです。将来的には、プログラムファイルから簡単に登録するための仕組みを取り入れます。
+Program codes are pre-registered. These are 17 programs written in C language, which were typed by students in a class for first-year students of the Faculty of Systems Engineering, Wakayama University. In the future, we will incorporate a mechanism for easy registration from program files.
 
-実行にあたってはDocker Composeを使用します。クライアントとサーバの計算機が異なっていても（その場合にはサーバにのみDocker Composeが必要となり、クライアントはブラウザのみでかまいません）、同じ（スタンドアロン）でも、動作します。docker-compose.ymlを編集すれば、終了しても、データベースに格納されたデータ（実施日時や結果など）を保持することができます。
+Docker Compose is used for the system execution. It works even if the client and server compute on different machines (The server needs Docker Compose, and the client only needs a browser.) or the same (i.e. standalone). You can edit docker-compose.yml to preserve the typing data stored in the database.
 
-## 謝辞ほか
+## Acknowledgment
 
-本システムの開発は、JSPS科研費[19K12267](https://kaken.nii.ac.jp/ja/grant/KAKENHI-PROJECT-19K12267/)の助成を受けたものです。
+This work was supported by JSPS KAKENHI Grant Number [19K12267](https://kaken.nii.ac.jp/ja/grant/KAKENHI-PROJECT-19K12267/).
 
-開発（プログラムコードおよび解説の作成も）にあたっては、和歌山大学システム工学部 村川研究室学生の協力を得ました。以下にて成果を発表しています。
-
-- 小髙真太郎, 窪田雅崇, 村川猛彦: 写経型学習に基づくC言語学習支援システムの開発, 2020年電子情報通信学会総合大会, 情報・システム講演論文集1, p.121 (2020).
-- 小髙真太郎, 村川猛彦: 写経型プログラミングに基づく学習支援システムの構築, 2021年電子情報通信学会総合大会, 情報・システム講演論文集1, p.92 (2021).
-- 村川猛彦: タイピングによるプログラミング学習のためのソースコード提示に関する一検討, 情報知識学会誌, Vol.31, No.2, pp.244-251 (2021). https://doi.org/10.2964/jsik_2021_033
-- 村川猛彦, 石村隆博, 田中和季, 山下優真: タイピングによるプログラミング学習の機能追加および授業実践, 情報処理学会第84回全国大会, 2H-04, 第4分冊, pp.521-522 (2022).
-- 村川猛彦, 堀口雄紀: タイピングによるプログラミング学習の利用を促す試み, 2022年電子情報通信学会総合大会, D-15-7 (2022).
-- 村川猛彦, 田中和季: タイピングによるプログラミング学習のコンテンツ追加および授業実践, 情報処理学会第85回全国大会, 1H-02, 第4分冊, pp.405-406 (2023).
+The students of Murakawa Lab. in Wakayama University assisted in the system development and prepared the program code with their explanations.

@@ -5,7 +5,7 @@
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="expires" content="0" />
 <meta charset="UTF-8">
-<title>プログラミングを学ぶ - Top</title>
+<title>LbTyping - Top</title>
 
 <style type="text/css">
 div {
@@ -38,26 +38,23 @@ div {
 </head>
 <body>
 <div class ="header">
-  <div class="header-logo">プログラミングを学ぶ</div>
+  <div class="header-logo">LbTyping</div>
 </div>
 
 <div class="wrapper">
     <p>
-      本システムは、「写経型学習（写経型プログラミング）」のための<br>
-      Webアプリケーションです。数行のプログラムコードを打ち込むと、<br>
-      タイプ時間と誤タイプ数を表示します。<br>
+      LbTyping is a web application for "learning programming by typing", which is also known as "shakyo-style learning" in Japan. When you type a few lines of program code, the results screen displays the typing time and the number of erroneous types.<br>
 <br>
-    実施にあたっての注意点は、タイプ開始前に「注意事項」のボタンを設けておりますので、<br>
-    そこでボタンを押してご確認ください。<br>
+      Click the "Notes" button, which is displayed before the start of the typing, and read it.<br>
     </p>
-    <p id="msgsid1">はじめに学生番号を入力してください</p>
+    <p id="msgsid1">Enter your student number first.</p>
     <p>
-    学生番号 <input type="text" name="sid" id="sid" size="10">
-    <input type="button" value="設定する" onclick="setsid()">
+    Student Number <input type="text" name="sid" id="sid" size="10">
+    <input type="button" value="Set" onclick="setsid()">
     </p>
     
-    <p id="msgsid2"><button type="button" onclick="location.href='choice.html'">問題選択画面へ</button></p>
-    <p id="msgsid3"><button type="button" onclick="location.href='replay-q.html'">リプレイ問題選択画面へ</button></p>
+    <p id="msgsid2"><button type="button" onclick="location.href='choice.html'">Choice</button></p>
+    <p id="msgsid3"><button type="button" onclick="location.href='replay-q.html'">Replay</button></p>
 
 <script>
 // グローバル変数（いくつかの関数内で参照・更新する）
