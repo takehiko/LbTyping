@@ -5,7 +5,7 @@
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="expires" content="0" />
 <meta charset="UTF-8">
-<title>プログラミングを学ぶ - Type!</title>
+<title>LbTyping - Type!</title>
 
 <style type="text/css">
 @keyframes borderFlashing {
@@ -122,7 +122,7 @@ input#start{
   <h2 class="problem1"></h2>
   
   <div id="typing">
-  <input type="button" id="start" value="スタート" onclick="OnButtonClick();"/>
+  <input type="button" id="start" value="Start" onclick="OnButtonClick();"/>
   <div id="timer"></div>
   <span id = "a" class= "typed"></span><span id = "c" class= "misstyped"></span><span id = "b" class= "untyped"></span>
   <div id = "e" class= "backspace"></div>
@@ -130,12 +130,12 @@ input#start{
   </div>
   <p id = "g" class= "log"></p>
   
-  <button type="button" id="retire" name="name" value="value" onclick="confirmation()" style="font-size: 30px;  width:200px; height:100px; position: relative; left: 750px; top: -10px">あきらめる</button>
-  <button type="button" id="r_page" name="name" value="value" onclick="location.href= `result.html?id=${rid}`" style="font-size: 30px;  width:250px; height:100px; position: relative; left: 750px; top: -10px; display:none;">結果画面へ</button>
+  <button type="button" id="retire" name="name" value="value" onclick="confirmation()" style="font-size: 30px;  width:200px; height:100px; position: relative; left: 750px; top: -10px">Give up</button>
+  <button type="button" id="r_page" name="name" value="value" onclick="location.href= `result.html?id=${rid}`" style="font-size: 30px;  width:250px; height:100px; position: relative; left: 750px; top: -10px; display:none;">Results</button>
 </div>
 <div id="wrapper2" style="position: relative; left: 0px; top: 10px">
-  <input type="button" id="bnote" value="注意事項を表示する" style="font-size: 20px" onclick="onNoteClick();">
-  <div id="note" style="font-size: 20px; display: none"><ul><li>上の枠がすべて表示されるよう、ブラウザのサイズを調節してください。</li><li>スタートボタンを押して3秒後に、枠内にプログラムコードが表示されます。正しく打つと次の文字に進みます。最後まで入力できたら終了です。</li><li>大文字・小文字は区別されます。また「<span lang="en" style="font-family: Courier New; font-size: 24px;">\</span>」が表示される箇所は、円記号(￥)を、<br>「<span lang="en" style="font-family: Courier New; font-size: 24px;">*</span>」が表示される箇所は、アスタリスクを、打ち込んでください。</li><li>空白と改行はタイプしなくてかまいません。タイプしても無視されます。</li><!--テンキーは使用できません。--><li>カッコ等の先行入力や自動補完の機能はありません。表示されている順にタイピングしてください。</li></ul></div>
+  <input type="button" id="bnote" value="Show notes" style="font-size: 20px" onclick="onNoteClick();">
+  <div id="note" style="font-size: 20px; display: none"><ul><li>Adjust the size of your browser so that the entire top frame is visible.</li><li>Three seconds after pressing the &quot;Start&quot; button, a program code appears in the frame. If you type correctly, you will advance to the next character. When you type until the end, you are finished.</li><li>The text is case sensitive.</li><li>You don't have to type spaces or line breaks. They will be ignored if typed.</li><!--テンキーは使用できません。--><li>There is no feature for auto-completion of parentheses. Type in the order shown.</li></ul></div>
 </div>
 
 <script src="axios.min.js"></script>
@@ -194,7 +194,7 @@ const getsid = () => {
     }
   });
   if (!sid) {
-    if (window.confirm('学籍番号を設定していません。トップページに戻りますか？\n（キャンセルを押すと解答がサーバに記録されません。）')) {
+    if (window.confirm('A student number is missing. Do you want to return to the top page? If you press Cancel, your answers will not be recorded on the server.')) {
       location.href = 'top.html';
     }
   }
@@ -314,10 +314,10 @@ function onNoteClick() {
   const note = document.getElementById("note");
   if (note.style.display == "none") {
     note.style.display = "block";
-    bnote.value = "注意事項を閉じる";
+    bnote.value = "Close notes";
   } else {
     note.style.display = "none";
-    bnote.value = "注意事項を表示する";
+    bnote.value = "Show notes";
   }
 }
 
@@ -401,8 +401,10 @@ function typeGame(evt) {
         miss_cnt--;
         if (miss_cnt == 0) {
           backspace.innerHTML = "";
+        } else if (miss_cnt == 1) {
+          backspace.innerHTML = 'Press the backspace key.';
         } else {
-          backspace.innerHTML = `backspaceを${miss_cnt}回押してください`;
+          backspace.innerHTML = `Press the backspace key ${miss_cnt} times.`;
         }
       }
     } else if (key.length == 1) {
@@ -430,7 +432,11 @@ function missType() {
   miss_typed.innerHTML = miss_a;
   miss_cnt++;
   total_miss_cnt++;
-  backspace.innerHTML = `backspaceを${miss_cnt}回押してください`;
+  if (miss_cnt == 1) {
+    backspace.innerHTML = 'Press the backspace key.';
+  } else {
+    backspace.innerHTML = `Press the backspace key ${miss_cnt} times.`;
+  }
 }
 
 function outputTime() {
@@ -456,7 +462,7 @@ function changeColor() {
 }
 
 function confirmation() {
-   ret = confirm("問題の解答を中断して選択画面に戻りますか？");
+   ret = confirm("Do you want to interrupt your typing and return to the selection screen?");
    if (ret == true){
       location.href= 'choice.html';
    }

@@ -5,7 +5,7 @@
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="expires" content="0" />
 <meta charset="UTF-8">
-<title>プログラミングを学ぶ - Result</title>
+<title>LbTyping - Results</title>
 
 <style type="text/css">
 div {
@@ -42,25 +42,25 @@ div#result{
 </head>
 <body>
   <div class ="header">
-    <p class="header-logo">結果発表</p>
+    <p class="header-logo">Results</p>
   </div>
   <div id="result">
-    <div id= "a" class="problem" style=" font-size: 30px">問題: </div>
-    <div id= "b" class="chalacter_number" style="font-size: 30px">入力文字数: </div>
-    <div id= "c" class="miss_cnt" style="font-size: 30px">誤タイプ数: </div>
-    <div id= "d" class="Time" style="font-size: 30px">タイプ時間: </div>
+    <div id= "a" class="problem" style=" font-size: 30px">Code: </div>
+    <div id= "b" class="chalacter_number" style="font-size: 30px">Type(s): </div>
+    <div id= "c" class="miss_cnt" style="font-size: 30px">Error(s): </div>
+    <div id= "d" class="Time" style="font-size: 30px">Type time: </div>
     <a href="#" onclick="toggle_rank();" id="e0" style="display:none"><div id= "e" class="Judge" style="font-size: 30px"></div></a>
     <div>
-      <button type="button" id="c2_page" onclick="location.href= `commentary.html?id=${rid}`" style="font-size: 30px; width:200px; height:100px;margin: 0 auto">解説画面へ</button>
-      <button type="button" id="t_page" onclick="location.href= 'top.html'" style="font-size: 30px; width:200px; height:100px;margin: 0 auto">トップ画面へ</button>
-      <button type="button" id="c_page" onclick="location.href= 'choice.html'" style="font-size: 30px;  width:230px; height:100px;display: inline-block; left: 200px;margin: 0 auto">問題選択画面へ</button>
+      <button type="button" id="c2_page" onclick="location.href= `commentary.html?id=${rid}`" style="font-size: 30px; width:200px; height:100px;margin: 0 auto">Commentary</button>
+      <button type="button" id="t_page" onclick="location.href= 'top.html'" style="font-size: 30px; width:200px; height:100px;margin: 0 auto">Top</button>
+      <button type="button" id="c_page" onclick="location.href= 'choice.html'" style="font-size: 30px;  width:230px; height:100px;display: inline-block; left: 200px;margin: 0 auto">Choice</button>
     </div>
   </div>
   
   <dialog id="dialog">
     <p id= "f" class="Rankup" style="font-size: 30px"></p>
-    <p id= "g" class="Border" style="font-size: 20px">各ランクの条件<br></p>
-    <button type="button" onclick="document.getElementById('dialog').close();" style="font-size: 30px">閉じる</button>
+    <p id= "g" class="Border" style="font-size: 20px">Requirements:<br></p>
+    <button type="button" onclick="document.getElementById('dialog').close();" style="font-size: 30px">Close</button>
   </dialog>
 
 <script src="axios.min.js"></script>
@@ -123,7 +123,7 @@ const get_response_id = async() => {
     diffTime = finish_at - start_at;
     diffSecond = Math.floor(diffTime / 1000);
     const diffMill = diffTime - diffSecond * 1000;
-    time.insertAdjacentHTML(be, diffSecond + "秒" + diffMill);
+    time.insertAdjacentHTML(be, diffSecond + "." + diffMill + " sec");
 
     await getQ(qid);
     q_count = res_data.count;
@@ -147,30 +147,30 @@ const setup_rank = () => {
 
   if (m_count <= m2) {
     if (diffSecond < t2) {
-      judge.insertAdjacentHTML(be, "【ランクA】この調子で頑張ろう！");
-      rankup.insertAdjacentHTML(be, "一番上のランク！この調子！");
+      judge.insertAdjacentHTML(be, "&lt;A&gt; Let's keep it up!");
+      rankup.insertAdjacentHTML(be, "The highest rank.");
     } else if (t_gap_d > 0) {
-      judge.insertAdjacentHTML(be, "【ランクD】もう少し速くタイピング<br>できるように頑張ろう！");
-      rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + t_gap_d + "秒タイムを縮めよう！");
+      judge.insertAdjacentHTML(be, "&lt;D&gt; Let's work on typing a little faster!");
+      rankup.insertAdjacentHTML(be, "Shorten your type time by " + t_gap_d + " more second(s) to move up in rank.");
     } else {
-      judge.insertAdjacentHTML(be, "【ランクB】正確性はいい感じ。<br>このままタイムを短くしていこう！");
-      rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + t_gap + "秒タイムを縮めよう！");
+      judge.insertAdjacentHTML(be, "&lt;B&gt; Accuracy looks good. Let's keep the time short!");
+      rankup.insertAdjacentHTML(be, "Shorten your type time by " + t_gap + " more second(s) to move up in rank.");
     }
   } else {
     if (diffSecond < t2) {
-      judge.insertAdjacentHTML(be, "【ランクC】あせらずミスを少なく<br>なるように心がけよう！");
-      rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + m_gap + "回ミスを減らそう");
+      judge.insertAdjacentHTML(be, "&lt;C&gt; Let's try not to rush and make fewer mistakes!");
+      rankup.insertAdjacentHTML(be, "Reduce " + m_gap + " more type error(s) to move up in rank.");
     } else {
-      judge.insertAdjacentHTML(be, "【ランクD】ゆっくりでもミスが少なく<br>なるようにタイプしてみよう！");
-      rankup.insertAdjacentHTML(be, "ランクアップするには<br>あと" + m_gap + "回ミスを減らそう");
+      judge.insertAdjacentHTML(be, "&lt;D&gt; Let's try to type slowly but with fewer mistakes!");
+      rankup.insertAdjacentHTML(be, "Reduce " + m_gap + " more type error(s) to move up in rank.");
     }
   }
 
   border.insertAdjacentHTML(be,
-    "A：タイプ時間" + t2 + "秒以内 かつ 誤タイプ数" + m2 + "回以下<br>"
-    + "B：タイプ時間" + q_count + "秒以内 かつ 誤タイプ数" + m2 + "回以下<br>"
-    + "C：タイプ時間" + t2 + "秒以内<br>"
-    + "D：上記以外");
+    "&lt;A&gt; Type time within " + t2 + " sec and type error within " + m2 + " times.<br>"
+    + "&lt;B&gt; Type time within " + q_count + " sec and type error within " + m2 + " times.<br>"
+    + "&lt;C&gt; Type time within " + t2 + " sec.<br>"
+    + "&lt;D&gt; Otherwise.");
 }
 
 const toggle_rank = () => {
