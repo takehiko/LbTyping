@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>プログラミングを学ぶ - Performance</title>
+<title>LbTyping - Past Record</title>
 <script src="https://www.w3schools.com/lib/w3.js"></script>
 </head>
 <style>
@@ -125,25 +125,25 @@ button#c_page{
 
 <body>
 <div class ="header">
-  <p class="header-logo">実績確認</p>
+  <p class="header-logo">Past Record</p>
 </div>
 
 <div class="wrapper">
-  <span>あなたの学生番号 </span>
+  <span>Suident number </span>
   <span id="si" name="sid"></span>
   <span id="sid" name="sid"></span>
   <div id="today" name="today"></div>
   <!--<input type="text" name="sd" id="sd"  size="10">-->
   <!--<input type="button" value="日付検索" onclick="kensaku()">-->
-  <input type="button" value="本日の実績を表示" onclick="showResponseByDay()">
-  <input type="button" value="最新の３件" onclick="kouzyun()">
-  <input type="button" value="今までの実績を表示" onclick="showResponseByStudent()"><br>
+  <input type="button" value="Today" onclick="showResponseByDay()">
+  <input type="button" value="Latest 3 records" onclick="kouzyun()">
+  <input type="button" value="All" onclick="showResponseByStudent()"><br>
   
   <hr>
   <div id="result"></div>
   <p>最後までタイプした課題のみを表示しています。<br>デフォルトは最新の３件ですが、上のボタンで変更可能です。<br>たまに表の表示が乱れることがあります。その際には、再読み込みをしてください。</p>
   <hr>
-  <button type="button" id="c_page" onclick="location.href= 'choice.html'">問題選択画面へ</button>
+  <button type="button" id="c_page" onclick="location.href= 'choice.html'">Tasks</button>
 </div>
 
 <script src="axios.min.js"></script>
@@ -183,9 +183,9 @@ const todaytable = () => {
   var month = hiduke.getMonth() + 1;
   var week = hiduke.getDay();
   var day = hiduke.getDate();
-  var yobi= new Array("日", "月", "火", "水", "木", "金", "土");
+  var yobi= new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
   var to=year+'-'+('0'+month).slice(-2)+'-'+('0'+day).slice(-2);
-  document.getElementById('today').innerHTML = "本日は " + to;
+  document.getElementById('today').innerHTML = "Today: " + to;
 }
 
 // res_dataの値に基づき表を作成するdocument.getElementById('sid').innerHTML='sid';
@@ -195,7 +195,7 @@ const showResponseTable = () => {
   const a = (res_data instanceof Array) ? res_data : [res_data];
   var i=0;
   var narabi = [];
-  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col" align="right">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">Date</th><th scope="col">Task</th><th scope="col" align="right">Miss type</th><th scope="col">Type time</th></tr>';
   a.forEach((s) => {
     narabi[i] = [ toshiString(s.finish_at),
                   tString(s.start_at),
@@ -223,7 +223,7 @@ const showResponseTable = () => {
   table += '<table></div>'
   document.getElementById('result').innerHTML =table ;
   if (!narabi[0][2]) {
-    document.getElementById('result').innerHTML = "実績がありませんでした";
+    document.getElementById('result').innerHTML = "No record";
   } else {
     document.getElementById('result').innerHTML = table;
   }
@@ -233,15 +233,17 @@ const showResponseTable = () => {
 // "2019年9月3日(火) 22時10分0秒"のような文字列(JST)に変換する
 const dateString = (d) => {
   if (d == null || d == '') return null_string;
-  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  //const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  const daytable = new Array("(Sun)", "(Mon)", "(Tue)", "(Wed)", "(Thu)", "(Fri)", "(Sat)");
   const date = new Date(d);
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日${daytable[date.getDay()]} ${date.getHours()}時${date.getMinutes()}分${date.getSeconds()}秒`
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}-${daytable[date.getDay()]} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
 }
 
 //時間のみに変更
 const keikaString = (d) => {
   if (d == null || d == '') return null_string;
-  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  //const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  const daytable = new Array("(Sun)", "(Mon)", "(Tue)", "(Wed)", "(Thu)", "(Fri)", "(Sat)");
   const date = new Date(d);
   return ` ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
 }
@@ -249,7 +251,7 @@ const keikaString = (d) => {
 //日付表示に変更
 const hiString = (d) => {
   if (d == null || d == '') return null_string;
-  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  //const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
   const date = new Date(d);
   return `${date.getMonth() + 1}月${date.getDate()}日`
 }
@@ -257,21 +259,21 @@ const hiString = (d) => {
 //年月日付を表示
 const toshiString = (d) => {
   if (d == null || d == '') return null_string;
-  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  //const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
   const date = new Date(d);
   return `${date.getFullYear()}-${('0'+(date.getMonth() + 1)).slice(-2)}-${('0'+date.getDate()).slice(-2)}`
 }
 
 const timeString = (d) => {
   if (d == null || d == '') return null_string;
-  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  //const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
   const date = new Date(d);
   return ` ${date.getHours()}時${date.getMinutes()}分${date.getSeconds()}秒`
 }
 
 const tString = (d) => {
   if (d == null || d == '') return null_string;
-  const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
+  //const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
   const date = new Date(d);
   return ` ${('0'+date.getHours()).slice(-2)}:${('0'+date.getMinutes()).slice(-2)}:${('0'+date.getSeconds()).slice(-2)}`
 }
@@ -286,7 +288,7 @@ const worktimeString = (d1, d2) => {
   const msec = t12 - sec * 1000;
   const min = Math.floor(sec / 60);
   sec -= min * 60
-  return min + '分' + sec + '秒';
+  return min + ' min ' + sec + ' sec';
 }
 
 // stringをHTMLエスケープして返す
@@ -409,7 +411,7 @@ const getsidAndshowQuestion = async () => {
     if (v[0] == 'sid') sid = v[1];
   });
   if (sid == null) {
-    if (window.confirm('学籍番号を設定していません。トップページに戻りますか？\n（キャンセルを押すと解答がサーバに記録されません。）')) {
+    if (window.confirm('A student number is missing. Do you want to return to the top page? If you press Cancel, your answers will not be recorded on the server.')) {
       location.href = 'top.html';
     }
   } else {
@@ -443,7 +445,7 @@ const showResponsekyouTable = () => {
   var narabi = [];
   const a = (res_data instanceof Array) ? res_data : [res_data];
 
-  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1" ><tr><th scope="col"">日付<i class="fa fa-sort"></i></th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1" ><tr><th scope="col"">Date<i class="fa fa-sort"></i></th><th scope="col">Task</th><th scope="col">Miss type</th><th scope="col">Type time</th></tr>';
   a.forEach((s) => {
     narabi[i]=[toshiString(s.finish_at),tString(s.start_at),s.question_id,s.miss_count,worktimeString(s.start_at, s.finish_at)];
     i++;
@@ -473,9 +475,9 @@ const showResponsekyouTable = () => {
   table += '<table></div>';
   document.getElementById('result').innerHTML += table;
   if(!narabi[0][2]) {
-    document.getElementById('result').innerHTML = "実績がありませんでした";
+    document.getElementById('result').innerHTML = "No record";
   } else if (h < 1) {
-    document.getElementById('result').innerHTML = "条件に一致する実績がありませんでした";
+    document.getElementById('result').innerHTML = "No record found";
   } else {
     document.getElementById('result').innerHTML = table;
   }
@@ -500,7 +502,7 @@ const showResponsekensakuTable = () => {
   var v=document.getElementById('sd').value; //コメントフォームの値を格納
   const a = (res_data instanceof Array) ? res_data : [res_data];
 
-  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">Date</th><th scope="col">Task</th><th scope="col">Miss type</th><th scope="col">Type time</th></tr>';
   var i = 0;
   var narabi = [];
   var h = 0;
@@ -541,9 +543,9 @@ const showResponsekensakuTable = () => {
 
   document.getElementById('result').innerHTML += table;
   if (!narabi[0][2]) {
-    document.getElementById('result').innerHTML = "実績がありませんでした";
+    document.getElementById('result').innerHTML = "No record";
   } else if (h < 1) {
-    document.getElementById('result').innerHTML = "条件に一致する実績がありませんでした";
+    document.getElementById('result').innerHTML = "No record found";
   } else {
     document.getElementById('result').innerHTML = table;
   }
@@ -568,9 +570,9 @@ const showResponsekouzyunTable = () => {
   clearResult()
   const a = (res_data instanceof Array) ? res_data : [res_data];
   if (res_data == null) {
-    document.getElementById('result').innerHTML = "実績がありませんでした";
+    document.getElementById('result').innerHTML = "No record";
   } else {
-    let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+    let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">Date</th><th scope="col">Task</th><th scope="col">Miss type</th><th scope="col">Type time</th></tr>';
     var i = 0;
     var h = 0;
     var narabi = [];
@@ -608,7 +610,7 @@ const showResponsekouzyunTable = () => {
     table += '<table></div>'
 
     if (!narabi[0][2]) {
-      document.getElementById('result').innerHTML = "実績がありませんでした";
+      document.getElementById('result').innerHTML = "No record";
     } else {
       document.getElementById('result').innerHTML =table;
     }
@@ -621,7 +623,7 @@ const showQuestionForChoice = () => {
   //clearResult()
   const a = (res_data instanceof Array) ? res_data : [res_data];
   if (a.forEach) {
-    let table = '<br><table border="1"><tr><th>question_id</th><th>名前</th><th>difficulty</th></tr>';
+    let table = '<br><table border="1"><tr><th>question_id</th><th>Task</th><th>difficulty</th></tr>';
     res_data.forEach((s) => {
       mondai[u] = [s.question_id, s.name, s.difficulty];
       u++;
@@ -649,7 +651,7 @@ const showResponsemon = () => {
 
   const a = (res_data instanceof Array) ? res_data : [res_data];
 
-  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">日付</th><th scope="col">問題</th><th scope="col">誤タイプ数</th><th scope="col">解答時間</th></tr>';
+  let table = '<div style="height:300px; width:100%; overflow-y:scroll; overflow-:scroll;"><br><table border="1"><tr><th scope="col">Date</th><th scope="col">Task</th><th scope="col">Miss type</th><th scope="col">Type time</th></tr>';
   var i = 0;
   var narabi = [];
 
