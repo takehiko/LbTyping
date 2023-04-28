@@ -5,7 +5,7 @@
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="expires" content="0" />
 <meta charset="UTF-8">
-<title>プログラミングを学ぶ - Replay!!</title>
+<title>LbTyping - Replay!!</title>
 <style type="text/css">
 .qname {
   font-family: serif;
@@ -42,27 +42,27 @@
 </head>
 <body>
 <header class ="header">
-  <p class="header-logo">リプレイ</p>
+  <p class="header-logo">Replay</p>
 </header>
 
 <div style="margin-bottom: 10px;">
     <div style="margin: 0 auto; max-width:1500px;">
         <div id="f" class="qname" style="font-size:40px"></div>
         <div style="font-size:20px">
-            <span style="font-size: 24px">タイム</span>
+            <span style="font-size: 24px">Time: </span>
             <span class="cnter">
-                【 <span id = "cnter_m">00</span> : <span id = "cnter_s">00.000</span> 】
-            </span>
-            <span id = "cnter_err" style = "display:none">エラー</span>
-            <input type="button" id="start" value="スタート" onclick="OnButtonClick();"/>
-            <input type="button" value="リセット" onclick="location.reload();"/>
-            <input type="button" id="sebutton" value="効果音あり" onclick="toggleSE();"/>
+                <span id = "cnter_m">00</span> min <span id = "cnter_s">00.000</span> sec
+            </span><br>
+            <span id = "cnter_err" style = "display:none">Error</span>
+            <input type="button" id="start" value="Start" onclick="OnButtonClick();"/>
+            <input type="button" value="Reset" onclick="location.reload();"/>
+            <input type="button" id="sebutton" value="Sound on" onclick="toggleSE();"/>
         </div>
     </div>
 
     <div style="display: flex; justify-content: center">
         <div style="width: 48%; margin: 20px">
-            <span style="font-size: 24px">自分</span>
+            <span style="font-size: 24px">You:</span>
             <div id="typing" style="padding: 10px; border: 1px solid #333333; font-family: Courier New">
                 <span class= "typed"></span><span class= "misstyped"></span><span class= "untyped"></span>
                 <div class= "backspace">&nbsp</div>
@@ -70,7 +70,7 @@
             </div>
         </div>
         <div style="width: 48%; margin: 20px">
-            <span style="font-size: 24px">手本</span>
+            <span style="font-size: 24px">Rival:</span>
             <div id="typing2" style="padding: 10px; border: 1px solid #333333; font-family: Courier New">
               <span class= "typed"></span><span class= "misstyped"></span><span class= "untyped"></span>
               <div class= "backspace">&nbsp</div>
@@ -79,11 +79,11 @@
         </div>
     </div>
 
-    <div style="margin: 20px 100px">
-<!--        <p><button type="button" onclick="location.href='top.html'">トップ画面へ</button></p>-->
-        <p><button type="button" onclick="location.href='choice.html'">問題選択画面へ</button></p>
-        <p><button type="button" onclick="location.href='replay-q.html'">リプレイ問題選択画面へ</button></p>
-        <p>効果音はOtoLogicの素材を使用しています。ボタンで効果音あり・なしを切り替えられます。</p>
+    <div style="margin: 10px 0px"> 
+      <!--    <p><button type="button" onclick="location.href='top.html'">トップ画面へ</button></p>-->
+          <button type="button" onclick="location.href='choice.html'">Back to Task</button>
+          <button type="button" onclick="location.href='replay-q.html'">Back to Replay task</button>
+          <p>The sound effects are made from the sound material by OtoLogic. Pressing the sound effect button changes or mutes it.</p>
     </div>
 </div>
 
@@ -207,7 +207,11 @@ class Replay {
       this.#miss_a += key
       this.#miss_typed.innerHTML = this.#miss_a
       this.#miss_cnt++
-      this.#backspace.innerHTML = `backspaceを${this.#miss_cnt}回押してください`;
+      if (this.#miss_cnt == 1) {
+        this.#backspace.innerHTML = 'Press the backspace key.';
+      } else {
+        this.#backspace.innerHTML = `Press the backspace key ${this.#miss_cnt} times.`;
+      }
     }
 
     for (const [char, time] of times) {
@@ -221,8 +225,10 @@ class Replay {
           this.#miss_cnt--
           if (this.#miss_cnt == 0) {
             this.#backspace.innerHTML = "&nbsp"
+          } else if (this.#miss_cnt == 1) {
+            this.#backspace.innerHTML = 'Press the backspace key.';
           } else {
-            this.#backspace.innerHTML = `backspaceを${this.#miss_cnt}回押してください`
+            this.#backspace.innerHTML = `Press the backspace key ${this.#miss_cnt} times.`;
           }
           se(this.#se_index);
         }
@@ -235,7 +241,7 @@ class Replay {
       }
     }
     stopCounter()
-    this.#clear.innerHTML = "Complete!! (タイム: " + this.#res.diffTime + ")"; 
+    this.#clear.innerHTML = "Complete!! (" + this.#res.diffTime + " sec)"; 
   }
 }
 
@@ -344,10 +350,10 @@ const se = (se_index = 0) => {
 const toggleSE = () => {
   if (flag_se) {
     flag_se = false;
-    document.getElementById("sebutton").value = "効果音なし";
+    document.getElementById("sebutton").value = "Mute";
   } else {
     flag_se = true;
-    document.getElementById("sebutton").value = "効果音あり";
+    document.getElementById("sebutton").value = "Sound on";
   }
 }
 
