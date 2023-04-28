@@ -81,3 +81,4 @@ INSERT INTO model(response_id) VALUES(1000000012);
 --INSERT INTO model(response_id) VALUES(1000000014);
 --INSERT INTO model(response_id) VALUES(1000000015);
 
+--INSERT INTO question(question_id,name,type_content,count,difficulty,basename,commentary,url) VALUES (499999,'(1) For statement','for (i = -2; i <= 2; i++) {',19,'NONE','forstatement','A for statement. The variable i ranges from -2 to 2.','https://paiza.io/projects/e/SW85LQcKgOs3P4Cs4R5etQ');
