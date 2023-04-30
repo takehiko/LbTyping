@@ -44,16 +44,14 @@ div {
 <div class="wrapper">
     <p>
       LbTyping is a web application for "learning programming by typing", which is also known as "shakyo-style learning" in Japan. When you type a few lines of program code, the results screen displays the typing time and the number of erroneous types.<br>
-<br>
-      Click the "Notes" button, which is displayed before the start of the typing, and read it.<br>
     </p>
     <p id="msgsid1">Enter your student number first.</p>
     <p>
     Student Number <input type="text" name="sid" id="sid" size="10">
     <input type="button" value="Set" onclick="setsid()">
     </p>
-    
-    <p id="msgsid2"><button type="button" onclick="location.href='choice.html'">Task</button></p>
+
+    <p id="msgsid2"><!--button type="button" onclick="location.href='choice.html'">Task</button--><button type="button" onclick="location.href= 'choice.html'" style="font-size: 30px; width:230px; height:100px; display: inline-block; left: 200px; margin: 0 auto">Task</button></p>
     <p id="msgsid3"><button type="button" onclick="location.href='replay-q.html'">Replay</button></p>
 
 <script>
