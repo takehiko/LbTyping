@@ -4,8 +4,6 @@
 # http://localhost:21337/db
 # docker-compose down
 
-version: '3'
-
 services:
   cnpg:
     build:
