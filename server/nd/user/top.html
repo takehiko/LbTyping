@@ -71,7 +71,7 @@ const setsid = () => {
     document.getElementById("msgsid1").removeAttribute("hidden");
     document.getElementById("msgsid2").setAttribute("hidden", "hidden");
     document.getElementById("msgsid3").setAttribute("hidden", "hidden");
-    alert("おそれいりますが、\n学生番号は数字のみで記入してください。");
+    alert("We are sorry.\nbut please enter student numbers in numerals only.");
     return;
   }
 
@@ -110,10 +110,10 @@ const toggle_dialog = () => {
   const b = document.getElementById('button_dialog');
   if (d.open) {
     d.close();
-    b.innerHTML = "更新履歴を表示する";
+    b.innerHTML = "Show update history";
   } else {
     d.show();
-    b.innerHTML = "更新履歴を消す";
+    b.innerHTML = "Hide update history";
   }
 }
 </script>
