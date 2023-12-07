@@ -47,7 +47,7 @@ span:lang(en) {
 
   <button type="button" id="t_page" onclick="location.href= 'top.html'" style="font-size: 30px; width:200px; height:100px;">Top</button>
   <button type="button" id="c_page" onclick="location.href= 'choice.html'" style="font-size: 30px;  width:230px; height:100px;">Another task</button>
-  <button type="button" id="r_page" onclick="getSimilarQuestion_by_qid(qid)"style="font-size: 30px;  width:230px; height:100px;">補充問題へ</button>
+  <button type="button" id="r_page" onclick="getSimilarQuestion_by_qid(qid)"style="font-size: 30px;  width:230px; height:100px;">Supplemental question</button>
 </div>
 
 <script src="axios.min.js"></script>
@@ -137,7 +137,7 @@ const get_response_by_qid = async() => {
 
   if (url) {
     const msg1 = `<iframe src="${url}?theme=twilight" width="100%" height="500" scrolling="no" seamless="seamless"></iframe>`;
-    const msg2 = `（<a href="${url}" target="_blank">paiza.ioで実行結果を見る</a>）`;
+    const msg2 = `（<a href="${url}" target="_blank">View execution results on paiza.io</a>）`;
     elem_msg1.innerHTML = msg1 + '<br>' + msg2;
   } else {
     elem_msg1.style.display = "none";
@@ -157,14 +157,14 @@ const getsidAndshowCommentary = async () => {
     if (v[0] == 'sid') sid = v[1];
   });
   if (sid == null) {
-    window.alert('学籍番号を設定していません。トップページに戻ります。');
+    window.alert('You have not set your student ID number. Return to the top page.');
     location.href = 'top.html';
   } else if (location.search.indexOf("?id=") == 0) {
     get_response();
   } else if (location.search.indexOf("?qid=") == 0) {
     get_response_by_qid();
   } else {
-    window.alert('出題が不明です。トップページに戻ります。');
+    window.alert('The question is unknown. Return to the top page.');
     location.href = 'top.html';
   }
 }
@@ -181,7 +181,7 @@ const getSimilarQuestion_by_qid = async(qid) =>{
   // console.log(next_page);
 
   if(!next_page){
-    alert("補充問題が登録されていません");
+    alert("No supplemental questions have been registered.");
     return;
   }
 
