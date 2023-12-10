@@ -66,16 +66,16 @@ div {
 
     <p id="msgsid3"><button type="button" onclick="location.href='replay-q.html'">Go to replay problem selection screen</button></p>
 
-    <p><button id="button_dialog" type="button" onclick="toggle_dialog();">Display update history</button></p>
+    <p><button id="button_dialog" type="button" onclick="toggle_dialog();">Show update history</button></p>
     <dialog id="dialog">
     Update history
     <ul>
-        <li>November 24, 2022: The number of problems has been increased to 34. During replay, a sound is made when typing and mistyping. You can also choose not to make a sound with a button.
-        <li>November 17, 2022: The number of problems has been increased to 28. A replay function has been added to reproduce the model and your own typing situation (please press the "Replay" button at the bottom of the problem selection screen).
-        <li>November 10, 2022: The number of problems has been increased to 22. On the result announcement screen, if you click the "【Rank...】..." part twice, the message below will disappear. The update history can be displayed/hidden by pressing a button.
-        <li>October 27, 2022: The number of problems has been increased to 18. On the problem selection screen, the display has been enhanced so that you can choose supplementary problems. Also, a "Check Achievement" button has been installed, and you can now check the status of your past implementation.
-        <li>October 20, 2022: Including supplementary problems, the number of problems has been increased to 12. On macOS, you can type "<span lang="en" style="font-family: Courier New; font-size: 24px;">\</span>" by pressing ¥.
-        <li>October 13, 2022: It was first provided in class. There were three problems.
+        <li>November 24, 2022: The number of tasks has been increased to 34. During replay, a sound is made when typing and mistyping. The user can also press a button to disable the sound.
+        <li>November 17, 2022: The number of tasks has been increased to 28. A replay function has been added to reproduce the model and the user's own typing situation. The "Replay" button is installed at the bottom of the task selection screen.
+        <li>November 10, 2022: The number of tasks has been increased to 22. On the resulting screen, when the user clicks on the ranking display, the message disappears. The update history on the top page can be displayed and hidden by pressing a button.
+        <li>October 27, 2022: The number of tasks has been increased to 18. On the task selection screen, the display has been enhanced so that the user can choose supplementary tasks. The button displayed as "Past record" has been installed to show the status of the user's working records.
+        <li>October 20, 2022: Adding supplementary tasks, the number of tasks has been increased to 12. Mac users can also type "<span lang="en" style="font-family: Courier New; font-size: 24px;">\</span>" by pressing the ¥ key.
+        <li>October 13, 2022: It was first provided in class. There were three tasks.
     </ul>
     </dialog>
 </div>
@@ -97,7 +97,7 @@ const setsid = () => {
     document.getElementById("msgsid1").removeAttribute("hidden");
     document.getElementById("msgsid2").setAttribute("hidden", "hidden");
     document.getElementById("msgsid3").setAttribute("hidden", "hidden");
-    alert("We are sorry.\nbut please enter student numbers in numerals only.");
+    alert("Sorry, please enter your student number as a number.");
     return;
   }
 
