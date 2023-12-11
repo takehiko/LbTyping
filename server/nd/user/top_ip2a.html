@@ -42,29 +42,28 @@ div {
 </div>
 
 <div class="wrapper">
-  <p>In Information Processing II A (System Engineering Department, Murakawa), we promote continuous learning of programming through "typing",<br>
-  and provide support for it.<br>
-  By using this service, you can learn the important points of programs written in C<br>
+  <p>In the course of an introductory programming Murakawa teaches, we promote continuous learning of programming through "typing".<br>
+  By using this service, you can learn the important points of programs written in the C programming language<br>
   effectively and efficiently.<br>
   <br>
-  This service is based on something called <a href="https://github.com/takehiko/LbTyping">LbTyping</a> that we released in March 2021,<br>
-  and we are improving its functions and arranging the problems (we will add a little every week) for this class.<br>
-  When you finish typing once, your typing time and the number of mistypes will be displayed.<br>
-  In addition, you can read detailed explanations and edit and run on paiza.io.<br>
-  Please use it regardless of whether it is during class time or not.<br>
+  This service is based on something called <a href="https://github.com/takehiko/LbTyping">LbTyping</a> released in March 2021 first,<br>
+  and we have been implementing the features and arranging the tasks for this class.<br>
+  When you finish typing once, your typing time and mistype count will be displayed.<br>
+  In addition, you can read the detailed explanations, and edit and run the program with the platform of paiza.io.<br>
+  Please use the service, whether it is during class time or not.<br>
   <br>
   For implementation, we have a "Precautions" button before starting typing, so please<br>
   press the button and check there.<br>
   </p>
-  <p id="msgsid1">Please enter your student number first</p>
+  <p id="msgsid1">Please enter your student number.</p>
   <p>
   Student number <input type="text" name="sid" id="sid" size="10">
   <input type="button" value="Set" onclick="setsid()">
   </p>
   
-  <p id="msgsid2"><button type="button" onclick="location.href='choice.html'">To the problem selection screen</button></p>
+  <p id="msgsid2"><button type="button" onclick="location.href='choice.html'">Task selection screen</button></p>
 
-    <p id="msgsid3"><button type="button" onclick="location.href='replay-q.html'">Go to replay problem selection screen</button></p>
+    <p id="msgsid3"><button type="button" onclick="location.href='replay-q.html'">Replay selection screen</button></p>
 
     <p><button id="button_dialog" type="button" onclick="toggle_dialog();">Show update history</button></p>
     <dialog id="dialog">
@@ -75,7 +74,7 @@ div {
         <li>November 10, 2022: The number of tasks has been increased to 22. On the resulting screen, when the user clicks on the ranking display, the message disappears. The update history on the top page can be displayed and hidden by pressing a button.
         <li>October 27, 2022: The number of tasks has been increased to 18. On the task selection screen, the display has been enhanced so that the user can choose supplementary tasks. The button displayed as "Past record" has been installed to show the status of the user's working records.
         <li>October 20, 2022: Adding supplementary tasks, the number of tasks has been increased to 12. Mac users can also type "<span lang="en" style="font-family: Courier New; font-size: 24px;">\</span>" by pressing the ¥ key.
-        <li>October 13, 2022: It was first provided in class. There were three tasks.
+        <li>October 13, 2022: It is the first provided in class, involving three tasks.
     </ul>
     </dialog>
 </div>
