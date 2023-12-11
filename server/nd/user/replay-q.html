@@ -5,7 +5,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="expires" content="0" />
-<title>プログラミングを学ぶ - Replay (1)</title>
+<title>LbTyping - Replay (1)</title>
 
 <style type="text/css">
 div {
@@ -54,22 +54,22 @@ div#result table{
 </head>
 <body>
 <div class ="header">
-  <div class="header-logo">リプレイ問題選択</div>
+  <div class="header-logo">Replay Tasks Selection</div>
 </div>
 <div class="wrapper">
   <p class="explain">
-    リプレイ機能とは、自分や手本となる人のタイピングを画面上で再現する機能です。
-    <br>自分のタイピングの特徴を把握し、または手本の優れたタイピングを参考にして、
-    <br>プログラムの理解に役立ててください。
+    The replay function is a feature that allows you to replay your own typing or that of a role model on the screen.
+    <br>Know your typing characteristics, or use a good typing example as a reference,
+    <br>Please help us understand the program.
   </p>
-  <p>問題を選択してください</p>
+  <p>Please select a task</p>
   <p>
-    <label><input type="checkbox" id="checkbox" onclick="showQuestions(!event.target.checked);" checked>手本が登録済みの問題のみ表示</label>
+    <label><input type="checkbox" id="checkbox" onclick="showQuestions(!event.target.checked);" checked>Only tasks for which a model has already been registered are displayed.</label>
   </p>
   <div id="result"></div>
   <p>
     <!--<button type="button" onclick="location.href='top.html'">トップ画面へ</button>-->
-    <button type="button" onclick="location.href='choice.html'" style="font-size: 30px; width:200px; height:100px;">問題選択画面へ戻る</button>
+    <button type="button" onclick="location.href='choice.html'" style="font-size: 30px; width:200px; height:100px;">Tasks</button>
   </p>
 </div>
 
@@ -99,7 +99,7 @@ const showQuestionForChoice = () => {
       });
       let line = '<tr>';
       line += `<td>${sname}</td>`;
-      line += `<td><button onclick="location.href='replay-c.html?qid=${s.question_id}'">選ぶ</button></td>`
+      line += `<td><button onclick="location.href='replay-c.html?qid=${s.question_id}'">select</button></td>`
       line += '</tr>';
       table += line;
     });

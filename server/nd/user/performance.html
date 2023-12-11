@@ -268,7 +268,7 @@ const timeString = (d) => {
   if (d == null || d == '') return null_string;
   //const daytable = "日月火水木金土".split('').map((c) => `(${c})`);
   const date = new Date(d);
-  return ` ${date.getHours()}時${date.getMinutes()}分${date.getSeconds()}秒`
+  return ` ${date.getHours()} hour ${date.getMinutes()} min ${date.getSeconds()} sec`
 }
 
 const tString = (d) => {
