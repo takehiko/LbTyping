@@ -5,7 +5,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="expires" content="0" />
-<title>プログラミングを学ぶ - Replay (2)</title>
+<title>LbTyping - Replay (2)</title>
 
 <style type="text/css">
 div {
@@ -52,37 +52,37 @@ td label {
 </head>
 <body>
 <div class ="header">
-  <div class="header-logo">リプレイ選択</div>
+  <div class="header-logo">Replay Selection</div>
 </div>
 <div class="container">
-  <p>問題: <span id="qname"></span></p>
+  <p>task: <span id="qname"></span></p>
   <p>
-    リプレイを選択してください。リプレイは自分のリプレイと手本のリプレイの2種類があります。
-    <br>同時リプレイ数が1の場合、2種類のリプレイの中から1つ選択できます。
-    <br>同時リプレイ数が2の場合、自分と手本から1つずつ選択します。
-    <br>なお、どちらかのリプレイデータがない場合には、「リプレイ」ボタンは押せません。
-    <br>選択後にリプレイボタンを押すとリプレイ画面へ移ります。
+    Select a replay.There are two types of replays: your replay and the hand model's replay.
+    <br>If the number of simultaneous replays is 1, you can select one of the two types of replays.
+    <br>If the number of simultaneous replays is 2, you can choose one from your own replays and one from the hand model's replays.
+    <br>Note that the "Replay" button cannot be pressed if there is no replay data for either of them.
+    <br>If you press the "Replay" button after making a selection, the replay screen will be displayed.
   </p>
   <hr>
   <p style="margin-bottom: 30px">
-    同時リプレイ数:
+    Number of simultaneous replays:
     <label onclick="updateReplayList()"><input type="radio" name="replay-num" autocomplete="off" checked>1</label>
     <label onclick="updateReplayList()"><input type="radio" name="replay-num" autocomplete="off">2</label>
     <br>
-    並び順キー:
-    <label onclick="updateReplayList()"><input type="radio" name="sort-key" autocomplete="off" checked>プレイ日時</label>
-    <label onclick="updateReplayList()"><input type="radio" name="sort-key" autocomplete="off">タイプ時間</label>
-    <label onclick="updateReplayList()"><input type="radio" name="sort-key" autocomplete="off">誤タイプ数</label>
+    sort key:
+    <label onclick="updateReplayList()"><input type="radio" name="sort-key" autocomplete="off" checked>Play date</label>
+    <label onclick="updateReplayList()"><input type="radio" name="sort-key" autocomplete="off">Type time</label>
+    <label onclick="updateReplayList()"><input type="radio" name="sort-key" autocomplete="off">Number of typos</label>
   </p>
-  <p style="font-size: 20px; margin-bottom: 10px">自分のリプレイ</p>
+  <p style="font-size: 20px; margin-bottom: 10px">My Replay</p>
   <p id="choices-mine" style="margin-bottom: 10px"></p>
-  <p style="font-size: 20px; margin-bottom: 10px">手本のリプレイ</p>
+  <p style="font-size: 20px; margin-bottom: 10px">Replay of example</p>
   <p id="choices-model"></p>
-  <p><input id="replay" type="button" value="リプレイ" onclick="replay()" disabled></p>
+  <p><input id="replay" type="button" value="replay" onclick="replay()" disabled></p>
   
 <!--  <p style="margin-top: 40px"><button type="button" onclick="location.href='top.html'">トップ画面へ</button></p>-->
-  <p style="margin-top: 40px"><button type="button" onclick="location.href='choice.html'">問題選択画面へ</button></p>
-  <p><button type="button" onclick="location.href='replay-q.html'">リプレイ問題選択画面へ</button></p>
+  <p style="margin-top: 40px"><button type="button" onclick="location.href='choice.html'">Top</button></p>
+  <p><button type="button" onclick="location.href='replay-q.html'">Choice Replay</button></p>
 </div>
 
 <script src="axios.min.js"></script>
@@ -109,7 +109,7 @@ const getSid = () => {
     if (v[0] == 'sid') sid = v[1];
   })
   if (sid == null) {
-    alert('学籍番号を設定していません。トップページに戻ります。');
+    alert('You have not set your student ID number. Return to the top page.');
     location.href = 'top.html';
   }
 }
@@ -164,7 +164,7 @@ const setChoices = async (choices, isMine) => {
 
   choices.dataset.length = replayList.length;
   if (replayList.length == 0) {
-    choices.innerHTML = 'リプレイデータがありません';
+    choices.innerHTML = 'No replay data';
     return 0;
   }
 
@@ -179,9 +179,9 @@ const setChoices = async (choices, isMine) => {
   const replayNum = document.getElementsByName('replay-num')[0].checked ? 1 : 2;
   let table = '<table border="1">';
   table += '<tr>';
-  table += '<th>プレイ日時</th>';
-  table += '<th>タイプ時間(秒)</th>';
-  table += '<th>誤タイプ数</th>';
+  table += '<th>Play date</th>';
+  table += '<th>Type time(sec)</th>';
+  table += '<th>Number of typos</th>';
   table += '<th></th>';
   table += '</tr>';
   replayList.forEach((r, idx) => {
